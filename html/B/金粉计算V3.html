@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奢龙试炼金粉需求计算器</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V3.css">
+    <style>
+        .main-content {
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 计算器卡片 */
+        .calculator-card {
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(185, 150, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            border-color: rgb(225, 90, 250);
+        }
+
+        /* 标题 */
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+
+        /* 按钮组 */
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cost-button {
+            padding: 12px 5px;
+            background-color: #121826;
+            border: 1px solid rgba(185, 150, 255, 0.3);
+            border-radius: 5px;
+            color: #c0c5d0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .cost-button:hover {
+            background-color: rgba(225, 90, 250, 0.1);
+            border-color: rgba(225, 90, 250, 0.5);
+        }
+
+        .cost-button.active {
+            background-color: rgba(225, 90, 250, 0.2);
+            border-color: rgb(225, 90, 250);
+            color: rgb(225, 90, 250);
+            font-weight: 600;
+        }
+
+        /* 输入组 */
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c0c5d0;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #121826;
+            border: 1px solid rgba(185, 150, 255, 0.3);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: rgb(225, 90, 250);
+            box-shadow: 0 0 0 2px rgba(225, 90, 250, 0.2);
+        }
+
+        .input-field:invalid {
+            border-color: #ff4757;
+        }
+
+        /* 结果区域 */
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(18, 24, 38, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(185, 150, 255, 0.2);
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            color: rgb(225, 90, 250);
+            margin-bottom: 15px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: rgb(225, 90, 250);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .calculation-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(185, 150, 255, 0.2);
+            color: #c0c5d0;
+            font-size: 0.9rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .calculator-card {
+                padding: 20px;
+            }
+
+            .result-value {
+                font-size: 1.7rem;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-card {
+                padding: 15px;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+            }
+
+            .result-value {
+                font-size: 1.5rem;
+            }
+
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="calculator-card">
+            <h2 class="card-title">奢龙试炼金粉需求计算器</h2>
+
+            <div class="button-group">
+                <button class="cost-button active" data-count="4" title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中未制作过，请选择此选项。">未制作过</button>
+                <button class="cost-button" data-count="3" title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过1次，请选择此选项。">已制作1次</button>
+                <button class="cost-button" data-count="2" title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过2次，请选择此选项。">已制作2次</button>
+                <button class="cost-button" data-count="1" title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过3次，请选择此选项。">已制作3次</button>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="current-cost">起始消耗</label>
+                    <input type="number" id="current-cost" class="input-field" min="7" value="7" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="quantity">制作数量</label>
+                    <input type="number" id="quantity" class="input-field" min="1" value="1">
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h3 class="result-title">消耗数量</h3>
+                <div class="result-value" id="result">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentCostInput = document.getElementById('current-cost');
+            const quantityInput = document.getElementById('quantity');
+            const resultElement = document.getElementById('result');
+            const costButtons = document.querySelectorAll('.cost-button');
+
+            let currentCount = 4;
+
+            // 按钮选择逻辑
+            costButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // 移除所有按钮的active类
+                    costButtons.forEach(btn => btn.classList.remove('active'));
+                    // 为当前点击的按钮添加active类
+                    this.classList.add('active');
+                    // 更新当前计算次数
+                    currentCount = parseInt(this.getAttribute('data-count'));
+                    // 重新计算结果
+                    calculateResult();
+                });
+            });
+
+            // 当前消耗输入验证
+            currentCostInput.addEventListener('change', function () {
+                if (this.value < 7) {
+                    this.value = 7;
+                }
+                calculateResult();
+            });
+
+            function calculateResult() {
+                const x = parseInt(currentCostInput.value) || 7;
+                const y = parseInt(quantityInput.value) || 1;
+
+                let totalResult = 0;
+
+                totalResult = calculateResulta(y, currentCount, x);
+
+
+                // 更新显示
+                resultElement.textContent = totalResult;
+            }
+
+            function calculateResulta(x, z, y) {
+                let n;
+                if (x <= z) {
+                    n = 1;
+                    return x * y;
+                } else {
+                    n = Math.ceil((x - z) / 4) + 1;
+                    // 公式: R = x(n+6) - 2n² + 6n - z(n-1) - 4
+                    return x * (n + 6) - 2 * n * n + 6 * n - z * (n - 1) - 4;
+                }
+            }
+
+            // 添加输入事件监听
+            currentCostInput.addEventListener('input', calculateResult);
+            quantityInput.addEventListener('input', calculateResult);
+
+            // 初始计算
+            calculateResult();
+        });
+    </script>
+</body>
+
+</html>

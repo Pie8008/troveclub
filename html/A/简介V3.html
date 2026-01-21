@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pe</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V3.css">
+    <style>
+        /* 成员展示 */
+        .members-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(42, 47, 62, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .member-role {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .role-leader {
+            background-color: #ff5555;
+            animation: colorChange 5s infinite;
+            /* 应用动画 */
+        }
+
+        @keyframes colorChange {
+            0% {
+                background-color: #ff5555;
+            }
+
+            25% {
+                background-color: #0dff00;
+            }
+
+            50% {
+                background-color: #0088ff;
+            }
+
+            75% {
+                background-color: #ff006f;
+            }
+
+            100% {
+                background-color: #ff5555;
+            }
+        }
+
+        .role-officer {
+            background-color: #ffaa00;
+        }
+
+        .role-member {
+            background-color: #55aaff;
+        }
+
+        /* 游戏列表 */
+        .game-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .game-tag {
+            background: linear-gradient(135deg, rgba(225, 90, 250, 0.2) 0%, rgba(185, 150, 255, 0.2) 100%);
+            padding: 5px 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(225, 90, 250, 0.3);
+        }
+
+        /* 统计数据 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(185, 150, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: rgb(225, 90, 250);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #c0c5d0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+
+        <!-- 统计数据 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value">10级</div>
+                <div class="stat-label">等级</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="history-time">无历史</div>
+                <div class="stat-label">历史</div>
+            </div>
+        </div>
+
+        <!-- 内容卡片 -->
+        <div class="content-cards">
+            <!-- 公会简介 -->
+            <div class="content-card">
+                <h2 class="card-title">公会简介</h2>
+                <div class="card-body">
+                    <p>死寂的公会，除了砸豆荚的时候没人出现。</p>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2 class="card-title">公会印象</h2>
+                <div class="card-body">
+                    <p>成员给出的最高评价：</p>
+                    <div class="game-list">
+                        <div class="game-tag">什么</div>
+                        <div class="game-tag">全是男娘</div>
+                        <div class="game-tag">群友很烧</div>
+                        <div class="game-tag">河里</div>
+                        <div class="game-tag">唐人街</div>
+                        <div class="game-tag">涩图</div>
+                        <div class="game-tag">promiscuous</div>
+                        <div class="game-tag">无能的会长</div>
+                        <div class="game-tag">怪人协会</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2 class="card-title">部分成员</h2>
+                <div class="card-body">
+                    <div class="members-container">
+                        <div class="member-item">
+                            <span class="member-role role-leader"></span>
+                            Yu_qi (会长、音轨师)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-leader"></span>
+                            cannasun (副会长)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-leader"></span>
+                            zLOVEz (副会长、音轨师、寄生)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-leader"></span>
+                            pie8008 (副会长、音轨师、转生)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-leader"></span>
+                            果冻 (副会长、已退坑)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="members-container">
+                        <div class="member-item">
+                            <span class="member-role role-officer"></span>
+                            MewsCat (他说要上来的)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-officer"></span>
+                            wqrrrr (像素画)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-officer"></span>
+                            Xiaoyuan0213 (？)
+                        </div>
+                        <div class="member-item">
+                            <span class="member-role role-officer"></span>
+                            BluesRui (？)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+    </div>
+
+    <script>
+        // 设置起始时间 - 可以在这里修改起始时间
+        const startDate = new Date('2023-11-02T00:00:00'); // 修改这里的日期
+        
+        function updateHistoryTime() {
+            const now = new Date();
+            const diffMs = now - startDate;
+            
+            // 计算年、月、日、时、分、秒
+            const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
+            const months = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+            
+            // 构建显示文本
+            let displayText = '';
+            if (years > 0) displayText += `${years}年`;
+            if (months > 0) displayText += `${months}月`;
+            if (days > 0) displayText += `${days}天`;
+            if (hours > 0) displayText += `${hours}时`;
+            if (minutes > 0) displayText += `${minutes}分`;
+            if (seconds > 0 || displayText === '') displayText += `${seconds}秒`;
+            
+            // 更新显示
+            document.getElementById('history-time').textContent = displayText;
+        }
+        
+        // 初始更新
+        updateHistoryTime();
+        
+        // 每秒更新一次
+        setInterval(updateHistoryTime, 1000);
+    </script>
+</body>
+
+</html>

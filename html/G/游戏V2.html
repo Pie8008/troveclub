@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏lv2页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V2.css">
+</head>
+
+<body>
+    <!-- 顶部选项卡容器 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-path="A">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>贪吃蛇</span>
+            </button>
+            <button class="tab-button" data-path="B">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>扫雷</span>
+            </button>
+            <!-- <button class="tab-button" data-path="content">
+                <i class="fas fa-cog"></i>
+                <span>？</span>
+            </button>
+            <button class="tab-button" data-path="users">
+                <i class="fas fa-cog"></i>
+                <span>？</span>
+            </button>
+            <button class="tab-button" data-path="settings">
+                <i class="fas fa-cog"></i>
+                <span>？</span>
+            </button> -->
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <iframe id="content-frame" class="iframe-container" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+
+        var PAGE_PATH_MAP = {
+            'A': './贪吃蛇V3.html',
+            'B': './扫雷V3.html',
+            'C': './C4/lv3C403.html',
+            'D': './C4/lv3C404.html',
+            'E': './C4/lv3C405.html'
+        };
+
+
+    </script>
+    <script src="../../js/V2.js"></script>
+</body>
+
+</html>

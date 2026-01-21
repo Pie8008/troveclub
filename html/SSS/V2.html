@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lv2模板页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/lv2.css">
+</head>
+
+<body>
+    <!-- 顶部选项卡容器 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-path="A">
+                <i class="fas fa-cog"></i>
+                <span>A</span>
+            </button>
+            <button class="tab-button" data-path="B">
+                <i class="fas fa-cog"></i>
+                <span>B</span>
+            </button>
+            <button class="tab-button" data-path="C">
+                <i class="fas fa-cog"></i>
+                <span>C</span>
+            </button>
+            <button class="tab-button" data-path="D">
+                <i class="fas fa-cog"></i>
+                <span>D</span>
+            </button>
+            <button class="tab-button" data-path="E">
+                <i class="fas fa-cog"></i>
+                <span>E</span>
+            </button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <iframe id="content-frame" class="iframe-container" src="../mo/加载.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        var PAGE_PATH_MAP = {
+            'A': '#',
+            'B': '#',
+            'C': '#',
+            'D': '#',
+            'E': '#'
+        };
+    </script>
+    <script src="../../js/leve2.js"></script>
+</body>
+
+</html>

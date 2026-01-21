@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画廊A</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V3.css">
+    <style>
+        /* 画廊特定样式 */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(185, 150, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            border-color: rgba(225, 90, 250, 0.4);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            margin-bottom: 8px;
+        }
+
+        .item-meta {
+            color: #c0c5d0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 放大视图样式 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .expanded-view {
+            max-width: 90%;
+            max-height: 90%;
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(225, 90, 250, 0.3);
+        }
+
+        .expanded-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            background-color: #121826;
+        }
+
+        .expanded-info {
+            padding: 20px;
+            color: #c0c5d0;
+        }
+
+        .expanded-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            margin-bottom: 10px;
+        }
+
+        .expanded-meta {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .expanded-description {
+            line-height: 1.6;
+        }
+
+        /* 关闭按钮 */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 50vw;
+            background: rgba(225, 90, 250, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(225, 90, 250, 1);
+        }
+
+        /* 页面标题样式 */
+        .page-title {
+            font-size: 2rem;
+            color: rgb(225, 90, 250);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            color: #c0c5d0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <h1 class="page-title">艺术品</h1>
+        <p class="page-subtitle">展览</p>
+
+        <div class="gallery-container">
+
+            <div class="gallery-item" data-id="1">
+                <img src="../../图片/图库图片/bs.png"
+                    alt="#" class="thumbnail">
+                <div class="item-info">
+                    <div class="item-title">宝石</div>
+                    <div class="item-meta">Yu_qi的超绝运气</div>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-id="2">
+                <img src="../../图片/图库图片/gm1.png"
+                    alt="#" class="thumbnail">
+                <div class="item-info">
+                    <div class="item-title">标记</div>
+                    <div class="item-meta">无信息</div>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-id="3">
+                <img src="../../图片/图库图片/gm2.jpeg"
+                    alt="#" class="thumbnail">
+                <div class="item-info">
+                    <div class="item-title">标记</div>
+                    <div class="item-meta">无信息</div>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-id="4">
+                <img src="../../图片/图库图片/世界树.png"
+                    alt="#" class="thumbnail">
+                <div class="item-info">
+                    <div class="item-title">主城大树</div>
+                    <div class="item-meta">抽象的大树。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 放大视图 -->
+        <div class="overlay">
+            <button class="close-btn">&times;</button>
+            <div class="expanded-view">
+                <img src="" alt="" class="expanded-image">
+                <div class="expanded-info">
+                    <div class="expanded-title"></div>
+                    <div class="expanded-meta"></div>
+                    <div class="expanded-description"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 画廊数据
+        const galleryData = {
+            1: {
+                title: "宝石",
+                image: "../../图片/图库图片/bs.png",
+                time: "某个时间",
+                author: "Yu_qi",
+                description: "无介绍"
+            },
+            2: {
+                title: "无名",
+                image: "../../图片/图库图片/gm1.png",
+                time: "某个时间",
+                author: "PE",
+                description: "无介绍"
+            },
+            3: {
+                title: "无名",
+                image: "../../图片/图库图片/gm2.jpeg",
+                time: "某个时间",
+                author: "未知",
+                description: "无介绍"
+            },
+            4: {
+                title: "大树",
+                image: "../../图片/图库图片/世界树.png",
+                time: "2025.11.25",
+                author: "Pie",
+                description: "会长出任何东西！"
+            }
+        };
+
+        // 获取DOM元素
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const overlay = document.querySelector('.overlay');
+        const expandedImage = document.querySelector('.expanded-image');
+        const expandedTitle = document.querySelector('.expanded-title');
+        const expandedMeta = document.querySelector('.expanded-meta');
+        const expandedDescription = document.querySelector('.expanded-description');
+        const closeBtn = document.querySelector('.close-btn');
+
+        // 添加点击事件监听器
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const itemId = item.getAttribute('data-id');
+                const data = galleryData[itemId];
+
+                // 更新放大视图内容
+                expandedImage.src = data.image;
+                expandedImage.alt = data.title;
+                expandedTitle.textContent = data.title;
+                expandedMeta.textContent = `${data.time} · ${data.author}`;
+                expandedDescription.textContent = data.description;
+
+                // 显示放大视图
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+            });
+        });
+
+        // 关闭放大视图
+        function closeOverlay() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto'; // 恢复背景滚动
+        }
+
+        // 点击关闭按钮
+        closeBtn.addEventListener('click', closeOverlay);
+
+        // 点击背景区域关闭
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeOverlay();
+            }
+        });
+
+        // 按ESC键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                closeOverlay();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V2.css">
+</head>
+
+<body>
+    <!-- 顶部选项卡容器 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-path="A">
+                <i class="fas fa-cog"></i>
+                <span>植物计算器</span>
+            </button>
+            <button class="tab-button" data-path="B">
+                <i class="fa-solid fa-hammer"></i>
+                <span>园艺收获时刻表</span>
+            </button>
+            <button class="tab-button" data-path="C">
+                <i class="fa-solid fa-hammer"></i>
+                <span>奢龙试炼金粉计算</span>
+            </button>
+            <button class="tab-button" data-path="D">
+                <i class="fa-solid fa-hammer"></i>
+                <span>奢龙加速时间表</span>
+            </button>
+            <button class="tab-button" data-path="E">
+                <i class="fa-solid fa-hammer"></i>
+                <span>编码器</span>
+            </button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <iframe id="content-frame" class="iframe-container" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        var PAGE_PATH_MAP = {
+            'A': './计算器V3.html',
+            'B': './收获时间V3.html',
+            'C': './金粉计算V3.html',
+            'D': './加速时间V3.html',
+            'E': './编码器V3.html'
+        };
+    </script>
+    <script src="../../js/V2.js"></script>
+</body>
+
+</html>

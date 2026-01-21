@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇</title>
+  <link rel="stylesheet" href="../../css/none.css">
+  <link rel="stylesheet" href="../../css/V3.css">
+  <link rel="stylesheet" href="../../css/w.css">
+  <style>
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-container {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      padding: 20px;
+      gap: 20px;
+      overflow: hidden;
+    }
+
+    .game-area {
+      min-width: 600px;
+      width: 60vw;
+      display: flex;
+      background-color: #1a1f2e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid #b996ff;
+    }
+
+    .game-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-board {
+      position: relative;
+      border: 2px solid #b996ff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(185, 150, 255, 0.3);
+    }
+
+    #gameCanvas {
+      background-color: #0f1420;
+      display: block;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4a00e0, #8e2de2);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(142, 45, 226, 0.4);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      background: linear-gradient(135deg, #6a6a6a, #8a8a8a);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .activation-panel {
+      background: #1a1f2e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid #b996ff;
+      flex: 1;
+    }
+
+    .activation-panel h2 {
+      margin-bottom: 15px;
+      color: rgb(225, 90, 250);
+      border-bottom: 1px solid rgba(185, 150, 255, 0.3);
+      padding-bottom: 8px;
+      font-size: 1.3rem;
+    }
+
+    .score-display {
+      background: rgba(185, 150, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(185, 150, 255, 0.3);
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #e0e0e0;
+      margin-bottom: 10px;
+    }
+
+    .difficulty-slot {
+      width: 100%;
+      height: 60px;
+      border: 2px dashed #b996ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      background: rgba(185, 150, 255, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .difficulty-slot:hover {
+      border-color: #fbc531;
+      background: rgba(251, 197, 49, 0.1);
+    }
+
+    .difficulty-slot.active {
+      border: 2px solid #4a00e0;
+      background: rgba(74, 0, 224, 0.1);
+    }
+
+    .difficulty-slot .slot-content {
+      color: #b996ff;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .difficulty-slot.active .slot-content {
+      color: #ff0000;
+      font-weight: bold;
+    }
+
+    .difficulty-slot.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .difficulty-slot.disabled:hover {
+      border-color: #b996ff;
+      background: rgba(185, 150, 255, 0.05);
+    }
+
+    .challenge-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .challenge-slot {
+      width: 100%;
+      height: 50px;
+      border: 2px dashed #b996ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(185, 150, 255, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .challenge-slot:hover {
+      border-color: #fbc531;
+      background: rgba(251, 197, 49, 0.1);
+    }
+
+    .challenge-slot.active {
+      border: 2px solid #4a00e0;
+      background: rgba(74, 0, 224, 0.1);
+    }
+
+    .challenge-slot .slot-content {
+      color: #b996ff;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .challenge-slot.active .slot-content {
+      color: #e22da3;
+      font-weight: bold;
+    }
+
+    .challenge-slot.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .challenge-slot.disabled:hover {
+      border-color: #b996ff;
+      background: rgba(185, 150, 255, 0.05);
+    }
+
+    .selection-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .selection-content {
+      background: #1a1f2e;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 0 40px rgba(185, 150, 255, 0.3);
+      border: 2px solid #b996ff;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .selection-content::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    .selection-content::-webkit-scrollbar-track {
+      background: #2a2f3e;
+    }
+
+    .selection-content::-webkit-scrollbar-thumb {
+      background: rgb(225, 90, 250);
+      border-radius: 10px;
+    }
+
+    .selection-content::-webkit-scrollbar-thumb:hover {
+      background: #ffffff;
+    }
+
+    .selection-content h2 {
+      margin-bottom: 20px;
+      color: rgb(225, 90, 250);
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .selection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .selection-item {
+      background: rgba(185, 150, 255, 0.1);
+      border: 1px solid rgba(185, 150, 255, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .selection-item:hover {
+      background: rgba(185, 150, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .selection-item.active {
+      background: linear-gradient(135deg, #4a00e0, #8e2de2);
+      border-color: #8e2de2;
+    }
+
+    .selection-item .challenge-description {
+      font-size: 0.75rem;
+      margin-top: 5px;
+      color: #b996ff;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      border-radius: 8px;
+    }
+
+    .game-over h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #ff7e5f;
+      text-shadow: 0 0 10px rgba(255, 126, 95, 0.5);
+    }
+
+    .game-over p {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .active-effects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .effect-tag {
+      background: rgba(74, 0, 224, 0.3);
+      border: 1px solid #4a00e0;
+      border-radius: 15px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      color: #e0e0e0;
+    }
+
+    @media (max-width: 968px) {
+      .game-container {
+        flex-direction: column;
+      }
+
+      .activation-area {
+        width: 100%;
+      }
+
+      .game-area {
+        flex-direction: column;
+      }
+
+      .game-info {
+        flex-direction: row;
+        margin-right: 0;
+        margin-bottom: 20px;
+        justify-content: space-between;
+      }
+
+      .selection-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+
+    @media (max-width: 619px) {
+      .game-container {
+        display: none;
+      }
+
+      .screen-warning {
+        display: block;
+      }
+    }
+
+    @media (min-width: 620px) {
+      .screen-warning {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content">
+    <div class="game-container">
+      <div class="activation-panel">
+        <h2>积分信息</h2>
+        <div class="score-display">分数: <span id="score">0</span></div>
+        <div class="score-display">速度: <span id="speed">400</span> ms/格</div>
+        <div class="score-display">长度: <span id="length">3</span></div>
+        <div class="score-display">倍率: <span id="multiplier">1.0</span>x</div>
+        <div class="active-effects" id="activeEffects">
+          <!-- 动态添加激活效果标签 -->
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="game-content">
+          <div class="game-board">
+            <canvas id="gameCanvas" width="550" height="550"></canvas>
+            <div id="gameOver" class="game-over hidden">
+              <h2>游戏结束!</h2>
+              <p>最终得分: <span id="finalScore">0</span></p>
+              <p>最快速度: <span id="finalSpeed">0</span> ms/格</p>
+              <p>食物数量: <span id="finalFood">0</span></p>
+              <button id="confirmGameOver">确定</button>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="startButton">开始游戏</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="activation-panel">
+        <h2>难度激活</h2>
+        <div class="difficulty-slot" id="difficultySlot">
+          <div class="slot-content">难度 I</div>
+        </div>
+        <div class="challenge-slots" id="challengeSlots">
+          <!-- 词条槽位会根据难度动态生成 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 难度选择模态框 -->
+  <div id="difficultyModal" class="selection-modal hidden">
+    <div class="selection-content">
+      <h2>选择难度</h2>
+      <div class="selection-grid" id="difficultyGrid">
+        <div class="selection-item" data-speed="400" data-multiplier="1.0" data-id="difficulty1">难度 I</div>
+        <div class="selection-item" data-speed="350" data-multiplier="1.2" data-id="difficulty2">难度 II</div>
+        <div class="selection-item" data-speed="300" data-multiplier="1.4" data-id="difficulty3">难度 III</div>
+        <div class="selection-item" data-speed="250" data-multiplier="1.6" data-id="difficulty4">难度 IV</div>
+        <div class="selection-item" data-speed="200" data-multiplier="1.8" data-id="difficulty5">难度 V</div>
+        <div class="selection-item" data-speed="150" data-multiplier="2.0" data-id="difficulty6">难度 VI</div>
+      </div>
+      <div class="modal-actions">
+        <button id="confirmDifficulty">确认</button>
+        <button id="cancelDifficulty">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 词条选择模态框 -->
+  <div id="challengeModal" class="selection-modal hidden">
+    <div class="selection-content">
+      <h2>选择词条</h2>
+      <div class="selection-grid" id="challengeGrid">
+        <div class="selection-item" data-multiplier="0.1" data-id="challenge1">
+          衔尾蛇
+          <div class="challenge-description">蛇头碰到身体不会结束游戏，但减少当前10%的积分</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.8" data-id="challenge2">
+          八岐大蛇
+          <div class="challenge-description">食物会使身体增长8个长度</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.2" data-id="challenge3">
+          绿色风格
+          <div class="challenge-description">食物、蛇头、身体、障碍的颜色均变为绿色</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.5" data-id="challenge4">
+          饱腹加速
+          <div class="challenge-description">每吃5个食物，第5个食物会增加50ms/格移动速度</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.1" data-id="challenge5">
+          暗藏宝藏
+          <div class="challenge-description">随机出现特殊食物，吃下会增加100积分和25ms/格的速度</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.5" data-id="challenge6">
+          增加障碍
+          <div class="challenge-description">障碍物额外增加5个</div>
+        </div>
+        <div class="selection-item" data-multiplier="-0.2" data-id="challenge7">
+          富含营养
+          <div class="challenge-description">食物的基础积分额外增加4点</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.5" data-id="challenge8">
+          积分流失
+          <div class="challenge-description">开始游戏立刻获得500积分，每次移动减少1点积分</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.9" data-id="challenge9">
+          过渡增长
+          <div class="challenge-description">每次移动增加1ms/格的移动速度</div>
+        </div>
+        <div class="selection-item" data-multiplier="1.5" data-id="challenge10">
+          迷失方向
+          <div class="challenge-description">翻转上下移动和左右移动</div>
+        </div>
+        <div class="selection-item" data-multiplier="0.5" data-id="challenge11">
+          加固封锁
+          <div class="challenge-description">超出边界会立刻结束游戏而不是移动到另一边</div>
+        </div>
+        <div class="selection-item" data-multiplier="1.0" data-id="challenge12">
+          深谙迷雾
+          <div class="challenge-description">无法看到以蛇头为中心5x5范围以外的任何内容</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="confirmChallenge">确认</button>
+        <button id="cancelChallenge">返回</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="screen-warning">
+    <h2>屏幕大小不适合此页面</h2>
+    <h2>请使用宽度大于620px的设备访问，或在电脑上打开此页面。</h2>
+  </div>
+
+  <script>
+    // 游戏核心变量
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const GRID_SIZE = 20; // 游戏网格尺寸（20x20）
+    const CELL_SIZE = canvas.width / GRID_SIZE; // 每个网格单元的像素大小
+
+    // 游戏状态变量
+    let snake = []; // 蛇的身体，每个元素是一个包含x,y坐标的对象
+    let food = {}; // 食物的位置
+    let obstacles = []; // 障碍物数组
+    let direction = 'right'; // 当前移动方向
+    let nextDirection = 'right'; // 下一个移动方向（用于防止连续快速按键导致的直接反向移动）
+    let score = 0; // 基础分数
+    let gameSpeed = 400; // 游戏速度（毫秒/移动一次）
+    let addSpeed = 10; // 每次吃到食物后减少的间隔时间
+    let gameInterval; // 游戏循环的间隔ID
+    let isGameActive = false; // 游戏是否正在进行
+    let difficultyMultiplier = 1; // 难度系数乘数
+    let challengeMultiplier = 1; // 挑战词条系数乘数
+    let foodCount = 0; // 吃到食物的数量
+    let minSpeed = 50; // 游戏最小速度限制
+
+    // 词条效果状态
+    let activeEffects = new Map(); // 存储激活的词条及其效果
+    let specialFood = null; // 特殊食物
+    let foodsSinceSpeedIncrease = 0; // 增值加速词条计数
+    let moveCount = 0; // 移动次数计数（用于积分流失和年迈增长词条）
+
+    // 难度和词条状态
+    let activeDifficulty = { // 当前激活的难度
+      id: 'difficulty1',
+      speed: '400',
+      multiplier: '1',
+      text: '难度 I'
+    };
+    let activeChallenges = new Set(); // 当前激活的词条集合
+    let currentSelectionType = null; // 当前选择类型：'difficulty' 或 'challenge'
+    let selectedItem = null; // 当前选中的项目
+    let currentChallengeSlot = null; // 当前操作的词条槽位
+
+    /**
+     * 初始化游戏
+     * 重置所有游戏状态到初始值
+     */
+    function initGame() {
+      // 初始化蛇 - 长度为3，水平排列在中间位置
+      snake = [
+        { x: 10, y: 10 },
+        { x: 9, y: 10 },
+        { x: 8, y: 10 }
+      ];
+
+      // 生成食物
+      generateFood();
+
+      // 生成障碍物 - 初始5个
+      generateObstacles(5);
+
+      // 重置游戏状态
+      score = 0;
+      foodCount = 0;
+      direction = 'right';
+      nextDirection = 'right';
+      foodsSinceSpeedIncrease = 0;
+      moveCount = 0;
+
+      // 积分流失词条效果
+      if (activeEffects.has('challenge8')) {
+        score = 500;
+      }
+
+      // 如果已激活难度，设置游戏速度
+      if (activeDifficulty) {
+        gameSpeed = parseInt(activeDifficulty.speed);
+      } else {
+        gameSpeed = 400; // 默认速度
+      }
+
+      addSpeed = 10; // 重置速度增量
+
+      // 更新UI显示
+      updateUI();
+    }
+
+    /**
+     * 生成食物
+     * 在随机位置生成食物，确保不与蛇身或障碍物重叠
+     */
+    function generateFood() {
+      let validPosition = false;
+
+      // 循环直到找到有效位置
+      while (!validPosition) {
+        // 随机生成食物坐标
+        food = {
+          x: Math.floor(Math.random() * GRID_SIZE),
+          y: Math.floor(Math.random() * GRID_SIZE)
+        };
+
+        // 检查食物是否与蛇身或障碍物重叠
+        validPosition = true;
+
+        // 检查蛇身
+        for (let segment of snake) {
+          if (segment.x === food.x && segment.y === food.y) {
+            validPosition = false;
+            break;
+          }
+        }
+
+        // 检查障碍物
+        if (validPosition) {
+          for (let obstacle of obstacles) {
+            if (obstacle.x === food.x && obstacle.y === food.y) {
+              validPosition = false;
+              break;
+            }
+          }
+        }
+      }
+
+      // 如果障碍宝藏词条激活，随机生成特殊食物
+      if (activeEffects.has('challenge5') && Math.random() < 0.1) {
+        generateSpecialFood();
+      }
+    }
+
+    /**
+     * 生成特殊食物
+     */
+    function generateSpecialFood() {
+      let validPosition = false;
+
+      // 循环直到找到有效位置
+      while (!validPosition) {
+        // 随机生成特殊食物坐标
+        specialFood = {
+          x: Math.floor(Math.random() * GRID_SIZE),
+          y: Math.floor(Math.random() * GRID_SIZE)
+        };
+
+        // 检查特殊食物是否与蛇身、普通食物或障碍物重叠
+        validPosition = true;
+
+        // 检查蛇身
+        for (let segment of snake) {
+          if (segment.x === specialFood.x && segment.y === specialFood.y) {
+            validPosition = false;
+            break;
+          }
+        }
+
+        // 检查普通食物
+        if (validPosition && food.x === specialFood.x && food.y === specialFood.y) {
+          validPosition = false;
+        }
+
+        // 检查障碍物
+        if (validPosition) {
+          for (let obstacle of obstacles) {
+            if (obstacle.x === specialFood.x && obstacle.y === specialFood.y) {
+              validPosition = false;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    /**
+     * 生成障碍物
+     * @param {number} count - 要生成的障碍物数量
+     */
+    function generateObstacles(count) {
+      obstacles = []; // 清空障碍物数组
+
+      // 如果增加障碍词条激活，增加障碍物数量
+      if (activeEffects.has('challenge6')) {
+        count += 5; // 根据描述，额外增加5个障碍物
+      }
+
+      for (let i = 0; i < count; i++) {
+        let validPosition = false;
+        let newObstacle = {};
+
+        // 循环直到找到有效位置
+        while (!validPosition) {
+          newObstacle = {
+            x: Math.floor(Math.random() * GRID_SIZE),
+            y: Math.floor(Math.random() * GRID_SIZE)
+          };
+
+          // 检查障碍物是否与蛇身或食物重叠
+          validPosition = true;
+
+          // 检查蛇身
+          for (let segment of snake) {
+            if (segment.x === newObstacle.x && segment.y === newObstacle.y) {
+              validPosition = false;
+              break;
+            }
+          }
+
+          // 检查食物
+          if (validPosition && food.x === newObstacle.x && food.y === newObstacle.y) {
+            validPosition = false;
+          }
+
+          // 检查其他障碍物
+          if (validPosition) {
+            for (let obstacle of obstacles) {
+              if (obstacle.x === newObstacle.x && obstacle.y === newObstacle.y) {
+                validPosition = false;
+                break;
+              }
+            }
+          }
+        }
+
+        obstacles.push(newObstacle); // 添加有效障碍物
+      }
+    }
+
+    /**
+     * 移动蛇
+     * 根据当前方向移动蛇，处理吃到食物和边界情况
+     */
+    function moveSnake() {
+      // 更新方向
+      direction = nextDirection;
+
+      // 计算新的头部位置
+      const head = { ...snake[0] }; // 复制头部位置
+
+      // 根据方向移动头部
+      switch (direction) {
+        case 'up':
+          head.y -= 1;
+          break;
+        case 'down':
+          head.y += 1;
+          break;
+        case 'left':
+          head.x -= 1;
+          break;
+        case 'right':
+          head.x += 1;
+          break;
+      }
+
+      // 边界处理 - 根据加固封锁词条决定
+      if (activeEffects.has('challenge11')) {
+        // 加固封锁：超出边界立即结束游戏
+        if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+          endGame();
+          return;
+        }
+      } else {
+        // 默认：边界互通
+        if (head.x < 0) head.x = GRID_SIZE - 1;
+        if (head.x >= GRID_SIZE) head.x = 0;
+        if (head.y < 0) head.y = GRID_SIZE - 1;
+        if (head.y >= GRID_SIZE) head.y = 0;
+      }
+
+      // 检查是否吃到食物
+      let foodEaten = false;
+      if (head.x === food.x && head.y === food.y) {
+        foodEaten = true;
+        handleFoodConsumption();
+      }
+
+      // 检查是否吃到特殊食物
+      if (specialFood && head.x === specialFood.x && head.y === specialFood.y) {
+        handleSpecialFoodConsumption();
+        specialFood = null;
+      }
+
+      // 衔尾蛇效果处理
+      if (activeEffects.has('challenge1')) {
+        handleOuroborosEffect(head, foodEaten);
+      } else {
+        // 如果没有衔尾蛇效果，正常移动
+        if (!foodEaten) {
+          snake.pop();
+        }
+        snake.unshift(head);
+      }
+
+      // 积分流失词条效果
+      if (activeEffects.has('challenge8')) {
+        score = Math.max(0, score - 1);
+      }
+
+      // 年迈增长词条效果
+      if (activeEffects.has('challenge9')) {
+        gameSpeed = Math.max(gameSpeed - 1, minSpeed);
+        // 重新设置游戏间隔以应用新速度
+        if (isGameActive) {
+          clearInterval(gameInterval);
+          gameInterval = setInterval(gameLoop, gameSpeed);
+        }
+      }
+
+      // 增加移动计数
+      moveCount++;
+
+      // 检查碰撞
+      checkCollisions();
+    }
+
+
+
+
+
+
+    /**
+     * 处理食物消耗
+     */
+    function handleFoodConsumption() {
+      // 增加分数
+      let foodScore = 1;
+
+      // 富含营养词条效果
+      if (activeEffects.has('challenge7')) {
+        foodScore += 4; // 基础积分额外增加4点
+      }
+
+      // 绿色风格词条效果
+      // if (activeEffects.has('challenge3')) {
+      //   foodScore = 2; // 绿色食物提供双倍分数
+      // }
+
+      score += foodScore;
+      foodCount++;
+      foodsSinceSpeedIncrease++;
+
+      // 八岐大蛇词条效果
+      if (activeEffects.has('challenge2')) {
+        // 食物使身体增长8个长度
+        for (let i = 0; i < 7; i++) {
+          snake.push({ ...snake[snake.length - 1] });
+        }
+      }
+      // else {
+      //   // 正常增长1个长度
+      //   snake.push({ ...snake[snake.length - 1] });
+      // }
+
+      // 饱腹加速词条效果
+      if (activeEffects.has('challenge4') && foodsSinceSpeedIncrease >= 5) {
+        gameSpeed = Math.max(gameSpeed - 50, minSpeed);
+        foodsSinceSpeedIncrease = 0;
+        showSpecialEffect("饱腹加速! 速度增加");
+      } else {
+        // 正常速度增加
+        gameSpeed = Math.max(gameSpeed - addSpeed, minSpeed);
+      }
+
+      // 生成新食物
+      generateFood();
+
+      // 重新设置游戏间隔以应用新速度
+      if (isGameActive) {
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, gameSpeed);
+      }
+    }
+
+    /**
+     * 处理特殊食物消耗
+     */
+    function handleSpecialFoodConsumption() {
+      // 特殊食物提供额外分数和速度
+      score += 100;
+      gameSpeed = Math.max(gameSpeed - 25, minSpeed);
+      foodCount++;
+
+      // 显示特殊食物得分效果
+      showSpecialEffect("+100 特殊食物! 速度增加");
+
+      // 重新设置游戏间隔以应用新速度
+      if (isGameActive) {
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, gameSpeed);
+      }
+    }
+
+    /**
+     * 衔尾蛇效果处理
+     * @param {Object} head - 蛇头位置
+     * @param {boolean} foodEaten - 是否吃到食物
+     */
+    function handleOuroborosEffect(head, foodEaten) {
+      let collisionOccurred = false;
+
+      // 检查是否撞到自己
+      for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+          collisionOccurred = true;
+          // 衔尾蛇效果：减少当前10%的积分，不结束游戏
+          score = Math.max(0, Math.floor(score * 0.9));
+
+          // 显示衔尾效果
+          showSpecialEffect("衔尾效果! 积分减少10%");
+          break;
+        }
+      }
+
+      // 添加新的头部
+      snake.unshift(head);
+
+      // 如果没有吃到食物，移除尾部
+      if (!foodEaten) {
+        snake.pop();
+      }
+    }
+
+    /**
+     * 显示特殊效果文本
+     * @param {string} text - 要显示的文本
+     */
+    function showSpecialEffect(text) {
+      // 创建效果元素
+      const effectElement = document.createElement('div');
+      effectElement.textContent = text;
+      effectElement.style.position = 'absolute';
+      effectElement.style.top = '50%';
+      effectElement.style.left = '50%';
+      effectElement.style.transform = 'translate(-50%, -50%)';
+      effectElement.style.color = '#ffeb3b';
+      effectElement.style.fontSize = '24px';
+      effectElement.style.fontWeight = 'bold';
+      effectElement.style.textShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
+      effectElement.style.zIndex = '10';
+      effectElement.style.animation = 'fadeOut 1.5s forwards';
+
+      // 添加到游戏板
+      const gameBoard = document.querySelector('.game-board');
+      gameBoard.appendChild(effectElement);
+
+      // 1.5秒后移除
+      setTimeout(() => {
+        if (gameBoard.contains(effectElement)) {
+          gameBoard.removeChild(effectElement);
+        }
+      }, 1500);
+    }
+
+    /**
+     * 检查碰撞
+     * 检查蛇头是否与自身或障碍物碰撞
+     */
+    function checkCollisions() {
+      const head = snake[0];
+
+      // 如果衔尾蛇效果激活，跳过自身碰撞检查
+      if (!activeEffects.has('challenge1')) {
+        // 检查是否撞到自己
+        for (let i = 1; i < snake.length; i++) {
+          if (head.x === snake[i].x && head.y === snake[i].y) {
+            endGame();
+            return;
+          }
+        }
+      }
+
+      // 检查是否撞到障碍物
+      for (let obstacle of obstacles) {
+        if (head.x === obstacle.x && head.y === obstacle.y) {
+          endGame();
+          return;
+        }
+      }
+    }
+
+    /**
+     * 绘制游戏
+     * 绘制游戏画面：背景、网格、蛇、食物、障碍物
+     */
+    function drawGame() {
+      // 清空画布
+      ctx.fillStyle = '#0f1420';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 深谙迷雾词条效果
+      if (activeEffects.has('challenge12')) {
+        drawWithFog();
+      } else {
+        // 正常绘制
+        drawGrid();
+        drawObstacles();
+        drawFood();
+        if (specialFood) {
+          drawSpecialFood();
+        }
+        drawSnake();
+      }
+    }
+
+    /**
+     * 带迷雾效果的绘制
+     */
+    function drawWithFog() {
+      const head = snake[0];
+      const visionRange = 2; // 5x5范围，从中心向外2格
+
+      // 绘制背景
+      ctx.fillStyle = '#0f1420';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 绘制可见范围内的内容
+      for (let x = Math.max(0, head.x - visionRange); x <= Math.min(GRID_SIZE - 1, head.x + visionRange); x++) {
+        for (let y = Math.max(0, head.y - visionRange); y <= Math.min(GRID_SIZE - 1, head.y + visionRange); y++) {
+          // 绘制网格
+          ctx.strokeStyle = 'rgba(185, 150, 255, 0.1)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+          // 绘制障碍物
+          for (let obstacle of obstacles) {
+            if (obstacle.x === x && obstacle.y === y) {
+              if (activeEffects.has('challenge3')) {
+                ctx.fillStyle = '#4cd137'; // 绿色障碍物
+              } else {
+                ctx.fillStyle = '#8c7ae6'; // 紫色障碍物
+              }
+              ctx.fillRect(obstacle.x * CELL_SIZE, obstacle.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+          }
+
+          // 绘制食物
+          if (food.x === x && food.y === y) {
+            if (activeEffects.has('challenge3')) {
+              ctx.fillStyle = '#4cd137'; // 绿色食物
+            } else {
+              ctx.fillStyle = '#fbc531'; // 黄色食物
+            }
+            ctx.beginPath();
+            ctx.arc(
+              food.x * CELL_SIZE + CELL_SIZE / 2,
+              food.y * CELL_SIZE + CELL_SIZE / 2,
+              CELL_SIZE / 2,
+              0,
+              Math.PI * 2
+            );
+            ctx.fill();
+          }
+
+          // 绘制特殊食物
+          if (specialFood && specialFood.x === x && specialFood.y === y) {
+            ctx.fillStyle = '#e84118'; // 红色特殊食物
+            ctx.beginPath();
+            ctx.arc(
+              specialFood.x * CELL_SIZE + CELL_SIZE / 2,
+              specialFood.y * CELL_SIZE + CELL_SIZE / 2,
+              CELL_SIZE / 2,
+              0,
+              Math.PI * 2
+            );
+            ctx.fill();
+          }
+
+          // 绘制蛇身
+          for (let i = 0; i < snake.length; i++) {
+            if (snake[i].x === x && snake[i].y === y) {
+              if (i === 0) {
+                // 蛇头
+                if (activeEffects.has('challenge3')) {
+                  ctx.fillStyle = '#4cd137'; // 绿色蛇头
+                } else {
+                  ctx.fillStyle = '#e84118'; // 红色蛇头
+                }
+              } else {
+                // 蛇身
+                if (activeEffects.has('challenge3')) {
+                  ctx.fillStyle = '#4cd137'; // 绿色蛇身
+                } else {
+                  ctx.fillStyle = '#8e2de2'; // 紫色蛇身
+                }
+              }
+              ctx.fillRect(snake[i].x * CELL_SIZE, snake[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+          }
+        }
+      }
+    }
+
+    /**
+     * 绘制网格
+     * 绘制游戏背景网格线
+     */
+    function drawGrid() {
+      ctx.strokeStyle = 'rgba(185, 150, 255, 0.1)';
+      ctx.lineWidth = 1;
+
+      // 绘制垂直线
+      for (let x = 0; x <= canvas.width; x += CELL_SIZE) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+
+      // 绘制水平线
+      for (let y = 0; y <= canvas.height; y += CELL_SIZE) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    /**
+     * 绘制蛇
+     * 绘制蛇的身体和头部
+     */
+    function drawSnake() {
+      // 绘制蛇身
+      if (activeEffects.has('challenge3')) {
+        ctx.fillStyle = '#4cd137'; // 绿色蛇身
+      } else {
+        ctx.fillStyle = '#8e2de2'; // 紫色蛇身
+      }
+      for (let i = 1; i < snake.length; i++) {
+        ctx.fillRect(
+          snake[i].x * CELL_SIZE,
+          snake[i].y * CELL_SIZE,
+          CELL_SIZE,
+          CELL_SIZE
+        );
+      }
+
+      // 绘制蛇头
+      if (activeEffects.has('challenge3')) {
+        ctx.fillStyle = '#4cd137'; // 绿色蛇头
+      } else {
+        ctx.fillStyle = '#e84118'; // 红色蛇头
+      }
+      ctx.fillRect(
+        snake[0].x * CELL_SIZE,
+        snake[0].y * CELL_SIZE,
+        CELL_SIZE,
+        CELL_SIZE
+      );
+    }
+
+    /**
+     * 绘制食物
+     * 绘制圆形食物
+     */
+    function drawFood() {
+      // 绿色风格词条效果
+      if (activeEffects.has('challenge3')) {
+        ctx.fillStyle = '#4cd137'; // 绿色食物
+      } else {
+        ctx.fillStyle = '#fbc531'; // 黄色食物
+      }
+
+      ctx.beginPath();
+      ctx.arc(
+        food.x * CELL_SIZE + CELL_SIZE / 2,
+        food.y * CELL_SIZE + CELL_SIZE / 2,
+        CELL_SIZE / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
+
+    /**
+     * 绘制特殊食物
+     */
+    function drawSpecialFood() {
+      ctx.fillStyle = '#e84118'; // 红色特殊食物
+      ctx.beginPath();
+      ctx.arc(
+        specialFood.x * CELL_SIZE + CELL_SIZE / 2,
+        specialFood.y * CELL_SIZE + CELL_SIZE / 2,
+        CELL_SIZE / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+
+      // 添加闪烁效果
+      if (Math.floor(Date.now() / 200) % 2 === 0) {
+        ctx.strokeStyle = '#ffeb3b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    /**
+     * 绘制障碍物
+     * 绘制所有障碍物
+     */
+    function drawObstacles() {
+      if (activeEffects.has('challenge3')) {
+        ctx.fillStyle = '#4cd137'; // 绿色障碍物
+      } else {
+        ctx.fillStyle = '#8c7ae6'; // 紫色障碍物
+      }
+      for (let obstacle of obstacles) {
+        ctx.fillRect(
+          obstacle.x * CELL_SIZE,
+          obstacle.y * CELL_SIZE,
+          CELL_SIZE,
+          CELL_SIZE
+        );
+      }
+    }
+
+    /**
+     * 游戏主循环
+     * 控制游戏的核心循环：移动、绘制、更新UI
+     */
+    function gameLoop() {
+      moveSnake();
+      drawGame();
+      updateUI();
+    }
+
+    /**
+     * 更新UI
+     * 更新分数、速度、长度等显示信息
+     */
+    function updateUI() {
+      // 计算最终分数：基础分数 × 挑战系数 × 难度系数
+      const totalMultiplier = challengeMultiplier * difficultyMultiplier;
+      document.getElementById('score').textContent = Math.floor(score * totalMultiplier);
+      document.getElementById('speed').textContent = gameSpeed;
+      document.getElementById('length').textContent = snake.length;
+      document.getElementById('multiplier').textContent = totalMultiplier.toFixed(1);
+
+      // 更新激活效果显示
+      updateActiveEffectsDisplay();
+    }
+
+    /**
+     * 更新激活效果显示
+     */
+    function updateActiveEffectsDisplay() {
+      const activeEffectsContainer = document.getElementById('activeEffects');
+      activeEffectsContainer.innerHTML = '';
+
+      activeEffects.forEach((effect, id) => {
+        const effectTag = document.createElement('div');
+        effectTag.className = 'effect-tag';
+        effectTag.textContent = effect.name;
+        activeEffectsContainer.appendChild(effectTag);
+      });
+    }
+
+    /**
+     * 检查是否可以开始游戏
+     * @returns {boolean} 是否可以开始游戏
+     */
+    function canStartGame() {
+      // 检查是否有未选择的词条槽位
+      const challengeSlots = document.querySelectorAll('.challenge-slot');
+      for (let slot of challengeSlots) {
+        if (!slot.classList.contains('active')) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    /**
+     * 开始游戏
+     * 初始化并开始游戏循环
+     */
+    function startGame() {
+      if (!isGameActive) {
+        // 检查是否可以开始游戏
+        if (!canStartGame()) {
+          alert('请先选择所有词条后再开始游戏！');
+          return;
+        }
+
+        initGame();
+        isGameActive = true;
+        document.getElementById('gameOver').classList.add('hidden');
+
+        // 锁定难度激活区域
+        lockActivationArea();
+
+        // 开始游戏循环
+        gameInterval = setInterval(gameLoop, gameSpeed);
+
+        // 更新按钮文本
+        document.getElementById('startButton').textContent = '结束游戏';
+      } else {
+        // 如果游戏正在进行中，点击结束游戏
+        endGame();
+      }
+    }
+
+    /**
+     * 结束游戏
+     * 停止游戏循环，显示游戏结束界面
+     */
+    function endGame() {
+      clearInterval(gameInterval);
+      isGameActive = false;
+
+      // 显示游戏结束界面
+      document.getElementById('finalScore').textContent = Math.floor(score * challengeMultiplier * difficultyMultiplier);
+      document.getElementById('finalSpeed').textContent = gameSpeed;
+      document.getElementById('finalFood').textContent = foodCount;
+      document.getElementById('gameOver').classList.remove('hidden');
+
+      // 解锁难度激活区域
+      unlockActivationArea();
+
+      // 更新按钮文本
+      document.getElementById('startButton').textContent = '开始游戏';
+    }
+
+    /**
+     * 锁定难度激活区域
+     * 游戏进行中禁止修改难度和词条
+     */
+    function lockActivationArea() {
+      const difficultySlot = document.getElementById('difficultySlot');
+      const challengeSlots = document.querySelectorAll('.challenge-slot');
+
+      difficultySlot.classList.add('disabled');
+      challengeSlots.forEach(slot => {
+        slot.classList.add('disabled');
+      });
+    }
+
+    /**
+     * 解锁难度激活区域
+     * 游戏结束后允许修改难度和词条
+     */
+    function unlockActivationArea() {
+      const difficultySlot = document.getElementById('difficultySlot');
+      const challengeSlots = document.querySelectorAll('.challenge-slot');
+
+      difficultySlot.classList.remove('disabled');
+      challengeSlots.forEach(slot => {
+        slot.classList.remove('disabled');
+      });
+    }
+
+    /**
+     * 设置难度
+     * @param {Object} difficultyData - 难度数据对象
+     */
+    function setDifficulty(difficultyData) {
+      // 更新难度槽位
+      const difficultySlot = document.getElementById('difficultySlot');
+      difficultySlot.classList.add('active');
+      difficultySlot.querySelector('.slot-content').textContent = difficultyData.text;
+
+      // 更新游戏难度
+      activeDifficulty = {
+        id: difficultyData.id,
+        speed: difficultyData.speed,
+        multiplier: difficultyData.multiplier,
+        text: difficultyData.text
+      };
+      difficultyMultiplier = parseFloat(difficultyData.multiplier);
+
+      // 根据难度等级生成词条槽位
+      generateChallengeSlots(parseInt(difficultyData.id.replace('difficulty', '')));
+
+      // 如果游戏正在进行中，更新游戏速度
+      if (isGameActive) {
+        gameSpeed = parseInt(difficultyData.speed);
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, gameSpeed);
+      }
+
+      updateUI();
+    }
+
+    /**
+    * 生成词条槽位
+    * @param {number} difficultyLevel - 难度等级
+    */
+    function generateChallengeSlots(difficultyLevel) {
+      const challengeSlots = document.getElementById('challengeSlots');
+      challengeSlots.innerHTML = ''; // 清空现有槽位
+
+      // 根据难度等级决定词条槽位数量
+      // 难度1为0个，依次增加，最多5个
+      const slotCount = Math.max(0, Math.min(difficultyLevel - 1, 5));
+
+      for (let i = 0; i < slotCount; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'challenge-slot';
+        slot.innerHTML = '<div class="slot-content">点击选择词条</div>';
+        challengeSlots.appendChild(slot);
+
+        // 添加点击事件
+        slot.addEventListener('click', () => {
+          if (!isGameActive) {
+            openChallengeSelection(slot);
+          }
+        });
+      }
+
+      // 清空已激活的词条
+      activeChallenges.clear();
+      activeEffects.clear();
+      challengeMultiplier = 1;
+    }
+
+    /**
+     * 激活词条
+     * @param {Object} challengeData - 词条数据对象
+     * @param {HTMLElement} slot - 词条槽位元素
+     */
+    function activateChallenge(challengeData, slot) {
+      // 检查槽位是否已有激活的词条
+      if (slot.classList.contains('active')) {
+        // 移除旧的词条效果
+        const oldChallengeId = slot.dataset.challengeId;
+        if (oldChallengeId) {
+          activeChallenges.delete(oldChallengeId);
+          activeEffects.delete(oldChallengeId);
+          challengeMultiplier -= parseFloat(slot.dataset.multiplier);
+        }
+      }
+
+      // 检查是否已经选择了只能选择一次的词条
+      if (['challenge3', 'challenge10', 'challenge11', 'challenge12'].includes(challengeData.id)) {
+        // 检查是否已经激活了同类型的词条
+        const oneTimeChallenges = ['challenge3', 'challenge10', 'challenge11', 'challenge12'];
+        for (let id of oneTimeChallenges) {
+          if (activeEffects.has(id) && id !== challengeData.id) {
+            alert('该词条类型只能选择一次！');
+            return;
+          }
+        }
+      }
+
+      // 更新词条槽位
+      slot.classList.add('active');
+      slot.querySelector('.slot-content').textContent = challengeData.text;
+      slot.dataset.challengeId = challengeData.id;
+      slot.dataset.multiplier = challengeData.multiplier;
+
+      // 更新游戏词条
+      activeChallenges.add(challengeData.id);
+      challengeMultiplier += parseFloat(challengeData.multiplier);
+
+      // 添加词条效果
+      addChallengeEffect(challengeData.id, challengeData.text);
+
+      updateUI();
+    }
+
+    /**
+     * 添加词条效果
+     * @param {string} id - 词条ID
+     * @param {string} name - 词条名称
+     */
+    function addChallengeEffect(id, name) {
+      activeEffects.set(id, { name });
+    }
+
+    /**
+     * 打开难度选择模态框
+     */
+    function openDifficultySelection() {
+      if (isGameActive) return;
+
+      currentSelectionType = 'difficulty';
+      const modal = document.getElementById('difficultyModal');
+      const grid = document.getElementById('difficultyGrid');
+
+      // 重置选择状态
+      grid.querySelectorAll('.selection-item').forEach(item => {
+        item.classList.remove('active');
+        // 如果已有激活的难度，标记为选中状态
+        if (activeDifficulty && item.dataset.id === activeDifficulty.id) {
+          item.classList.add('active');
+          selectedItem = item;
+        }
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    /**
+     * 打开词条选择模态框
+     * @param {HTMLElement} slot - 词条槽位元素
+     */
+    function openChallengeSelection(slot) {
+      if (isGameActive) return;
+
+      currentSelectionType = 'challenge';
+      currentChallengeSlot = slot;
+      const modal = document.getElementById('challengeModal');
+      const grid = document.getElementById('challengeGrid');
+
+      // 重置选择状态
+      grid.querySelectorAll('.selection-item').forEach(item => {
+        item.classList.remove('active');
+
+        // 重置所有项目的可用状态
+        item.style.opacity = '1';
+        item.style.cursor = 'pointer';
+      });
+
+      // 获取所有已选择的词条ID
+      const selectedIds = Array.from(activeChallenges);
+
+      // 禁用已选择的词条
+      grid.querySelectorAll('.selection-item').forEach(item => {
+        if (selectedIds.includes(item.dataset.id)) {
+          item.style.opacity = '0.5';
+          item.style.cursor = 'not-allowed';
+        }
+      });
+
+      selectedItem = null;
+      modal.classList.remove('hidden');
+    }
+
+    /**
+     * 关闭所有模态框
+     */
+    function closeAllModals() {
+      document.getElementById('difficultyModal').classList.add('hidden');
+      document.getElementById('challengeModal').classList.add('hidden');
+      currentSelectionType = null;
+      selectedItem = null;
+    }
+
+    // 事件监听 - 键盘控制
+    document.addEventListener('keydown', (e) => {
+      if (!isGameActive) return;
+
+      // 迷失方向词条效果
+      if (activeEffects.has('challenge10')) {
+        // 翻转上下移动和左右移动
+        switch (e.key) {
+          case 'ArrowUp':
+          case 'w':
+          case 'W':
+            if (direction !== 'up') nextDirection = 'down';
+            break;
+          case 'ArrowDown':
+          case 's':
+          case 'S':
+            if (direction !== 'down') nextDirection = 'up';
+            break;
+          case 'ArrowLeft':
+          case 'a':
+          case 'A':
+            if (direction !== 'left') nextDirection = 'right';
+            break;
+          case 'ArrowRight':
+          case 'd':
+          case 'D':
+            if (direction !== 'right') nextDirection = 'left';
+            break;
+        }
+      } else {
+        // 正常方向控制
+        switch (e.key) {
+          case 'ArrowUp':
+          case 'w':
+          case 'W':
+            if (direction !== 'down') nextDirection = 'up';
+            break;
+          case 'ArrowDown':
+          case 's':
+          case 'S':
+            if (direction !== 'up') nextDirection = 'down';
+            break;
+          case 'ArrowLeft':
+          case 'a':
+          case 'A':
+            if (direction !== 'right') nextDirection = 'left';
+            break;
+          case 'ArrowRight':
+          case 'd':
+          case 'D':
+            if (direction !== 'left') nextDirection = 'right';
+            break;
+        }
+      }
+    });
+
+    // 按钮事件监听
+    document.getElementById('startButton').addEventListener('click', startGame);
+    document.getElementById('confirmGameOver').addEventListener('click', () => {
+      document.getElementById('gameOver').classList.add('hidden');
+    });
+
+    // 难度槽位点击事件
+    document.getElementById('difficultySlot').addEventListener('click', () => {
+      if (!isGameActive) {
+        openDifficultySelection();
+      }
+    });
+
+    // 模态框选择事件
+    document.querySelectorAll('#difficultyGrid .selection-item, #challengeGrid .selection-item').forEach(item => {
+      item.addEventListener('click', () => {
+        // 如果词条已经被选择，则不允许再次选择
+        if (currentSelectionType === 'challenge' &&
+          item.style.opacity === '0.5' &&
+          item.style.cursor === 'not-allowed') {
+          return;
+        }
+
+        // 移除其他项目的激活状态
+        item.parentElement.querySelectorAll('.selection-item').forEach(i => {
+          i.classList.remove('active');
+        });
+        // 激活当前项目
+        item.classList.add('active');
+        selectedItem = item;
+      });
+    });
+
+    // 模态框确认按钮事件
+    document.getElementById('confirmDifficulty').addEventListener('click', () => {
+      if (selectedItem) {
+        const difficultyData = {
+          id: selectedItem.dataset.id,
+          speed: selectedItem.dataset.speed,
+          multiplier: selectedItem.dataset.multiplier,
+          text: selectedItem.textContent
+        };
+        setDifficulty(difficultyData);
+      }
+      closeAllModals();
+    });
+
+    document.getElementById('confirmChallenge').addEventListener('click', () => {
+      if (selectedItem && currentChallengeSlot) {
+        const challengeData = {
+          id: selectedItem.dataset.id,
+          multiplier: selectedItem.dataset.multiplier,
+          text: selectedItem.textContent
+        };
+        activateChallenge(challengeData, currentChallengeSlot);
+      }
+      closeAllModals();
+    });
+
+    // 模态框取消按钮事件
+    document.getElementById('cancelDifficulty').addEventListener('click', closeAllModals);
+    document.getElementById('cancelChallenge').addEventListener('click', closeAllModals);
+
+    // 初始化游戏
+    initGame();
+    drawGame();
+
+    // 设置默认难度
+    setDifficulty(activeDifficulty);
+
+    // 添加CSS动画
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeOut {
+        0% { opacity: 1; transform: translate(-50%, -50%); }
+        100% { opacity: 0; transform: translate(-50%, -100%); }
+      }
+    `;
+  </script>
+</body>
+
+</html>

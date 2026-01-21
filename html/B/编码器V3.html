@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>齁哦哦编码器</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/V3.css">
+    <style>
+        .main-content {
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 标题样式 */
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: rgb(225, 90, 250);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: #c0c5d0;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* 输入输出区域 */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            background-color: #2a2f3e;
+            border: 1px solid rgba(185, 150, 255, 0.2);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: rgb(225, 90, 250);
+        }
+
+        /* 按钮样式 */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: rgba(225, 90, 250, 0.8);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: rgb(225, 90, 250);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <h1 class="page-title">呃嗯！呼～❤呃啊～哼！！呃嗯哈嗯～啊</h1>
+        <p class="page-subtitle">by <a href="https://msbt.seku.su/">https://msbt.seku.su/</a></p>
+        <div class="content-cards">
+            <!-- 编码区域 -->
+            <div class="content-card">
+                <div class="card-title">原文输入/输出</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <textarea id="inputRaw" placeholder="在此输入文本"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="encode()">编码</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 解码区域 -->
+            <div class="content-card">
+                <div class="card-title">密文输入/输出</div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <textarea id="inputCode" placeholder="齁~哦哦哦哦哦~!"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="decode()">解码</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 码表定义
+        const codebook = ['齁', '哦', '噢', '喔', '咕', '咿', '嗯', '啊', '～', '哈', '！', '唔', '哼', '❤', '呃', '呼'];
+        const codebookMap = {};
+        for (let i = 0; i < codebook.length; i++) {
+            codebookMap[codebook[i]] = i;
+        }
+
+        // 编码函数
+        function encode() {
+            let input = document.getElementById("inputRaw").value;
+            if (!input) {
+                alert("请输入任意文本!");
+                return;
+            }
+
+            let encoder = new TextEncoder();
+            let bytes = encoder.encode(input);
+            let encoded = '';
+            for (let byte of bytes) {
+                let high = (byte >> 4) & 0x0F;
+                let low = byte & 0x0F;
+                encoded += codebook[high] + codebook[low];
+            }
+            document.getElementById("inputCode").value = encoded;
+        }
+
+        // 解码函数
+        function decode() {
+            let input = document.getElementById("inputCode").value;
+            if (!input) {
+                alert("内容一片空白了~齁~哦哦哦哦哦~!");
+                return;
+            }
+
+            if (input.length % 2 !== 0) {
+                alert("奇数个不行的~哦哦~");
+                return;
+            }
+
+            let bytes = [];
+            for (let i = 0; i < input.length; i += 2) {
+                let high = codebookMap[input[i]];
+                let low = codebookMap[input[i + 1]];
+                if (high === undefined || low === undefined) {
+                    alert("非法字符不可以~~");
+                    return;
+                }
+                let byte = (high << 4) | low;
+                bytes.push(byte);
+            }
+
+            let decoder = new TextDecoder();
+            try {
+                let decoded = decoder.decode(new Uint8Array(bytes));
+                document.getElementById("inputRaw").value = decoded;
+            } catch (e) {
+                alert("无法正确解码为UTF-8文本");
+                document.getElementById("inputRaw").value = bytes.map(b => b.toString(16).padStart(2, '0')).join(' ');
+            }
+        }
+    </script>
+</body>
+
+</html>

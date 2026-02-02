@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'C': './公共页/二级菜单页.html?config=guides',
         'D': './公共页/二级菜单页.html?config=more',
         'E': './公共页/二级菜单页.html?config=records',
+        'F': './页面/F数据页/物品数据.html',
         'G': './公共页/二级菜单页.html?config=games'
     };
 

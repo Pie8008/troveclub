@@ -34,15 +34,29 @@
             margin: 0 auto;
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
+        .calendar-section {
             margin-bottom: 30px;
-            gap: 15px;
         }
 
-        select {
-            padding: 10px 15px;
+        .calendar-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(185, 150, 255, 0.2);
+        }
+
+        .month-buttons {
+            display: flex;
+            gap: 10px;
+            /* 不需要额外调整，默认就在左侧 */
+        }
+
+        .month-btn {
+            padding: 10px 20px;
             border: 1px solid rgba(185, 150, 255, 0.3);
             border-radius: 6px;
             font-size: 16px;
@@ -50,18 +64,38 @@
             color: #e0e0e0;
             cursor: pointer;
             transition: all 0.3s;
+            min-width: 100px;
+            text-align: center;
         }
 
-        select:focus {
-            outline: none;
+        .month-btn:hover {
+            background-color: rgba(185, 150, 255, 0.1);
             border-color: rgb(225, 90, 250);
-            box-shadow: 0 0 0 2px rgba(225, 90, 250, 0.2);
+        }
+
+        .month-btn.active {
+            background-color: rgba(225, 90, 250, 0.2);
+            border-color: rgb(225, 90, 250);
+            color: rgb(225, 90, 250);
+        }
+
+        .current-month-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: rgb(225, 90, 250);
+            text-align: right;
+            /* 改为右对齐 */
+            /* flex-grow: 1; 移除这行 */
+            margin-left: auto;
+            /* 添加这行，推到最右侧 */
         }
 
         .legend {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 10px;
             margin-bottom: 20px;
         }
 
@@ -78,12 +112,35 @@
         }
 
         .color-1 {
-            background-color: #3498db;
+            background-color: #1abc9c;
+            /* 凌晨 */
         }
 
         .color-2 {
-            background-color: #e74c3c;
+            background-color: #3498db;
+            /* 上午 */
         }
+
+        .color-3 {
+            background-color: #e74c3c;
+            /* 下午 */
+        }
+
+        .color-4 {
+            background-color: #9b59b6;
+            /* 晚上 */
+        }
+
+        .color-5 {
+            background-color: #7f8c8d;
+            /* 无 */
+        }
+
+
+
+
+
+
 
         .calendar {
             display: grid;
@@ -131,43 +188,41 @@
             padding: 4px;
             border-radius: 4px;
             margin-top: 5px;
+            font-weight: bold;
         }
 
         .time-1 {
-            background-color: rgba(52, 152, 219, 0.2);
+            background-color: rgba(26, 188, 156, 0.3);
+            /* 凌晨 */
+            color: #1abc9c;
+            border-left: 3px solid #1abc9c;
         }
 
         .time-2 {
-            background-color: rgba(231, 76, 60, 0.2);
+            background-color: rgba(52, 152, 219, 0.3);
+            /* 上午 */
+            color: #3498db;
+            border-left: 3px solid #3498db;
         }
 
         .time-3 {
-            background-color: rgba(46, 204, 113, 0.2);
+            background-color: rgba(231, 76, 60, 0.3);
+            /* 下午 */
+            color: #e74c3c;
+            border-left: 3px solid #e74c3c;
         }
 
         .time-4 {
-            background-color: rgba(155, 89, 182, 0.2);
-        }
-
-        .time-5 {
-            background-color: rgba(241, 196, 15, 0.2);
-        }
-
-        .time-6 {
-            background-color: rgba(230, 126, 34, 0.2);
-        }
-
-        .time-7 {
-            background-color: rgba(52, 73, 94, 0.2);
-        }
-
-        .time-8 {
-            background-color: rgba(149, 165, 166, 0.2);
+            background-color: rgba(155, 89, 182, 0.3);
+            /* 晚上 */
+            color: #9b59b6;
+            border-left: 3px solid #9b59b6;
         }
 
         .time-none {
-            background-color: rgba(127, 140, 141, 0.1);
+            background-color: rgba(127, 140, 141, 0.2);
             color: #7f8c8d;
+            border-left: 3px solid #7f8c8d;
         }
 
         .empty-day {
@@ -183,40 +238,6 @@
         .other-month {
             background-color: #121826;
             color: #6c757d;
-        }
-
-        .summary {
-            background-color: #1a1f2e;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 1px solid rgba(185, 150, 255, 0.2);
-        }
-
-        .summary h3 {
-            margin-bottom: 15px;
-            color: rgb(225, 90, 250);
-        }
-
-        .summary-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .summary-item {
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .time-schedule {
-            background-color: rgba(52, 152, 219, 0.1);
-            border-left: 3px solid #3498db;
-        }
-
-        .cycle-info {
-            background-color: rgba(155, 89, 182, 0.1);
-            border-left: 3px solid #9b59b6;
         }
 
         /* 当前日期指示器样式 */
@@ -245,9 +266,11 @@
             0% {
                 box-shadow: 0 0 5px #FFD700, inset 0 0 5px rgba(255, 215, 0, 0.3);
             }
+
             50% {
                 box-shadow: 0 0 15px #FFD700, inset 0 0 10px rgba(255, 215, 0, 0.5);
             }
+
             100% {
                 box-shadow: 0 0 5px #FFD700, inset 0 0 5px rgba(255, 215, 0, 0.3);
             }
@@ -265,27 +288,50 @@
                 padding: 5px;
             }
 
-            .summary-list {
-                grid-template-columns: 1fr;
+            .calendar-controls {
+                flex-direction: row;
+                /* 保持行布局 */
+                align-items: center;
+            }
+
+            .current-month-label {
+                text-align: center;
+                /* 移动端居中显示 */
+                margin-left: 0;
+                /* 移除自动边距 */
+                width: 100%;
+                /* 全宽度 */
+                order: 3;
+                /* 放到第三行 */
+                margin-top: 10px;
+            }
+
+            .month-buttons {
+                width: auto;
+                /* 恢复自动宽度 */
+                justify-content: flex-start;
+                /* 左对齐 */
+            }
+
+            .month-btn {
+                flex: 1;
+                min-width: 0;
             }
 
             .time-display {
                 font-size: 12px;
             }
-        }
 
-        @media (max-width: 480px) {
             .legend {
                 flex-direction: column;
                 align-items: center;
                 gap: 10px;
             }
 
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
 
+        }
+
+        @media (max-width: 480px) {
             .day {
                 height: 70px;
             }
@@ -296,11 +342,22 @@
 
             .time-display {
                 height: 50%;
-                font-size: 12px;
+                font-size: 10px;
                 padding: 2px;
             }
 
-            
+            .month-buttons {
+                justify-content: space-between;
+                /* 小屏幕时按钮均匀分布 */
+                width: 100%;
+            }
+
+            .month-btn {
+                flex: 1;
+            }
+
+
+
         }
     </style>
 </head>
@@ -310,42 +367,49 @@
         <div class="container">
             <header>
                 <h1>奢龙加速时间</h1>
+                <div class="description">根据起始日期2025年10月13日计算的奢龙加速时间周期</div>
             </header>
-
-            <div class="content-card">
-                <div class="card-title">日期选择&时间段</div>
-                <div class="card-body">
-                    <div class="controls">
-                        <select id="year-select">
-                            <!-- 年份选项将通过JavaScript动态生成 -->
-                        </select>
-                        <select id="month-select">
-                            <!-- 月份选项将通过JavaScript动态生成 -->
-                        </select>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="color-box color-1"></div>
-                            <span>上半天 (1:00, 4:00, 7:00, 10:00)</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="color-box color-2"></div>
-                            <span>下半天 (13:00, 16:00, 19:00, 22:00)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="content-card">
                 <div class="card-title">日历</div>
                 <div class="card-body">
+                    <!-- 日历控制区域 -->
+                    <div class="calendar-controls">
+                        <div class="month-buttons">
+                            <button class="month-btn active" id="current-month-btn">当前月</button>
+                            <button class="month-btn" id="next-month-btn">下个月</button>
+                        </div>
+                        <div class="current-month-label" id="current-month-label">
+                            <!-- 月份显示将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 图例说明 -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box color-1"></div>
+                            <span>凌晨（1:00、4:00）</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-2"></div>
+                            <span>上午（7:00、10:00）</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-3"></div>
+                            <span>下午（13:00、16:00）</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-4"></div>
+                            <span>晚上（19:00、22:00）</span>
+                        </div>
+                    </div>
+
+                    <!-- 日历内容 -->
                     <div class="calendar" id="calendar">
                         <!-- 日历内容将通过JavaScript动态生成 -->
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 
@@ -360,37 +424,92 @@
         ];
 
         // 获取DOM元素
-        const yearSelect = document.getElementById('year-select');
-        const monthSelect = document.getElementById('month-select');
+        const currentMonthBtn = document.getElementById('current-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const currentMonthLabel = document.getElementById('current-month-label');
         const calendar = document.getElementById('calendar');
 
-        // 填充年份选项（2025-2030）
-        const currentYear = new Date().getFullYear();
-        for (let year = 2025; year <= 2030; year++) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year + '年';
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
+        // 当前显示的月份和年份
+        let currentDisplayYear = new Date().getFullYear();
+        let currentDisplayMonth = new Date().getMonth();
+
+        // 更新月份标签
+        function updateMonthLabel() {
+            const monthNames = [
+                '一月', '二月', '三月', '四月', '五月', '六月',
+                '七月', '八月', '九月', '十月', '十一月', '十二月'
+            ];
+            currentMonthLabel.textContent = `${currentDisplayYear}年 ${monthNames[currentDisplayMonth]}`;
         }
 
-        // 填充月份选项
-        for (let month = 0; month < 12; month++) {
-            const option = document.createElement('option');
-            option.value = month;
-            option.textContent = (month + 1) + '月';
-            if (month === new Date().getMonth()) {
-                option.selected = true;
+        // 切换到当前月
+        function switchToCurrentMonth() {
+            const now = new Date();
+            currentDisplayYear = now.getFullYear();
+            currentDisplayMonth = now.getMonth();
+
+            // 更新按钮状态
+            currentMonthBtn.classList.add('active');
+            nextMonthBtn.classList.remove('active');
+
+            updateMonthLabel();
+            generateCalendar();
+        }
+
+        // 切换到下个月
+        function switchToNextMonth() {
+            // 计算下个月
+            let nextMonth = currentDisplayMonth + 1;
+            let nextYear = currentDisplayYear;
+
+            if (nextMonth > 11) {
+                nextMonth = 0;
+                nextYear += 1;
             }
-            monthSelect.appendChild(option);
+
+            currentDisplayYear = nextYear;
+            currentDisplayMonth = nextMonth;
+
+            // 更新按钮状态
+            currentMonthBtn.classList.remove('active');
+            nextMonthBtn.classList.add('active');
+
+            updateMonthLabel();
+            generateCalendar();
+        }
+
+        // 根据时间获取对应的CSS类名
+        function getTimeClass(timeText) {
+            if (timeText === "None") {
+                return 'time-none';
+            }
+
+            const hour = parseInt(timeText.split(':')[0]);
+
+            // 凌晨：1:00、4:00
+            if (hour === 1 || hour === 4) {
+                return 'time-1';
+            }
+            // 上午：7:00、10:00
+            else if (hour === 7 || hour === 10) {
+                return 'time-2';
+            }
+            // 下午：13:00、16:00
+            else if (hour === 13 || hour === 16) {
+                return 'time-3';
+            }
+            // 晚上：19:00、22:00
+            else if (hour === 19 || hour === 22) {
+                return 'time-4';
+            }
+
+            return 'time-none';
         }
 
         // 生成日历
         function generateCalendar() {
-            const year = parseInt(yearSelect.value);
-            const month = parseInt(monthSelect.value);
+            const year = currentDisplayYear;
+            const month = currentDisplayMonth;
 
             // 清空日历
             calendar.innerHTML = '';
@@ -421,7 +540,7 @@
             // 获取当前日期
             const today = new Date();
             const currentDay = today.getDate();
-            const currentMonth = today.getMonth();
+            const currentMonthToday = today.getMonth();
             const currentYearToday = today.getFullYear();
 
             // 添加当月日期
@@ -437,7 +556,7 @@
                 dayElement.appendChild(dayNumber);
 
                 // 检查是否是今天
-                if (day === currentDay && month === currentMonth && year === currentYearToday) {
+                if (day === currentDay && month === currentMonthToday && year === currentYearToday) {
                     dayElement.classList.add('current-day');
                 }
 
@@ -454,17 +573,9 @@
                     const timeDisplay = document.createElement('div');
                     timeDisplay.className = 'time-display';
 
-                    // 根据时间设置不同的样式类
-                    if (timeText === "None") {
-                        timeDisplay.className += ' time-none';
-                    } else {
-                        const hour = parseInt(timeText.split(':')[0]);
-                        if (hour < 12) {
-                            timeDisplay.className += ' time-1'; // 上午时间
-                        } else {
-                            timeDisplay.className += ' time-2'; // 下午时间
-                        }
-                    }
+                    // 获取对应的CSS类名
+                    const timeClass = getTimeClass(timeText);
+                    timeDisplay.classList.add(timeClass);
 
                     timeDisplay.textContent = timeText;
                     dayElement.appendChild(timeDisplay);
@@ -480,12 +591,13 @@
             }
         }
 
-        // 初始化日历
+        // 初始化
+        updateMonthLabel();
         generateCalendar();
 
         // 添加事件监听器
-        yearSelect.addEventListener('change', generateCalendar);
-        monthSelect.addEventListener('change', generateCalendar);
+        currentMonthBtn.addEventListener('click', switchToCurrentMonth);
+        nextMonthBtn.addEventListener('click', switchToNextMonth);
 
         // 每天午夜更新当前日期指示器
         function updateCurrentDayIndicator() {
@@ -493,11 +605,14 @@
             const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(0, 0, 0, 0);
-            
+
             const timeUntilMidnight = tomorrow.getTime() - now.getTime();
-            
-            setTimeout(function() {
-                generateCalendar();
+
+            setTimeout(function () {
+                // 如果当前显示的是当前月，则重新生成日历
+                if (currentMonthBtn.classList.contains('active')) {
+                    generateCalendar();
+                }
                 // 设置下一次更新
                 updateCurrentDayIndicator();
             }, timeUntilMidnight + 1000); // 多加1秒确保已经过了午夜

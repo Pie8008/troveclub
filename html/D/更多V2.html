@@ -1,56 +1,100 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>更多攻略</title>
-    <link rel="stylesheet" href="../../css/none.css">
-    <link rel="stylesheet" href="../../css/V3.css">
+    <title>应用网格</title>
     <style>
-        body {
-            justify-content: center;
-            align-items: center;
+        :root {
+            --bg-primary: #121826;
+            --bg-secondary: #1a1f2e;
+            --bg-tablet: #0d111c;
+            --text-primary: #e0e0e0;
+            --text-secondary: #c0c5d0;
+            --accent-color: rgb(225, 90, 250);
+            --hover-color: rgb(250, 197, 90);
+            --border-color: rgba(185, 150, 255, 0.2);
+            --scrollbar-track: #2a2f3e;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            
+            /* 卡片背景色变量 - 增加区分度 */
+            --card-bg-newtab: #1a1f2e; /* 新标签页打开 - 原色 */
+            --card-bg-sametab: #151a28; /* 当前页打开 - 明显更深的颜色 */
         }
 
-        .tablet {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* 滚动条样式 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #ffffff;
+        }
+
+        /* 平板容器 */
+        .tablet-container {
             width: 100vw;
             height: 100vh;
-            background-color: #1a1f2e;
+            background-color: var(--bg-secondary);
             border-radius: 24px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             position: relative;
-            border: 12px solid #0d111c;
+            border: 12px solid var(--bg-tablet);
         }
 
+        /* 主内容区域 */
         .main-content {
             height: 100%;
+            padding: 30px;
             overflow-y: auto;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
         }
 
-        .main-content::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .main-content::-webkit-scrollbar-track {
-            background: #2a2f3e;
-        }
-
-        .main-content::-webkit-scrollbar-thumb {
-            background: rgb(225, 90, 250);
-            border-radius: 10px;
-        }
-
-        .main-content::-webkit-scrollbar-thumb:hover {
-            background: #ffffff;
-        }
-
-        .content-cards {
+        /* 应用网格布局 */
+        .app-grid {
+            display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .content-card {
+        /* 应用卡片 - 根据打开类型设置不同背景 */
+        .app-card {
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease, transform 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -59,13 +103,32 @@
             height: 140px;
         }
 
+        /* 新标签页打开的卡片样式 */
+        .app-card.new-tab {
+            background-color: var(--card-bg-newtab);
+        }
+
+        /* 当前页打开的卡片样式 - 背景色明显更深 */
+        .app-card.same-tab {
+            background-color: var(--card-bg-sametab);
+            /* 添加细微的内阴影增强层次感 */
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 
+                        0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-card:hover {
+            border-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        /* 应用图标容器 */
         .app-icon {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
             border-radius: 16px;
             padding: 10px;
             width: 100%;
@@ -81,139 +144,241 @@
             transform: scale(0.95);
         }
 
-        .app-icon img {
+        /* 图标样式 */
+        .app-icon-image {
             width: 60px;
             height: 60px;
             border-radius: 14px;
             margin-bottom: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            object-fit: cover; /* 确保图片缩放后保持比例 */
+            object-fit: cover;
         }
 
+        .app-icon-fallback {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* 应用名称 */
         .app-name {
             font-size: 12px;
-            color: #c0c5d0;
+            color: var(--text-secondary);
             text-align: center;
             font-weight: 500;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .content-cards {
+            .tablet-container {
+                width: 95%;
+                height: 90vh;
+            }
+
+            .app-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
 
-            .tablet {
-                width: 95%;
-                height: 90vh;
+            .main-content {
+                padding: 20px;
             }
         }
 
         @media (max-width: 480px) {
-            .content-cards {
-                grid-template-columns: repeat(2, 1fr);
+            .tablet-container {
+                height: 95vh;
             }
 
-            .tablet {
-                height: 95vh;
+            .app-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
-
 <body>
-    <div class="tablet">
-        <div class="main-content">
-            <div class="content-cards" id="app-grid">
-            </div>
+    <div class="tablet-container">
+        <div class="main-content custom-scrollbar">
+            <div class="app-grid" id="appGrid"></div>
         </div>
     </div>
 
     <script>
-        // 应用数据 - 现在支持imageUrl字段
+        // 应用数据配置
         const apps = [
-            { name: "公会攻略", color: "#007AFF", url: "https://promiscuouseden.notion.site/trove-index-aaaaa00000", imageUrl: "../../图片/杂项图标/公会图标.png" },
-            { name: "TroveSaurus", color: "#FF9500", url: "https://trovesaurus.com/", imageUrl:"../../图片/杂项图标/sauruslogo.png" },
-            { name: "TroveWiki", color: "#34C759", url: "https://trove.fandom.com/wiki/Trove_Wiki", imageUrl: "../../图片/杂项图标/Wilklogo.webp" },
-            { name: "TroveGame", color: "#FF3B30", url: "https://trovegame.com/patch-notes/patch-notes-radiant-pathfinder-11-2025/", imageUrl:"../../图片/杂项图标/trovelogo.webp" },
-            { name: "Glyph官网", color: "#5856D6", url: "https://glyph.trionworlds.com/", imageUrl:"../../图片/杂项图标/glyphlogo.png" },
-            { name: "Glyph用户条款", color: "#123456", url: "https://www.glyph.net/en/terms-of-use-of-the-glyph-platform/", imageUrl:"../../图片/杂项图标/glyphlogo.png" },
-            { name: "神奇", color: "#6A6A6A", url: "https://arcxingye.github.io/r18/index.html" },
-            { name: "电脑开荒", color: "#7C7C7C", url: "https://www.cyhaoka.vip" }
+            { 
+                name: "公会攻略", 
+                color: "#007AFF", 
+                url: "https://promiscuouseden.notion.site/trove-index-aaaaa00000", 
+                imageUrl: "../../图片/杂项图标/公会图标.png",
+                openType: "newTab"
+            },
+            { 
+                name: "TroveSaurus", 
+                color: "#FF9500", 
+                url: "https://trovesaurus.com/", 
+                imageUrl: "../../图片/杂项图标/sauruslogo.png",
+                openType: "newTab"
+            },
+            { 
+                name: "TroveWiki", 
+                color: "#34C759", 
+                url: "https://trove.fandom.com/wiki/Trove_Wiki", 
+                imageUrl: "../../图片/杂项图标/Wilklogo.webp",
+                openType: "newTab"
+            },
+            { 
+                name: "TroveGame", 
+                color: "#FF3B30", 
+                url: "https://trovegame.com/patch-notes/patch-notes-radiant-pathfinder-11-2025/", 
+                imageUrl: "../../图片/杂项图标/trovelogo.webp",
+                openType: "newTab"
+            },
+            { 
+                name: "Glyph官网", 
+                color: "#5856D6", 
+                url: "https://glyph.trionworlds.com/", 
+                imageUrl: "../../图片/杂项图标/glyphlogo.png",
+                openType: "newTab"
+            },
+            { 
+                name: "Glyph用户条款", 
+                color: "#123456", 
+                url: "https://www.glyph.net/en/terms-of-use-of-the-glyph-platform/", 
+                imageUrl: "../../图片/杂项图标/glyphlogo.png",
+                openType: "newTab"
+            },
+            { 
+                name: "神奇", 
+                color: "#6A6A6A", 
+                url: "https://arcxingye.github.io/r18/index.html",
+                openType: "newTab"
+            },
+            { 
+                name: "电脑开荒", 
+                color: "#7C7C7C", 
+                url: "https://www.cyhaoka.vip",
+                openType: "newTab"
+            }
         ];
 
-        // 获取桌面元素
-        const appGrid = document.getElementById('app-grid');
+        // DOM元素
+        const appGrid = document.getElementById('appGrid');
 
-        // 生成应用图标
-        apps.forEach(app => {
-            const appCard = document.createElement('div');
-            appCard.className = 'content-card';
-
-            const appIcon = document.createElement('div');
-            appIcon.className = 'app-icon';
-
-            appCard.title = "点击跳转到新页面";
-
-            // 创建图标 - 优先使用图片图标
+        /**
+         * 创建应用图标元素
+         * @param {Object} app - 应用对象
+         * @returns {HTMLElement} - 图标元素
+         */
+        function createAppIcon(app) {
             let icon;
+            
             if (app.imageUrl) {
-                // 使用图片图标
+                // 创建图片图标
                 icon = document.createElement('img');
+                icon.className = 'app-icon-image';
                 icon.src = app.imageUrl;
                 icon.alt = app.name;
                 
-                // 图片加载完成后进行缩放处理
+                // 图片加载完成后自适应缩放
                 icon.onload = function() {
-                    // 获取图片原始尺寸
                     const naturalWidth = this.naturalWidth;
                     const naturalHeight = this.naturalHeight;
-                    
-                    // 计算缩放比例，以较长的边为基准
-                    const maxSize = 60; // 图标固定大小
+                    const maxSize = 60;
                     const scale = Math.max(naturalWidth, naturalHeight) / maxSize;
                     
-                    // 设置缩放后的尺寸
                     this.style.width = `${naturalWidth / scale}px`;
                     this.style.height = `${naturalHeight / scale}px`;
                 };
             } else {
-                // 使用默认文字图标
+                // 创建备用文字图标
                 icon = document.createElement('div');
-                icon.style.width = '60px';
-                icon.style.height = '60px';
-                icon.style.borderRadius = '14px';
+                icon.className = 'app-icon-fallback';
                 icon.style.backgroundColor = app.color;
-                icon.style.display = 'flex';
-                icon.style.alignItems = 'center';
-                icon.style.justifyContent = 'center';
-                icon.style.color = 'white';
-                icon.style.fontSize = '24px';
-                icon.style.fontWeight = 'bold';
                 icon.textContent = app.name.charAt(0);
             }
+            
+            return icon;
+        }
 
-            // 创建应用名称
-            const appName = document.createElement('div');
-            appName.className = 'app-name';
-            appName.textContent = app.name;
+        /**
+         * 获取打开类型的提示文本
+         * @param {string} openType - 打开类型
+         * @returns {string} - 提示文本
+         */
+        function getOpenTypeHint(openType) {
+            return openType === "newTab" ? "跳转" : "打开";
+        }
 
-            // 添加到应用图标
-            appIcon.appendChild(icon);
-            appIcon.appendChild(appName);
-
-            // 添加到卡片
-            appCard.appendChild(appIcon);
-
-            // 添加点击事件
-            appCard.addEventListener('click', () => {
-                window.open(app.url, '_blank');
+        /**
+         * 创建应用卡片
+         * @param {Object} app - 应用对象
+         * @returns {HTMLElement} - 卡片元素
+         */
+        function createAppCard(app) {
+            const card = document.createElement('div');
+            
+            // 根据打开类型设置卡片类名和背景色
+            const openTypeClass = app.openType === "newTab" ? "new-tab" : "same-tab";
+            card.className = `app-card ${openTypeClass}`;
+            
+            const hintText = getOpenTypeHint(app.openType);
+            card.title = `${app.name}\n${hintText}`;
+            
+            const iconContainer = document.createElement('div');
+            iconContainer.className = 'app-icon';
+            
+            const icon = createAppIcon(app);
+            iconContainer.appendChild(icon);
+            
+            const nameElement = document.createElement('div');
+            nameElement.className = 'app-name';
+            nameElement.textContent = app.name;
+            iconContainer.appendChild(nameElement);
+            
+            card.appendChild(iconContainer);
+            
+            // 根据打开类型设置点击事件
+            card.addEventListener('click', (e) => {
+                if (app.openType === "newTab") {
+                    // 新标签页打开
+                    window.open(app.url, '_blank');
+                } else {
+                    // 当前页打开
+                    window.location.href = app.url;
+                }
             });
+            
+            return card;
+        }
 
-            // 添加到桌面
-            appGrid.appendChild(appCard);
-        });
+        /**
+         * 初始化应用网格
+         */
+        function initializeAppGrid() {
+            apps.forEach(app => {
+                // 确保openType有默认值
+                if (!app.openType) {
+                    app.openType = "newTab"; // 默认新标签页打开
+                }
+                
+                const appCard = createAppCard(app);
+                appGrid.appendChild(appCard);
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initializeAppGrid);
     </script>
 </body>
-
 </html>

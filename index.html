@@ -8,380 +8,9 @@
     <!-- Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="./css/none.css">
-    <style>
-        body {
-            display: flex;
-            min-height: 100vh;
-            background-color: #121826;
-            color: #e0e0e0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* 导航栏区域 */
-        .sidebar {
-            width: 200px;
-            background-color: #1a1f2e;
-            /* padding: 20px 0; */
-            display: flex;
-            flex-direction: column;
-            border-right: 2px solid rgb(185 150 255);
-            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-
-        /* 导航栏内上方logo区域 */
-        .logo {
-            text-align: center;
-            padding: 0 0 10px 0;
-            margin-bottom: 15px;
-            border-bottom: 2px solid rgb(185 150 255);
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: rgb(225, 90, 250);
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(185, 150, 255, 1);
-        }
-
-        .logo p {
-            font-size: 0.9rem;
-            color: #8a8f9d;
-            margin-top: 5px;
-        }
-
-        /* 导航分组区域 */
-        .nav-section {
-            margin-bottom: 0;
-        }
-
-        /* 分组标题样式 */
-        .section-title {
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            color: #6c7280;
-            letter-spacing: 1px;
-        }
-
-        /* 导航按钮容器 */
-        .nav-buttons {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 单个导航按钮样式 */
-        .nav-button {
-            display: flex;
-            align-items: center;
-            margin: 0 0 5px 0;
-            padding: 14px 25px;
-            color: #c0c5d0;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-            position: relative;
-            cursor: pointer;
-        }
-
-        /* 悬停 */
-        .nav-button:hover {
-            background-color: #232838;
-            color: #ffffff;
-            border-left: 4px solid rgb(225, 90, 250);
-        }
-
-        /* 激活 */
-        .nav-button.active {
-            background-color: #232838;
-            color: rgb(225, 90, 250);
-            border-left: 4px solid rgb(225, 90, 250);
-        }
-
-        /* 图标 */
-        .nav-button i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        /* 徽章样式（用于显示通知数量） */
-        .badge {
-            background-color: rgb(225, 90, 250);
-            color: white;
-            border-radius: 10px;
-            padding: 2px 8px;
-            font-size: 0.7rem;
-            margin-left: auto;
-        }
-
-        /* ===== 右侧内容区域样式 ===== */
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* 顶部栏样式 */
-        .top-bar {
-            background-color: #1a1f2e;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #b996ff;
-            position: relative;
-        }
-
-        /* 变动标题 */
-        .top-bar h2 {
-            font-weight: 600;
-            color: rgb(225, 90, 250);
-            font-size: 1.5rem;
-        }
-
-        /* 名称与职位容器区域 */
-        .user-info {
-            display: flex;
-            align-items: center;
-            cursor: pointer; /* 添加指针变化 */
-        }
-
-        /* 头像 */
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            border: 2px solid rgb(225, 90, 250);
-            object-fit: cover;
-        }
-
-        /* 用户详细信息容器 */
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 名称样式 */
-        .user-name {
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        /* 会长文字样式 */
-        .user-rank {
-            font-size: 0.8rem;
-            color: #ff0000;
-        }
-
-        /* 内联容器 */
-        .iframe-container {
-            flex: 1;
-            overflow: hidden;
-            background-color: #121826;
-        }
-
-        /* 内联 */
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 10px;
-            background-color: #1a1f2e;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* 移动端菜单按钮 */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: rgb(225, 90, 250);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            margin-right: 15px;
-        }
-
-        /* 移动端遮罩层 */
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 99;
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 968px) {
-
-            /* 改为垂直布局 */
-            body {
-                flex-direction: column;
-                overflow: auto;
-            }
-
-            /* 移动端菜单按钮显示 */
-            .mobile-menu-toggle {
-                display: block;
-            }
-
-            /* 导航栏默认隐藏 */
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -100%;
-                width: 80%;
-                max-width: 300px;
-                height: 100%;
-                padding: 20px 0;
-                transition: left 0.3s ease;
-                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
-            }
-
-            /* 显示导航栏 */
-            .sidebar.active {
-                left: 0;
-            }
-
-            /* 显示遮罩层 */
-            .mobile-overlay.active {
-                display: block;
-            }
-
-            /* 导航按钮水平排列 */
-            .nav-buttons {
-                flex-direction: column;
-                overflow-y: auto;
-                padding: 0 10px;
-                height: 100%;
-            }
-
-            /* 按钮样式 */
-            .nav-button {
-                padding: 12px 15px;
-                border-left: none;
-                border-bottom: 4px solid transparent;
-                white-space: nowrap;
-            }
-
-            /* 悬停和激活使用底部边框 */
-            .nav-button:hover,
-            .nav-button.active {
-                border-left: none;
-                border-bottom: 4px solid rgb(225, 90, 250);
-            }
-
-            /* 调整Logo区域 */
-            .logo {
-                padding: 10px 0;
-                margin-bottom: 10px;
-            }
-
-            /* 调整顶部栏 */
-            .top-bar {
-                padding: 10px 15px;
-            }
-
-            .top-bar h2 {
-                font-size: 1.2rem;
-            }
-
-            /* 调整用户信息区域 */
-            .user-info img {
-                width: 35px;
-                height: 35px;
-            }
-
-            .user-name {
-                font-size: 0.9rem;
-            }
-
-            .user-rank {
-                font-size: 0.7rem;
-            }
-
-            /* 调整iframe高度 */
-            iframe {
-                height: 100vh;
-            }
-        }
-
-        /* 针对更小屏幕的优化 */
-        @media (max-width: 480px) {
-            .sidebar {
-                width: 85%;
-            }
-
-            .top-bar {
-                padding: 8px 12px;
-            }
-
-            .top-bar h2 {
-                font-size: 1.1rem;
-            }
-
-            .user-info img {
-                width: 30px;
-                height: 30px;
-            }
-
-            .user-details {
-                display: none;
-            }
-
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo p {
-                font-size: 0.8rem;
-            }
-
-            .nav-button {
-                padding: 10px 12px;
-            }
-
-            .nav-button i {
-                font-size: 1rem;
-                margin-right: 10px;
-            }
-
-            .badge {
-                font-size: 0.6rem;
-                padding: 1px 6px;
-            }
-        }
-
-        /* 横屏优化 */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .sidebar {
-                overflow-y: auto;
-            }
-
-            .logo {
-                padding: 8px 0 15px;
-                margin-bottom: 8px;
-            }
-
-            .nav-section {
-                margin-bottom: 15px;
-            }
-
-            .nav-button {
-                padding: 8px 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./公共页/none.css">
+    <link rel="stylesheet" href="./index.css">
+    <style></style>
 </head>
 
 <body>
@@ -395,7 +24,9 @@
             <img src="./图片/杂项图标/公会图标.png" alt="Promiscuous Eden" width="200px" height="200px">
             <h1>堕乐园</h1>
             <p></p>
-            <p>&copy; 2023-<script>document.write(new Date().getFullYear())</script><br>PROMISCUOUS&nbsp;EDEN</p>
+            <p>&copy; 2023-
+                <script>document.write(new Date().getFullYear())</script><br>PROMISCUOUS&nbsp;EDEN
+            </p>
         </div>
 
         <!-- 主要导航分组 -->
@@ -404,34 +35,34 @@
 
                 <div class="nav-button active" data-page="A">
                     <i class="fa-solid fa-house"></i>
-                    <span>公会信息</span>
+                    <span>主页</span>
                 </div>
 
-                <div class="nav-button" data-page="B">
+                <div class="nav-button" data-page="B" data-config="tools">
                     <i class="fa-solid fa-briefcase"></i>
                     <span>工具箱</span>
                     <span class="badge">5</span>
                 </div>
 
-                <div class="nav-button" data-page="C">
+                <div class="nav-button" data-page="C" data-config="guides">
                     <i class="fas fa-fist-raised"></i>
                     <span>快捷攻略</span>
                     <span class="badge">3</span>
                 </div>
 
-                <div class="nav-button" data-page="D">
+                <div class="nav-button" data-page="D" data-config="more">
                     <i class="fas fa-fist-raised"></i>
                     <span>更多</span>
                     <span class="badge">6</span>
                 </div>
 
-                <div class="nav-button" data-page="E">
+                <div class="nav-button" data-page="E" data-config="records">
                     <i class="fa-solid fa-pen"></i>
                     <span>公会记录</span>
                     <span class="badge">2</span>
                 </div>
 
-                <div class="nav-button" data-page="G">
+                <div class="nav-button" data-page="G" data-config="games">
                     <i class="fa-solid fa-gamepad"></i>
                     <span>网页小游戏</span>
                     <span class="badge">1</span>
@@ -463,7 +94,7 @@
 
         <!-- iframe容器 -->
         <div class="iframe-container">
-            <iframe id="content-frame" src="./html/SSS/加载.html" title="内容区域"></iframe>
+            <iframe id="content-frame" src="./公共页/加载.html" title="内容区域"></iframe>
         </div>
     </div>
 
@@ -473,143 +104,7 @@
 
     </audio>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const navButtons = document.querySelectorAll('.nav-button');
-            const sidebar = document.getElementById('sidebar');
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mobileOverlay = document.getElementById('mobile-overlay');
-            const userInfo = document.getElementById('user-info');
-            const clickAudio = document.getElementById('click-audio');
-
-            // 页面路径
-            const pagePaths = {
-                'A': './html/A/主页V2.html',
-                'B': './html/B/工具V2.html',
-                'C': './html/C/攻略V2.html',
-                'D': './html/D/更多V2.html',
-                'E': './html/E/记录V2.html',
-                'G': './html/G/游戏V2.html'
-            };
-
-            // 点击计数器
-            let clickCount = 0;
-            const CLICK_THRESHOLD = 11; // 点击11次触发网页跳转
-
-            // 移动端菜单切换
-            function toggleMobileMenu() {
-                sidebar.classList.toggle('active');
-                mobileOverlay.classList.toggle('active');
-            }
-
-            // 初始化函数：设置默认显示的导航项
-            function initializeDefaultNav() {
-                // 获取第一个导航按钮
-                const firstNavButton = navButtons[0];
-
-                if (firstNavButton) {
-                    // 获取第一个按钮的页面标识
-                    const firstPageId = firstNavButton.getAttribute('data-page');
-
-                    // 更新顶部标题文本内容
-                    const topBarTitle = document.querySelector('.top-bar h2');
-                    topBarTitle.textContent = firstNavButton.querySelector('span').textContent;
-
-                    // 根据第一个页面标识设置iframe的src
-                    if (pagePaths[firstPageId]) {
-                        document.getElementById('content-frame').src = pagePaths[firstPageId];
-                        // 激活第一个导航按钮
-                        firstNavButton.classList.add('active');
-                    } else {
-                        document.getElementById('content-frame').src = './html/mo/加载.html';
-                    }
-                } else {
-                    // 如果没有导航按钮，显示加载页面
-                    document.getElementById('content-frame').src = './html/mo/加载.html';
-                }
-            }
-
-            // 为每个导航按钮添加点击事件监听器
-            navButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    // 移除所有按钮的active类
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    // 为当前点击的按钮添加active类
-                    this.classList.add('active');
-
-                    // 更新变动标题文本内容
-                    const topBarTitle = document.querySelector('.top-bar h2');
-                    topBarTitle.textContent = this.querySelector('span').textContent;
-
-                    // 获取当前按钮对应的页面标识
-                    const pageId = this.getAttribute('data-page');
-
-                    // 切换iframe的src路径
-                    if (pagePaths[pageId]) {
-                        document.getElementById('content-frame').src = pagePaths[pageId];
-                    } else {
-                        document.getElementById('content-frame').src = './html/mo/加载.html';
-                    }
-
-                    // 在移动端点击导航项后关闭菜单
-                    if (window.innerWidth <= 968) {
-                        toggleMobileMenu();
-                    }
-                });
-            });
-
-            // 用户信息区域点击事件
-            userInfo.addEventListener('click', function() {
-                // 增加点击计数
-                clickCount++;
-                
-                // 尝试播放音频
-                try {
-                    // 如果音频正在播放，先暂停并重置
-                    if (!clickAudio.paused) {
-                        clickAudio.pause();
-                        clickAudio.currentTime = 0;
-                    }
-                    
-                    // 播放音频
-                    clickAudio.play().catch(function(error) {
-                        console.log('音频播放失败:', error);
-                        // 音频播放失败不影响计数功能
-                    });
-                } catch (error) {
-                    console.log('音频播放出错:', error);
-                    // 音频播放出错不影响计数功能
-                }
-                
-                // 检查是否达到点击阈值
-                if (clickCount >= CLICK_THRESHOLD) {
-                    // 打开新网页
-                    window.open('./html/SSS/yuqi.html', '_blank');
-                    
-                    // 重置计数器
-                    clickCount = 0;
-                }
-            });
-
-            // 移动端菜单按钮点击事件
-            mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-
-            // 移动端遮罩层点击事件
-            mobileOverlay.addEventListener('click', toggleMobileMenu);
-
-            // 初始化页面
-            initializeDefaultNav();
-
-            // 监听窗口大小变化
-            window.addEventListener('resize', function () {
-                // 如果窗口宽度大于968px，确保侧边栏可见
-                if (window.innerWidth > 968) {
-                    sidebar.classList.remove('active');
-                    mobileOverlay.classList.remove('active');
-                }
-            });
-        });
-    </script>
+    <script src="./index.js"></script>
 </body>
 
 </html>

@@ -5,16 +5,423 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>垂钓指南</title>
-    <link rel="stylesheet" href="../../css/none.css">
-    <link rel="stylesheet" href="../../css/V3.css">
-    <link rel="stylesheet" href="../../css/gofish.css">
-    <link rel="stylesheet" href="../../css/w.css">
+    <link rel="stylesheet" href="../../公共页/none.css">
     <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #121826;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* body滚动条 */
+        body::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #2a2f3e;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgb(225, 90, 250);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: #ffffff;
+        }
+
+
+        /* 主区域 */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background-color: #121826;
+        }
+
+        /* 次区域 */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* 内容样式 */
+        .content-card {
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(185, 150, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            /* transform: translateY(-5px); */
+            /* box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); */
+            border-color: rgb(250, 197, 90);
+        }
+
+        /* 标题区域 */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(185, 150, 255, 0.3);
+        }
+
+        /* 单个内容 */
+        .card-body {
+            color: #c0c5d0;
+            line-height: 1.6;
+        }
+
+        /* 侧边导航 */
+        .fishing-nav {
+            background-color: #1a1f2e;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            border-right: 1px solid rgba(185, 150, 255, 0.2);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            position: relative;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button.active {
+            border-color: rgb(225, 90, 250);
+            box-shadow: 0 0 15px rgba(225, 90, 250, 0.3);
+        }
+
+        .nav-tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(26, 31, 46, 0.95);
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            border: 1px solid rgba(185, 150, 255, 0.3);
+            margin-left: 10px;
+        }
+
+        .nav-button:hover .nav-tooltip {
+            opacity: 1;
+        }
+
+        /* 表格头部 */
+        .table-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #1a1f2e, #2a2f3e);
+            z-index: 100;
+            border-bottom: 2px solid rgba(225, 90, 250, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .table-header th {
+            padding: 15px 10px;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            text-align: left;
+            border-right: 1px solid rgba(185, 150, 255, 0.2);
+        }
+
+        .table-header th:last-child {
+            border-right: none;
+        }
+
+        /* 表格内容 */
+        .fishing-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1a1f2e;
+            position: relative;
+        }
+
+        /* 不同液体种类的网格分隔 */
+        .fishing-section {
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        /* 水域网格颜色 */
+        .section-water {
+            background: linear-gradient(135deg,
+                    rgba(135, 206, 235, 0.1) 0%,
+                    rgba(135, 206, 235, 0.05) 50%,
+                    rgba(135, 206, 235, 0.1) 100%);
+            border-left: 4px solid rgba(135, 206, 235, 0.6);
+        }
+
+        /* 熔岩网格颜色 */
+        .section-lava {
+            background: linear-gradient(135deg,
+                    rgba(255, 0, 0, 0.1) 0%,
+                    rgba(255, 0, 0, 0.05) 50%,
+                    rgba(255, 0, 0, 0.1) 100%);
+            border-left: 4px solid rgba(255, 0, 0, 0.6);
+        }
+
+        /* 巧克力网格颜色 */
+        .section-chocolate {
+            background: linear-gradient(135deg,
+                    rgba(165, 42, 42, 0.1) 0%,
+                    rgba(165, 42, 42, 0.05) 50%,
+                    rgba(165, 42, 42, 0.1) 100%);
+            border-left: 4px solid rgba(165, 42, 42, 0.6);
+        }
+
+        /* 等离子网格颜色 */
+        .section-plasma {
+            background: linear-gradient(135deg,
+                    rgba(0, 0, 255, 0.1) 0%,
+                    rgba(0, 0, 255, 0.05) 50%,
+                    rgba(0, 0, 255, 0.1) 100%);
+            border-left: 4px solid rgba(0, 0, 255, 0.6);
+        }
+
+        /* 深渊网格颜色 */
+        .section-abyss {
+            background: linear-gradient(135deg,
+                    rgba(128, 0, 128, 0.1) 0%,
+                    rgba(128, 0, 128, 0.05) 50%,
+                    rgba(128, 0, 128, 0.1) 100%);
+            border-left: 4px solid rgba(128, 0, 128, 0.6);
+        }
+
+        /* 附魔网格颜色 */
+        .section-enchanted {
+            background: linear-gradient(135deg,
+                    rgba(255, 192, 203, 0.1) 0%,
+                    rgba(255, 192, 203, 0.05) 50%,
+                    rgba(255, 192, 203, 0.1) 100%);
+            border-left: 4px solid rgba(255, 192, 203, 0.6);
+        }
+
+        /* 乌龟网格颜色 */
+        .section-turtle {
+            background: linear-gradient(135deg,
+                    rgba(172, 255, 47, 0.1) 0%,
+                    rgba(172, 255, 47, 0.05) 50%,
+                    rgba(172, 255, 47, 0.1) 100%);
+            border-left: 4px solid rgba(172, 255, 47, 0.6);
+        }
+
+        /* 网格分隔标题 */
+        .section-header {
+            background: rgba(26, 31, 46, 0.8);
+            padding: 10px 15px;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            border-bottom: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .section-water .section-header {
+            border-bottom-color: rgba(135, 206, 235, 0.6);
+        }
+
+        .section-water .section-header::before {
+            background: rgba(135, 206, 235, 0.8);
+        }
+
+        .section-lava .section-header {
+            border-bottom-color: rgba(255, 0, 0, 0.6);
+        }
+
+        .section-lava .section-header::before {
+            background: rgba(255, 0, 0, 0.8);
+        }
+
+        .section-chocolate .section-header {
+            border-bottom-color: rgba(165, 42, 42, 0.6);
+        }
+
+        .section-chocolate .section-header::before {
+            background: rgba(165, 42, 42, 0.8);
+        }
+
+        .section-plasma .section-header {
+            border-bottom-color: rgba(0, 0, 255, 0.6);
+        }
+
+        .section-plasma .section-header::before {
+            background: rgba(0, 0, 255, 0.8);
+        }
+
+        .section-abyss .section-header {
+            border-bottom-color: rgba(128, 0, 128, 0.6);
+        }
+
+        .section-abyss .section-header::before {
+            background: rgba(128, 0, 128, 0.8);
+        }
+
+        .section-enchanted .section-header {
+            border-bottom-color: rgba(255, 192, 203, 0.6);
+        }
+
+        .section-enchanted .section-header::before {
+            background: rgba(255, 192, 203, 0.8);
+        }
+
+        .section-turtle .section-header {
+            border-bottom-color: rgba(172, 255, 47, 0.6);
+        }
+
+        .section-turtle .section-header::before {
+            background: rgba(172, 255, 47, 0.8);
+        }
+
+        .fishing-table tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(185, 150, 255, 0.1);
+        }
+
+        .fishing-table tr:hover {
+            background-color: rgba(225, 90, 250, 0.15);
+            transform: scale(1.01);
+        }
+
+        .fishing-table td {
+            padding: 12px 10px;
+            border-right: 1px solid rgba(185, 150, 255, 0.1);
+            position: relative;
+        }
+
+        .fishing-table td:last-child {
+            border-right: none;
+        }
+
+        /* 稀有度样式 */
+        .rarity-common {
+            color: #e0e0e0;
+        }
+
+        .rarity-uncommon {
+            color: #4CAF50;
+        }
+
+        .rarity-rare {
+            color: rgb(225, 90, 250);
+            font-weight: 600;
+        }
+
+        /* 特殊条件样式 */
+        .special-condition {
+            background: rgba(225, 90, 250, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 3px solid rgb(225, 90, 250);
+            margin: 2px 0;
+        }
+
+        .rod-requirement {
+            color: #ff6b6b;
+            font-style: italic;
+            font-size: 0.9em;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .fishing-nav {
+                display: none;
+            }
+
+            .nav-button {
+                display: none;
+            }
+
+            .fishing-table td {
+                padding: 8px 6px;
+                font-size: 0.9rem;
+            }
+
+            .section-header {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .content-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 276px) {
             .main-content {
                 display: none;
             }
-            .fishing-nav{
+
+            .fishing-nav {
                 display: none;
             }
 
@@ -1119,10 +1526,10 @@
         </div>
     </div>
 
-    <div class="screen-warning">
+    <!-- <div class="screen-warning">
         <h2>屏幕大小不适合此页面</h2>
         <h2>请使用宽度大于275px的设备访问，或在电脑上打开此页面。</h2>
-    </div>
+    </div> -->
 
     <script>
         // 导航按钮点击事件

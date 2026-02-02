@@ -5,9 +5,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pe</title>
-    <link rel="stylesheet" href="../../css/none.css">
-    <link rel="stylesheet" href="../../css/V3.css">
+    <link rel="stylesheet" href="../../公共页/none.css">
     <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #121826;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* body滚动条 */
+        body::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #2a2f3e;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgb(225, 90, 250);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: #ffffff;
+        }
+
+
+        /* 主区域 */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background-color: #121826;
+        }
+
+        /* 次区域 */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* 内容样式 */
+        .content-card {
+            background-color: #1a1f2e;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(185, 150, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            /* transform: translateY(-5px); */
+            /* box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); */
+            border-color: rgb(250, 197, 90);
+        }
+
+        /* 标题区域 */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgb(225, 90, 250);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(185, 150, 255, 0.3);
+        }
+
+        /* 单个内容 */
+        .card-body {
+            color: #c0c5d0;
+            line-height: 1.6;
+        }
+
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .content-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* 成员展示 */
         .members-container {
             display: flex;
@@ -203,17 +302,17 @@
             </div>
         </div>
 
-     
+
     </div>
 
     <script>
         // 设置起始时间 - 可以在这里修改起始时间
         const startDate = new Date('2023-11-02T00:00:00'); // 修改这里的日期
-        
+
         function updateHistoryTime() {
             const now = new Date();
             const diffMs = now - startDate;
-            
+
             // 计算年、月、日、时、分、秒
             const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
             const months = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
@@ -221,7 +320,7 @@
             const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-            
+
             // 构建显示文本
             let displayText = '';
             if (years > 0) displayText += `${years}年`;
@@ -230,14 +329,14 @@
             if (hours > 0) displayText += `${hours}时`;
             if (minutes > 0) displayText += `${minutes}分`;
             if (seconds > 0 || displayText === '') displayText += `${seconds}秒`;
-            
+
             // 更新显示
             document.getElementById('history-time').textContent = displayText;
         }
-        
+
         // 初始更新
         updateHistoryTime();
-        
+
         // 每秒更新一次
         setInterval(updateHistoryTime, 1000);
     </script>

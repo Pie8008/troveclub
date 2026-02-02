@@ -5,10 +5,115 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>贪吃蛇</title>
-  <link rel="stylesheet" href="../../css/none.css">
-  <link rel="stylesheet" href="../../css/V3.css">
-  <link rel="stylesheet" href="../../css/w.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: #121826;
+      color: #e0e0e0;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* body滚动条 */
+    body::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: #2a2f3e;
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background: rgb(225, 90, 250);
+      border-radius: 10px;
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+      background: #ffffff;
+    }
+
+
+    /* 主区域 */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      background-color: #121826;
+    }
+
+    /* 次区域 */
+    .content-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    /* 内容样式 */
+    .content-card {
+      background-color: #1a1f2e;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(185, 150, 255, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .content-card:hover {
+      /* transform: translateY(-5px); */
+      /* box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); */
+      border-color: rgb(250, 197, 90);
+    }
+
+    /* 标题区域 */
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: rgb(225, 90, 250);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(185, 150, 255, 0.3);
+    }
+
+    /* 单个内容 */
+    .card-body {
+      color: #c0c5d0;
+      line-height: 1.6;
+    }
+
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 768px) {
+      .content-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .content {
       flex: 1;
       display: flex;
@@ -526,10 +631,7 @@
   </div>
 
 
-  <div class="screen-warning">
-    <h2>屏幕大小不适合此页面</h2>
-    <h2>请使用宽度大于620px的设备访问，或在电脑上打开此页面。</h2>
-  </div>
+
 
   <script>
     // 游戏核心变量

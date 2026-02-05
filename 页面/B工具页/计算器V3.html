@@ -21,6 +21,13 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        textarea {
+            overflow: hidden;
+            /* 隐藏滚动条且不可滚动 */
+            min-height: 40px;
+            max-height: 40px;
+        }
+
         body::-webkit-scrollbar {
             width: 5px;
             height: 5px;
@@ -271,6 +278,8 @@
             transition: all 0.3s ease;
             gap: 20px;
             border: 1px solid rgba(185, 150, 255, 0.1);
+            position: relative;
+            /* 为重置按钮定位 */
         }
 
         /* Seed item style */
@@ -502,48 +511,6 @@
             cursor: pointer;
         }
 
-        /* 新增悬浮界面样式 */
-        .reset-panel {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: #1a1f2e;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(225, 90, 250, 0.4);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 150px;
-        }
-
-        .reset-panel.active {
-            display: flex;
-        }
-
-        .reset-row-button {
-            padding: 8px 12px;
-            background: linear-gradient(135deg, #2a2f3e, #3a3f4e);
-            color: #c0c5d0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 12px;
-            text-align: center;
-            border: 1px solid rgba(185, 150, 255, 0.2);
-        }
-
-        .reset-row-button:hover {
-            background: linear-gradient(135deg, #3a3f4e, #4a4f5e);
-            transform: scale(1.03);
-        }
-
-        .reset-button-container {
-            position: relative;
-        }
-
         /* 新增：种子图片上的按钮容器 */
         .seed-image-buttons {
             position: absolute;
@@ -607,6 +574,31 @@
             transform: scale(1.1);
         }
 
+        /* 新增：种子行重置按钮 */
+        .row-reset-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ff922b, #ffa94d);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .row-reset-button:hover {
+            background: linear-gradient(135deg, #ffa94d, #ffc078);
+            transform: scale(1.1);
+        }
+
         /* 新增：倍数输入框容器 */
         .multiplier-container {
             display: flex;
@@ -619,6 +611,40 @@
         .multiplier-label {
             font-size: 12px;
             color: #c0c5d0;
+        }
+
+        /* 新增：快速输入框样式 */
+        .quick-input-container {
+            margin-bottom: 10px;
+        }
+
+        .quick-input-label {
+            font-size: 12px;
+            color: #c0c5d0;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        #quick-input {
+            width: 100%;
+            height: 60px;
+            /* 增加高度 */
+            text-align: left;
+            /* 改为左对齐 */
+            border: 1px solid #2a2f3e;
+            border-radius: 4px;
+            padding: 8px 10px;
+            /* 增加内边距 */
+            background-color: #2a2f3e;
+            color: #e0e0e0;
+            font-size: 12px;
+            resize: vertical;
+            /* 允许垂直调整大小 */
+        }
+
+        #quick-input:focus {
+            outline: none;
+            border-color: rgba(225, 90, 250, 0.6);
         }
 
         /* Responsive design */
@@ -739,6 +765,12 @@
                 min-width: 120px;
                 max-width: 150px;
             }
+
+            /* 调整行重置按钮位置 */
+            .row-reset-button {
+                bottom: 5px;
+                left: 5px;
+            }
         }
 
         /* 超窄屏设备适配 */
@@ -763,6 +795,11 @@
 
             .harvest-input-label {
                 font-size: 11px;
+            }
+
+            textarea {
+                min-height: 30px;
+                max-height: 30px;
             }
         }
     </style>
@@ -798,18 +835,14 @@
                 </div>
             </div>
 
-            <!-- 移除了预设功能按钮 -->
+            <!-- 新增快速输入框 -->
+            <div class="quick-input-container">
+                <span class="quick-input-label">快速输入↓</span>
+                <textarea id="quick-input" placeholder="例如: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"></textarea>
+            </div>
 
             <div class="function-buttons-container" id="function-buttons">
-                <div class="reset-button-container">
-                    <div class="function-button" data-action="reset" title="右键点击可选择重置指定区域数量。">重置数量</div>
-                    <div class="reset-panel" id="reset-panel">
-                        <div class="reset-row-button" data-row="1">重置一阶</div>
-                        <div class="reset-row-button" data-row="2">重置二阶</div>
-                        <div class="reset-row-button" data-row="3">重置三阶</div>
-                        <div class="reset-row-button" data-row="4">重置四阶</div>
-                    </div>
-                </div>
+                <div class="function-button" data-action="reset" title="重置所有种子数量">重置数量</div>
             </div>
         </div>
 
@@ -821,6 +854,9 @@
 
                 <!-- 新增的一阶种子行 -->
                 <div class="seed-row" id="seed-row1">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="1" title="重置本行">R</button>
+
                     <div class="seed-item">
                         <div class="seed-image" data-input-id="shaping-ore-seed">
                             <img src="../../图片/植物图标/塑形矿.png" alt="塑形矿" title="塑形矿">
@@ -829,8 +865,10 @@
                                 <button class="seed-clear-button" data-input-id="shaping-ore-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="shaping-ore-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="shaping-ore-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="shaping-ore-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="shaping-ore-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="shaping-ore-seed" class="seed-quantity-input">
@@ -844,8 +882,10 @@
                                 <button class="seed-clear-button" data-input-id="blue-crystal-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="blue-crystal-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="blue-crystal-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="blue-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="blue-crystal-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="blue-crystal-seed" class="seed-quantity-input">
@@ -859,8 +899,10 @@
                                 <button class="seed-clear-button" data-input-id="limit-crystal-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="limit-crystal-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="limit-crystal-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="limit-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="limit-crystal-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="limit-crystal-seed" class="seed-quantity-input">
@@ -874,8 +916,10 @@
                                 <button class="seed-clear-button" data-input-id="red-ore-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="red-ore-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="red-ore-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="red-ore-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="red-ore-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="red-ore-seed" class="seed-quantity-input">
@@ -884,6 +928,9 @@
 
                 <!-- 原有的二阶种子行 -->
                 <div class="seed-row" id="seed-row2">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="2" title="重置本行">R</button>
+
                     <div class="seed-item">
                         <div class="seed-image" data-input-id="crystal-seed">
                             <img src="../../图片/植物图标/水晶.png" alt="水晶" title="水晶">
@@ -892,8 +939,10 @@
                                 <button class="seed-clear-button" data-input-id="crystal-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="crystal-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="crystal-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="crystal-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="crystal-seed" class="seed-quantity-input">
@@ -907,8 +956,10 @@
                                 <button class="seed-clear-button" data-input-id="eye-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="eye-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="eye-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="eye-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="eye-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="eye-seed" class="seed-quantity-input">
@@ -922,8 +973,10 @@
                                 <button class="seed-clear-button" data-input-id="sunrise-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="sunrise-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="sunrise-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="sunrise-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="sunrise-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="sunrise-seed" class="seed-quantity-input">
@@ -937,8 +990,10 @@
                                 <button class="seed-clear-button" data-input-id="glimmerstone-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="glimmerstone-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="glimmerstone-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="glimmerstone-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="glimmerstone-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="glimmerstone-seed" class="seed-quantity-input">
@@ -946,6 +1001,9 @@
                 </div>
 
                 <div class="seed-row" id="seed-row3">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="3" title="重置本行">R</button>
+
                     <div class="seed-item">
                         <div class="seed-image" data-input-id="tentacle-seed">
                             <img src="../../图片/植物图标/触手.png" alt="触手" title="触手">
@@ -954,8 +1012,10 @@
                                 <button class="seed-clear-button" data-input-id="tentacle-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="tentacle-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="tentacle-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="tentacle-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="tentacle-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="tentacle-seed" class="seed-quantity-input">
@@ -969,8 +1029,10 @@
                                 <button class="seed-clear-button" data-input-id="golden-soul-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="golden-soul-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="golden-soul-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="golden-soul-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="golden-soul-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="golden-soul-seed" class="seed-quantity-input">
@@ -984,8 +1046,10 @@
                                 <button class="seed-clear-button" data-input-id="bulb-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="bulb-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="bulb-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="bulb-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="bulb-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="bulb-seed" class="seed-quantity-input">
@@ -993,6 +1057,9 @@
                 </div>
 
                 <div class="seed-row" id="seed-row4">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="4" title="重置本行">R</button>
+
                     <div class="seed-item">
                         <div class="seed-image" data-input-id="construct-crystal-seed">
                             <img src="../../图片/植物图标/建晶.png" alt="建晶" title="建晶">
@@ -1001,8 +1068,10 @@
                                 <button class="seed-clear-button" data-input-id="construct-crystal-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="construct-crystal-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="construct-crystal-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="construct-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="construct-crystal-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="construct-crystal-seed" class="seed-quantity-input">
@@ -1016,8 +1085,10 @@
                                 <button class="seed-clear-button" data-input-id="ripener-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="ripener-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="ripener-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="ripener-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="ripener-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="ripener-seed" class="seed-quantity-input">
@@ -1031,8 +1102,10 @@
                                 <button class="seed-clear-button" data-input-id="primordial-flame-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="primordial-flame-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="primordial-flame-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="primordial-flame-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="primordial-flame-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="primordial-flame-seed" class="seed-quantity-input">
@@ -1046,8 +1119,10 @@
                                 <button class="seed-clear-button" data-input-id="wallflower-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="wallflower-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="wallflower-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="wallflower-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="wallflower-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="wallflower-seed" class="seed-quantity-input">
@@ -1061,8 +1136,10 @@
                                 <button class="seed-clear-button" data-input-id="flash-powder-seed">×</button>
                             </div>
                             <div class="seed-operation-buttons">
-                                <button class="seed-operation-button" data-operation="multiply" data-input-id="flash-powder-seed">×</button>
-                                <button class="seed-operation-button" data-operation="divide" data-input-id="flash-powder-seed">÷</button>
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="flash-powder-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="flash-powder-seed">÷</button>
                             </div>
                         </div>
                         <input type="number" value="0" id="flash-powder-seed" class="seed-quantity-input">
@@ -1515,6 +1592,9 @@
 
                 // 计算黄金水壶需求
                 calculateGoldenWateringRequirement();
+
+                // 更新快速输入框（只在种子数量变化时更新）
+                updateQuickInput();
             }
 
             // 更新材料显示
@@ -1566,7 +1646,7 @@
                     // 左键点击事件 - 增加数量
                     seedImage.addEventListener('click', function (e) {
                         // 防止点击按钮时触发图片点击事件
-                        if (!e.target.closest('.seed-clear-button') && !e.target.closest('.seed-operation-button')) {
+                        if (!e.target.closest('.seed-clear-button') && !e.target.closest('.seed-operation-button') && !e.target.closest('.row-reset-button')) {
                             if (e.button === 0 && !isLongPress) {
                                 e.preventDefault();
                                 input.value = parseInt(input.value) + 1;
@@ -1591,7 +1671,7 @@
                     // 鼠标按下事件 - 开始计时长按
                     seedImage.addEventListener('mousedown', function (e) {
                         // 防止按钮触发长按
-                        if (e.target.closest('.seed-clear-button') || e.target.closest('.seed-operation-button')) {
+                        if (e.target.closest('.seed-clear-button') || e.target.closest('.seed-operation-button') || e.target.closest('.row-reset-button')) {
                             return;
                         }
 
@@ -1689,6 +1769,26 @@
                     }
                     appState.multiplier = value;
                 });
+
+                // 新增：快速输入框监听 - 只在失去焦点时更新
+                const quickInput = document.getElementById('quick-input');
+                let quickInputTimer;
+
+                quickInput.addEventListener('input', function () {
+                    // 清除之前的计时器
+                    clearTimeout(quickInputTimer);
+
+                    // 设置新的计时器，延迟更新
+                    quickInputTimer = setTimeout(() => {
+                        applyQuickInput(this.value);
+                    }, 500); // 500毫秒延迟，让用户有输入的时间
+                });
+
+                // 当快速输入框失去焦点时立即更新
+                quickInput.addEventListener('blur', function () {
+                    clearTimeout(quickInputTimer);
+                    applyQuickInput(this.value);
+                });
             }
 
             function setupButtonInteractions() {
@@ -1738,30 +1838,6 @@
 
                 // 重置数量按钮
                 const resetButton = document.querySelector('[data-action="reset"]');
-                const resetPanel = document.getElementById('reset-panel');
-
-                // 右键点击重置按钮显示悬浮界面
-                resetButton.addEventListener('contextmenu', function (e) {
-                    e.preventDefault();
-                    resetPanel.classList.add('active');
-                });
-
-                // 点击其他地方关闭悬浮界面
-                document.addEventListener('click', function (e) {
-                    if (!resetPanel.contains(e.target) && e.target !== resetButton) {
-                        resetPanel.classList.remove('active');
-                    }
-                });
-
-                // 悬浮界面按钮点击事件 - 新增一阶重置
-                const resetRowButtons = document.querySelectorAll('.reset-row-button');
-                resetRowButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        const rowId = this.getAttribute('data-row');
-                        resetSeedRow(rowId);
-                        resetPanel.classList.remove('active');
-                    });
-                });
 
                 // 左键点击重置按钮重置所有
                 resetButton.addEventListener('click', function () {
@@ -1786,6 +1862,10 @@
                     multiplierInput.value = 1;
                     appState.multiplier = 1;
 
+                    // 重置快速输入框
+                    const quickInput = document.getElementById('quick-input');
+                    quickInput.value = '';
+
                     // 更新收获次数限制
                     updateHarvestInputLimit();
 
@@ -1793,7 +1873,7 @@
                 });
             }
 
-            // 重置指定种子行 - 新增一阶
+            // 重置指定种子行
             function resetSeedRow(rowId) {
                 const seedRow = document.getElementById(`seed-row${rowId}`);
                 if (seedRow) {
@@ -1910,17 +1990,17 @@
                         const inputId = this.getAttribute('data-input-id');
                         const operation = this.getAttribute('data-operation');
                         const input = document.getElementById(inputId);
-                        
+
                         let currentValue = parseInt(input.value) || 0;
                         let newValue;
-                        
+
                         if (operation === 'multiply') {
                             newValue = currentValue * appState.multiplier;
                         } else if (operation === 'divide') {
                             // 除法结果向上取整
                             newValue = Math.ceil(currentValue / appState.multiplier);
                         }
-                        
+
                         // 确保最小值是0
                         newValue = Math.max(0, newValue);
                         input.value = newValue;
@@ -1929,6 +2009,48 @@
                         calculateRequirements();
                     });
                 });
+
+                // 重置行按钮事件
+                document.querySelectorAll('.row-reset-button').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.stopPropagation(); // 防止事件冒泡
+                        const rowId = this.getAttribute('data-row');
+                        resetSeedRow(rowId);
+                    });
+                });
+            }
+
+            // 更新快速输入框
+            function updateQuickInput() {
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+                const values = Array.from(inputs).map(input => input.value || '0');
+                const quickInput = document.getElementById('quick-input');
+
+                // 只在快速输入框没有焦点时更新
+                if (document.activeElement !== quickInput) {
+                    quickInput.value = values.join(',');
+                }
+            }
+
+            // 应用快速输入框的内容
+            function applyQuickInput(quickInputValue) {
+                const values = quickInputValue.split(',')
+                    .map(val => val.trim())
+                    .map(val => {
+                        const num = parseInt(val);
+                        return isNaN(num) ? 0 : Math.max(0, num);
+                    });
+
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+
+                inputs.forEach((input, index) => {
+                    if (index < values.length) {
+                        input.value = values[index];
+                        appState.seedQuantities[input.id] = values[index];
+                    }
+                });
+
+                calculateRequirements();
             }
 
             // 初始化应用
@@ -1938,7 +2060,7 @@
                 setupInputListeners();
                 setupButtonInteractions();
                 setupHarmonizerClick();
-                setupSeedImageButtons(); // 新增：设置种子图片上的按钮
+                setupSeedImageButtons();
                 updateHarvestInputLimit();
 
                 // 初始化水壶浇灌数量

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>齁哦哦编码器</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/color.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.5s ease;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 平板容器 */
+        .tablet-container {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--secondary-bg);
+
+            box-shadow: 0 20px 50px var(--shadow-dark);
+            overflow: hidden;
+            position: relative;
+            animation: fadeIn 0.8s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            height: 100%;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        /* 标题样式 */
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            text-align: center;
+            text-shadow: 0 0 10px var(--shadow-accent);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out 0.1s both;
+        }
+
+        .page-subtitle a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .page-subtitle a:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+
+        /* 内容卡片容器 */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background-color: var(--secondary-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 20px var(--shadow-primary);
+            border: 2px solid var(--border-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-card:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 8px 25px var(--shadow-primary);
+        }
+
+        /* 标题区域 */
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        /* 输入输出区域 */
+        .input-group {
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            background-color: var(--tertiary-bg);
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px var(--accent-primary-transparent);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* 按钮样式 */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px var(--shadow-primary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 968px) {
+            .tablet-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .content-cards {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .content-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            textarea {
+                min-height: 130px;
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 20px;
+            }
+
+            .content-card {
+                padding: 15px;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+
+            textarea {
+                min-height: 120px;
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            button {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 横屏优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+                margin-bottom: 5px;
+            }
+
+            .page-subtitle {
+                margin-bottom: 15px;
+            }
+
+            .content-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tablet-container">
+        <div class="main-content">
+            <h1 class="page-title">呃嗯！呼～❤呃啊～哼！！呃嗯哈嗯～啊</h1>
+            <p class="page-subtitle">by <a href="https://msbt.seku.su/">https://msbt.seku.su/</a></p>
+
+            <div class="content-cards">
+                <!-- 编码区域 -->
+                <div class="content-card">
+                    <div class="card-title">原</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <textarea id="inputRaw" placeholder="在此输入文本"></textarea>
+                        </div>
+                        <div class="button-group">
+                            <button onclick="encode()">编</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 解码区域 -->
+                <div class="content-card">
+                    <div class="card-title">密</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <textarea id="inputCode" placeholder="齁~哦哦哦哦哦~!"></textarea>
+                        </div>
+                        <div class="button-group">
+                            <button onclick="decode()">解</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 码表定义
+        const codebook = ['齁', '哦', '噢', '喔', '咕', '咿', '嗯', '啊', '～', '哈', '！', '唔', '哼', '❤', '呃', '呼'];
+        const codebookMap = {};
+        for (let i = 0; i < codebook.length; i++) {
+            codebookMap[codebook[i]] = i;
+        }
+
+        /**
+         * 编码函数
+         */
+        function encode() {
+            let input = document.getElementById("inputRaw").value;
+            if (!input.trim()) {
+                alert("请输入任意文本!");
+                return;
+            }
+
+            try {
+                let encoder = new TextEncoder();
+                let bytes = encoder.encode(input);
+                let encoded = '';
+                for (let byte of bytes) {
+                    let high = (byte >> 4) & 0x0F;
+                    let low = byte & 0x0F;
+                    encoded += codebook[high] + codebook[low];
+                }
+                document.getElementById("inputCode").value = encoded;
+
+                // 轻微反馈
+                document.getElementById("inputCode").style.borderColor = "var(--accent-primary)";
+                setTimeout(() => {
+                    document.getElementById("inputCode").style.borderColor = "";
+                }, 500);
+            } catch (e) {
+                alert("编码时发生错误: " + e.message);
+            }
+        }
+
+        /**
+         * 解码函数
+         */
+        function decode() {
+            let input = document.getElementById("inputCode").value;
+            if (!input.trim()) {
+                alert("内容一片空白了~齁~哦哦哦哦哦~!");
+                return;
+            }
+
+            if (input.length % 2 !== 0) {
+                alert("奇数个不行的~哦哦~");
+                return;
+            }
+
+            let bytes = [];
+            for (let i = 0; i < input.length; i += 2) {
+                let high = codebookMap[input[i]];
+                let low = codebookMap[input[i + 1]];
+                if (high === undefined || low === undefined) {
+                    alert("非法字符不可以~~");
+                    return;
+                }
+                let byte = (high << 4) | low;
+                bytes.push(byte);
+            }
+
+            try {
+                let decoder = new TextDecoder();
+                let decoded = decoder.decode(new Uint8Array(bytes));
+                document.getElementById("inputRaw").value = decoded;
+
+                // 轻微反馈
+                document.getElementById("inputRaw").style.borderColor = "var(--accent-primary)";
+                setTimeout(() => {
+                    document.getElementById("inputRaw").style.borderColor = "";
+                }, 500);
+            } catch (e) {
+                alert("无法正确解码为UTF-8文本");
+                document.getElementById("inputRaw").value = bytes.map(b => b.toString(16).padStart(2, '0')).join(' ');
+            }
+        }
+
+        /**
+         * 监听父窗口的主题变化
+         */
+        function listenToParentThemeChanges() {
+            // 检查是否在iframe中
+            if (window.parent !== window) {
+                // 监听存储变化（父窗口主题变化会更新localStorage）
+                window.addEventListener('storage', function (e) {
+                    if (e.key === 'preferred-theme') {
+                        applyThemeFromParent(e.newValue);
+                    }
+                });
+
+                // 监听父窗口的消息
+                window.addEventListener('message', function (e) {
+                    if (e.data && e.data.type === 'theme-change') {
+                        applyThemeFromParent(e.data.theme);
+                    }
+                });
+
+                // 初始应用父窗口主题
+                const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                applyThemeFromParent(parentTheme);
+            }
+        }
+
+        /**
+         * 应用父窗口的主题
+         * @param {string} theme - 主题名称
+         */
+        function applyThemeFromParent(theme) {
+            if (theme === 'default') {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+        }
+
+        /**
+         * 页面加载完成后初始化
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // 监听父窗口主题变化
+            listenToParentThemeChanges();
+
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                document.body.style.transition = 'opacity 0.3s ease';
+            }, 50);
+
+            // 为输入框添加回车快捷键
+            document.getElementById('inputRaw').addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    encode();
+                }
+            });
+
+            document.getElementById('inputCode').addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    decode();
+                }
+            });
+
+            // 添加按钮点击反馈
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function () {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                });
+            });
+        });
+
+        // 暴露函数给父窗口调用
+        window.applyTheme = function (theme) {
+            applyThemeFromParent(theme);
+        };
+    </script>
+    <script src="../../js/security.js"></script>
+</body>
+
+</html>

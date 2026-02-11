@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>垂钓指南</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/color.css">
+    <style>
+        
+
+        body {
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes cardAppear {
+            from {
+                transform: translateY(20px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0.4);
+                border-color: rgba(var(--accent-primary-rgb), 1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 4px rgba(var(--accent-primary-rgb), 0.2);
+                border-color: rgba(var(--accent-primary-rgb), 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0.4);
+                border-color: rgba(var(--accent-primary-rgb), 1);
+            }
+        }
+
+
+        /* 主容器 */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* 头部区域 */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-primary);
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        h1 {
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+            font-size: 2rem;
+            text-shadow: 0 0 10px var(--shadow-accent);
+        }
+
+       
+
+        /* 搜索和过滤控制区域 */
+        .search-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+            animation: slideInUp 0.6s ease-out 0.3s both;
+        }
+
+        /* 搜索框样式 */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-transparent);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: var(--accent-primary-transparent);
+            color: var(--accent-primary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            background-color: var(--accent-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+
+        .search-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* 高级搜索选项 */
+        .advanced-search {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--tertiary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .search-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .search-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .search-option label {
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        /* 过滤控制区域 */
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 100px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            background-color: var(--accent-primary-transparent);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+
+        .category-btn.active {
+            background-color: var(--accent-primary-transparent);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .category-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .current-category-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-primary);
+            text-align: right;
+            margin-left: auto;
+            text-shadow: 0 0 5px var(--shadow-accent);
+        }
+
+        /* 搜索结果统计 */
+        .search-results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--tertiary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .clear-search {
+            background: none;
+            border: none;
+            color: var(--accent-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .clear-search:hover {
+            color: var(--accent-primary);
+        }
+
+        .color-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid var(--border-primary);
+            box-shadow: 0 2px 4px var(--shadow-primary);
+        }
+
+        .color-common {
+            background-color: #e0e0e0;
+        }
+
+        .color-uncommon {
+            background-color: #4CAF50;
+        }
+
+        .color-rare {
+            background-color: #E15AFA;
+        }
+
+        /* 表格容器 */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            background-color: var(--secondary-bg);
+            animation: cardAppear 0.5s ease-out 0.5s both;
+        }
+
+        /* 表格样式 */
+        .fishing-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        /* 表格头部 */
+        .table-header {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-bottom: 2px solid var(--accent-primary-transparent);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .table-header th {
+            padding: 15px 10px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            text-align: left;
+            border-right: 1px solid var(--border-primary);
+            position: relative;
+            text-shadow: 0 0 5px var(--shadow-accent);
+        }
+
+        .table-header th:last-child {
+            border-right: none;
+        }
+
+        .table-header th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            right: 10px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            opacity: 0.6;
+        }
+
+        /* 表格内容 */
+        .fishing-table tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .fishing-table tr:hover {
+            background-color: var(--accent-primary-transparent);
+            transform: scale(1.01);
+        }
+
+        .fishing-table td {
+            padding: 12px 10px;
+            border-right: 1px solid var(--border-primary);
+            position: relative;
+        }
+
+        .fishing-table td:last-child {
+            border-right: none;
+        }
+
+        /* 高亮搜索关键词 */
+        .highlight {
+            background-color: rgba(255, 235, 59, 0.3);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #ff9800;
+        }
+
+        /* 稀有度样式 */
+        .rarity-common {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .rarity-uncommon {
+            color: #4CAF50;
+            font-weight: 600;
+            text-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        .rarity-rare {
+            color: #E15AFA;
+            font-weight: 700;
+            text-shadow: 0 0 5px rgba(225, 90, 250, 0.4);
+        }
+
+        /* 特殊条件样式 */
+        .special-condition {
+            background: var(--accent-primary-transparent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-primary);
+            margin: 2px 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .rod-requirement {
+            color: #ff6b6b;
+            font-style: italic;
+            font-size: 0.9em;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 2px 0;
+            line-height: 1.4;
+        }
+
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid var(--accent-primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 无搜索结果提示 */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            background-color: var(--tertiary-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .no-results h3 {
+            color: var(--accent-secondary);
+            margin-bottom: 10px;
+        }
+
+        .no-results p {
+            margin-bottom: 15px;
+        }
+
+        .search-tips {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-tips ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .search-tips li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .search-tips li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        /* 鱼类类别分隔标题 */
+        .category-section {
+            margin-bottom: 20px;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            padding: 15px 20px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid var(--accent-primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--shadow-accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, var(--accent-primary-transparent), transparent);
+            opacity: 0.3;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* 水域类别颜色 */
+        .section-water .section-header {
+            border-color: rgba(135, 206, 235, 0.6);
+            background: linear-gradient(135deg, var(--secondary-bg), rgba(135, 206, 235, 0.1));
+        }
+
+        /* 熔岩类别颜色 */
+        .section-lava .section-header {
+            border-color: rgba(255, 0, 0, 0.6);
+            background: linear-gradient(135deg, var(--secondary-bg), rgba(255, 0, 0, 0.1));
+        }
+
+        /* 巧克力类别颜色 */
+        .section-chocolate .section-header {
+            border-color: rgba(165, 42, 42, 0.6);
+            background: linear-gradient(135deg, var(--secondary-bg), rgba(165, 42, 42, 0.1));
+        }
+
+        /* 等离子类别颜色 */
+        .section-plasma .section-header {
+            border-color: rgba(0, 0, 255, 0.6);
+            background: linear-gradient(135deg, var(--secondary-bg), rgba(0, 0, 255, 0.1));
+        }
+
+        /* ===== 响应式设计 ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .search-controls {
+                gap: 15px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .advanced-search {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .current-category-label {
+                text-align: center;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .category-buttons {
+                justify-content: center;
+            }
+
+            .category-btn {
+                flex: 1;
+                min-width: 0;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .fishing-table td {
+                padding: 8px 6px;
+                font-size: 0.9rem;
+            }
+
+            .section-header {
+                padding: 12px 15px;
+                font-size: 1.1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+           
+        }
+
+        @media (max-width: 480px) {
+            .category-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .category-btn {
+                width: 100%;
+            }
+
+            .fishing-table td {
+                padding: 6px 4px;
+                font-size: 0.85rem;
+            }
+
+            .special-condition,
+            .rod-requirement {
+                font-size: 0.8em;
+            }
+
+            
+
+            
+
+            .color-box {
+                width: 20px;
+                height: 20px;
+            }
+
+            .search-results-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+
+        /* 横屏优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .fishing-table td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container custom-scrollbar">
+        <header>
+            <h1>钓鱼地点</h1>
+        </header>
+
+        <!-- 搜索和过滤控制区域 -->
+        <div class="search-controls">
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <input type="text" class="search-box" id="search-input" placeholder="输入鱼类名称、条件或钓竿类型进行搜索..." autocomplete="off">
+                <button class="search-btn" id="search-btn">搜索</button>
+            </div>
+
+            <!-- 高级搜索选项 -->
+            <div class="advanced-search">
+                <div class="search-option">
+                    <input type="checkbox" id="search-name" checked>
+                    <label for="search-name">鱼类名称</label>
+                </div>
+                <div class="search-option">
+                    <input type="checkbox" id="search-condition" checked>
+                    <label for="search-condition">出现条件</label>
+                </div>
+                <div class="search-option">
+                    <input type="checkbox" id="search-rod" checked>
+                    <label for="search-rod">钓竿类型</label>
+                </div>
+                <div class="search-option">
+                    <input type="checkbox" id="search-location">
+                    <label for="search-location">鱼池类型</label>
+                </div>
+            </div>
+
+            <!-- 过滤控制区域 -->
+            <div class="filter-controls">
+                <div class="category-buttons" id="category-buttons">
+                    <button class="category-btn active" data-category="水域鱼类">水域鱼类</button>
+                    <button class="category-btn" data-category="熔岩鱼类">熔岩鱼类</button>
+                    <button class="category-btn" data-category="巧克力鱼类">巧克力鱼类</button>
+                    <button class="category-btn" data-category="等离子鱼类">等离子鱼类</button>
+                    <button class="category-btn" data-category="all">全部鱼类</button>
+                </div>
+                <div class="current-category-label" id="current-category-label">
+                    水域鱼类
+                </div>
+            </div>
+
+            <!-- 搜索结果统计 -->
+            <div class="search-results-info" id="search-results-info" style="display: none;">
+                <div>
+                    找到 <span class="results-count" id="results-count">0</span> 条结果
+                    <span id="search-keyword-info" style="margin-left: 10px;"></span>
+                </div>
+                <button class="clear-search" id="clear-search">清除搜索</button>
+            </div>
+        </div>
+
+        <!-- 表格内容 -->
+        <div id="fishing-content">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script src="../../json/钓鱼地点数据.js"></script>
+    <script>
+        // 监听父窗口的主题变化
+        function listenToParentThemeChanges() {
+            if (window.parent !== window) {
+                window.addEventListener('storage', function (e) {
+                    if (e.key === 'preferred-theme') {
+                        applyThemeFromParent(e.newValue);
+                    }
+                });
+
+                const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                applyThemeFromParent(parentTheme);
+            }
+        }
+
+        function applyThemeFromParent(theme) {
+            if (theme === 'default') {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+
+            document.body.style.transition = 'all 0.5s ease';
+            setTimeout(() => {
+                document.body.style.transition = '';
+            }, 500);
+        }
+
+        // 鱼类数据
+        let currentCategory = '水域鱼类';
+        let currentSearchQuery = '';
+        let searchOptions = {
+            name: true,
+            condition: true,
+            rod: true,
+            location: false
+        };
+
+        // DOM元素
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const searchResultsInfo = document.getElementById('search-results-info');
+        const resultsCount = document.getElementById('results-count');
+        const searchKeywordInfo = document.getElementById('search-keyword-info');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const currentCategoryLabel = document.getElementById('current-category-label');
+        const fishingContent = document.getElementById('fishing-content');
+
+        // 搜索选项
+        const searchNameCheckbox = document.getElementById('search-name');
+        const searchConditionCheckbox = document.getElementById('search-condition');
+        const searchRodCheckbox = document.getElementById('search-rod');
+        const searchLocationCheckbox = document.getElementById('search-location');
+
+        // loadFishingData函数
+        async function loadFishingData() {
+            try {
+                // 检查全局变量fishingData是否已加载
+                if (typeof fishingData !== 'undefined' && fishingData) {
+                    console.log('JSON数据已加载:', fishingData);
+                    generateFishingTable();
+                } else {
+                    console.error('fishingData未定义或为空');
+                    fishingContent.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">数据未加载，请检查JS文件。</div>';
+                }
+            } catch (error) {
+                console.error('加载钓鱼数据失败:', error);
+                fishingContent.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">加载数据失败，请刷新页面重试。</div>';
+            }
+        }
+
+        // 搜索功能
+        function performSearch() {
+            const query = searchInput.value.trim().toLowerCase();
+            currentSearchQuery = query;
+
+            if (query) {
+                searchResultsInfo.style.display = 'flex';
+                searchKeywordInfo.textContent = `关键词: "${query}"`;
+            } else {
+                searchResultsInfo.style.display = 'none';
+                currentSearchQuery = '';
+            }
+
+            generateFishingTable();
+        }
+
+        // 清除搜索
+        function clearSearch() {
+            searchInput.value = '';
+            currentSearchQuery = '';
+            searchResultsInfo.style.display = 'none';
+            generateFishingTable();
+            searchInput.focus();
+        }
+
+        // 更新搜索选项
+        function updateSearchOptions() {
+            searchOptions = {
+                name: searchNameCheckbox.checked,
+                condition: searchConditionCheckbox.checked,
+                rod: searchRodCheckbox.checked,
+                location: searchLocationCheckbox.checked
+            };
+
+            if (currentSearchQuery) {
+                performSearch();
+            }
+        }
+
+        // 高亮搜索关键词
+        function highlightText(text, query) {
+            if (!query || query.trim() === '') return text;
+
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // 检查是否匹配搜索
+        function matchesSearch(fish, query) {
+            if (!query || query.trim() === '') return true;
+
+            const searchFields = [];
+            if (searchOptions.name) searchFields.push(fish.名称);
+            if (searchOptions.condition) searchFields.push(fish["出现条件/地点"]);
+            if (searchOptions.rod) searchFields.push(fish["所需钓竿类型"]);
+            if (searchOptions.location) searchFields.push(fish["鱼池类型"]);
+
+            return searchFields.some(field =>
+                field && field.toLowerCase().includes(query)
+            );
+        }
+
+        // 生成表格
+        function generateFishingTable() {
+            if (!fishingData) return;
+
+            let allFishes = [];
+            let totalResults = 0;
+
+            // 根据当前类别获取数据
+            if (currentCategory === 'all') {
+                // 所有类别
+                fishingData['鱼类数据'].forEach(category => {
+                    allFishes = allFishes.concat(category.鱼类.map(fish => ({
+                        ...fish,
+                        category: category.类别
+                    })));
+                });
+            } else {
+                // 特定类别
+                const categoryData = fishingData['鱼类数据'].find(cat => cat.类别 === currentCategory);
+                if (!categoryData) {
+                    fishingContent.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">未找到该类别的数据。</div>';
+                    return;
+                }
+                allFishes = categoryData.鱼类.map(fish => ({
+                    ...fish,
+                    category: currentCategory
+                }));
+            }
+
+            // 过滤搜索结果
+            const filteredFishes = allFishes.filter(fish =>
+                matchesSearch(fish, currentSearchQuery)
+            );
+
+            totalResults = filteredFishes.length;
+
+            // 更新结果计数
+            if (currentSearchQuery) {
+                resultsCount.textContent = totalResults;
+            }
+
+            // 如果没有结果
+            if (filteredFishes.length === 0) {
+                let message = '';
+                if (currentSearchQuery) {
+                    message = `
+                        <div class="no-results">
+                            <h3>未找到匹配的鱼类</h3>
+                            <p>没有找到包含 "<strong>${currentSearchQuery}</strong>" 的鱼类。</p>
+                            <div class="search-tips">
+                                <p>搜索建议：</p>
+                                <ul>
+                                    <li>尝试使用更简单的关键词</li>
+                                    <li>检查是否有拼写错误</li>
+                                    <li>尝试搜索部分名称（如"鱼"、"龟"）</li>
+                                    <li>调整搜索选项（左侧复选框）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    message = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">该类别暂无数据。</div>';
+                }
+                fishingContent.innerHTML = message;
+                return;
+            }
+
+            // 按类别分组（仅在显示全部时）
+            let html = '';
+            if (currentCategory === 'all') {
+                const groupedFishes = {};
+                filteredFishes.forEach(fish => {
+                    if (!groupedFishes[fish.category]) {
+                        groupedFishes[fish.category] = [];
+                    }
+                    groupedFishes[fish.category].push(fish);
+                });
+
+                Object.keys(groupedFishes).forEach(category => {
+                    const fishes = groupedFishes[category];
+                    const sectionClass = getSectionClass(category);
+
+                    html += `
+                        <div class="category-section ${sectionClass}">
+                            <div class="section-header">${category} <span style="font-size: 0.8em; opacity: 0.8;">(${fishes.length} 种)</span></div>
+                            <div class="table-container">
+                                <table class="fishing-table">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th style="width: 20%">鱼类名称</th>
+                                            <th style="width: 10%">稀有度</th>
+                                            <th style="width: 35%">出现条件/地点</th>
+                                            <th style="width: 20%">所需钓竿类型</th>
+                                            <th style="width: 15%">鱼池类型</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+
+                    fishes.forEach(fish => {
+                        const rarityClass = getRarityClass(fish.稀有度);
+                        const fishName = currentSearchQuery ? highlightText(fish.名称, currentSearchQuery) : fish.名称;
+                        const condition = currentSearchQuery ? highlightText(fish["出现条件/地点"], currentSearchQuery) : formatCondition(fish["出现条件/地点"]);
+                        const rodReq = currentSearchQuery ? highlightText(fish["所需钓竿类型"], currentSearchQuery) : formatRodRequirement(fish["所需钓竿类型"]);
+
+                        html += `
+                            <tr>
+                                <td><strong>${fishName}</strong></td>
+                                <td class="${rarityClass}">${fish.稀有度}</td>
+                                <td>${condition}</td>
+                                <td>${rodReq}</td>
+                                <td>${fish["鱼池类型"]}</td>
+                            </tr>`;
+                    });
+
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                // 单个类别
+                const sectionClass = getSectionClass(currentCategory);
+
+                html = `
+                    <div class="category-section ${sectionClass}">
+                        <div class="section-header">${currentCategory} <span style="font-size: 0.8em; opacity: 0.8;">(${filteredFishes.length} 种)</span></div>
+                        <div class="table-container">
+                            <table class="fishing-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th style="width: 20%">鱼类名称</th>
+                                        <th style="width: 10%">稀有度</th>
+                                        <th style="width: 35%">出现条件/地点</th>
+                                        <th style="width: 20%">所需钓竿类型</th>
+                                        <th style="width: 15%">鱼池类型</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                filteredFishes.forEach(fish => {
+                    const rarityClass = getRarityClass(fish.稀有度);
+                    const fishName = currentSearchQuery ? highlightText(fish.名称, currentSearchQuery) : fish.名称;
+                    const condition = currentSearchQuery ? highlightText(fish["出现条件/地点"], currentSearchQuery) : formatCondition(fish["出现条件/地点"]);
+                    const rodReq = currentSearchQuery ? highlightText(fish["所需钓竿类型"], currentSearchQuery) : formatRodRequirement(fish["所需钓竿类型"]);
+
+                    html += `
+                        <tr>
+                            <td><strong>${fishName}</strong></td>
+                            <td class="${rarityClass}">${fish.稀有度}</td>
+                            <td>${condition}</td>
+                            <td>${rodReq}</td>
+                            <td>${fish["鱼池类型"]}</td>
+                        </tr>`;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+            }
+
+            fishingContent.innerHTML = html;
+
+            // 为表格行添加悬停效果
+            addTableHoverEffects();
+        }
+
+        // 根据类别获取CSS类名
+        function getSectionClass(category) {
+            const classMap = {
+                '水域鱼类': 'section-water',
+                '熔岩鱼类': 'section-lava',
+                '巧克力鱼类': 'section-chocolate',
+                '等离子鱼类': 'section-plasma',
+                '深渊鱼类': 'section-abyss',
+                '附魔鱼类': 'section-enchanted',
+                '乌龟鱼类': 'section-turtle'
+            };
+            return classMap[category] || '';
+        }
+
+        // 根据稀有度获取CSS类名
+        function getRarityClass(rarity) {
+            const classMap = {
+                '普通': 'rarity-common',
+                '罕见': 'rarity-uncommon',
+                '稀有': 'rarity-rare'
+            };
+            return classMap[rarity] || '';
+        }
+
+        // 格式化条件文本
+        function formatCondition(condition) {
+            if (!condition || condition === '无') {
+                return '<span style="color: var(--text-secondary);">无特殊条件</span>';
+            }
+            return `<div class="special-condition">${condition}</div>`;
+        }
+
+        // 格式化钓竿要求
+        function formatRodRequirement(requirement) {
+            if (!requirement || requirement === '无') {
+                return '<span style="color: var(--text-secondary);">无要求</span>';
+            }
+            return `<div class="rod-requirement">${requirement}</div>`;
+        }
+
+        // 添加表格悬停效果
+        function addTableHoverEffects() {
+            const tableRows = document.querySelectorAll('.fishing-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = 'var(--accent-primary-transparent)';
+                    row.style.transform = 'scale(1.01)';
+                });
+
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                    row.style.transform = '';
+                });
+            });
+        }
+
+        // 切换类别
+        function switchCategory(category) {
+            currentCategory = category;
+
+            // 更新按钮状态
+            categoryButtons.forEach(btn => {
+                if (btn.getAttribute('data-category') === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // 更新标签
+            currentCategoryLabel.textContent = category === 'all' ? '全部鱼类' : category;
+
+            // 生成新的表格
+            generateFishingTable();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 监听父窗口主题变化
+            listenToParentThemeChanges();
+
+            // 加载数据
+            loadFishingData();
+
+            // 搜索按钮事件
+            searchBtn.addEventListener('click', performSearch);
+
+            // 回车键搜索
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            // 清除搜索按钮事件
+            clearSearchBtn.addEventListener('click', clearSearch);
+
+            // 搜索选项更新事件
+            searchNameCheckbox.addEventListener('change', updateSearchOptions);
+            searchConditionCheckbox.addEventListener('change', updateSearchOptions);
+            searchRodCheckbox.addEventListener('change', updateSearchOptions);
+            searchLocationCheckbox.addEventListener('change', updateSearchOptions);
+
+            // 添加类别按钮事件监听器
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const category = this.getAttribute('data-category');
+                    switchCategory(category);
+
+                    // 添加点击动画
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'translateY(10px)';
+            document.body.style.transition = 'all 0.5s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                document.body.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+    <script src="../../js/security.js"></script>
+</body>
+
+</html>

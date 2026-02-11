@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>园艺计算器</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/color.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.5s ease;
+        }
+
+        textarea {
+            overflow: hidden;
+            /* 隐藏滚动条且不可滚动 */
+            min-height: 40px;
+            max-height: 40px;
+        }
+
+        /* 主布局容器 */
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 180px;
+            background-color: var(--secondary-bg);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 2px 0 10px var(--shadow-primary);
+            z-index: 10;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 2px solid var(--border-primary);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 1px;
+            height: 1px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--tertiary-bg);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            overflow: auto;
+        }
+
+        .left-panel {
+            flex: 4;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 区域标题 */
+        .area-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--accent-primary);
+            text-align: left;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-light);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .area-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-secondary);
+            transition: width 0.3s ease;
+        }
+
+        .area-title:hover::after {
+            width: 100%;
+        }
+
+        /* 选项按钮容器 */
+        .option-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* 选项按钮样式 */
+        .option-button {
+            padding: 10px 15px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            text-align: center;
+            border: 2px solid var(--border-primary);
+        }
+
+        .option-button:hover {
+            background-color: var(--accent-primary-transparent);
+            color: var(--text-light);
+        }
+
+        .option-button.active {
+            background-color: var(--accent-primary);
+            color: var(--text-light);
+            box-shadow: 0 4px 12px var(--shadow-accent);
+        }
+
+        /* 功能按钮容器 */
+        .function-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        /* 功能按钮样式 */
+        .function-button {
+            padding: 10px 15px;
+            background-color: var(--accent-primary);
+            color: var(--text-light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            text-align: center;
+            border: 2px solid var(--border-primary);
+        }
+
+        .function-button:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        /* 种子行 */
+        .seed-row {
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            gap: 20px;
+            border: 2px solid var(--border-primary);
+            position: relative;
+        }
+
+        /* 种子项 */
+        .seed-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            position: relative;
+        }
+
+        /* 种子图片 */
+        .seed-image {
+            width: 120px;
+            height: 120px;
+            background-color: var(--tertiary-bg);
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            transition: all 0.2s ease;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .seed-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .seed-image:hover {
+            border-color: var(--accent-secondary);
+        }
+
+        .seed-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 种子数量标记 */
+        .seed-quantity-marker {
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            color: var(--accent-primary);
+            font-weight: bold;
+            font-size: 12px;
+            background-color: rgba(var(--secondary-bg-rgb), 0.9);
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-primary);
+            z-index: 1;
+            transition: all 0.2s ease;
+        }
+
+        /* 输入容器 */
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: 80px;
+            justify-content: center;
+        }
+
+        /* 种子数量输入框 */
+        .seed-quantity-input {
+            width: 60px;
+            height: 20px;
+            text-align: center;
+            border: 2px solid var(--border-primary);
+            border-radius: 4px;
+            padding: 2px 5px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-primary);
+            -moz-appearance: textfield;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        .seed-quantity-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .seed-quantity-input::-webkit-outer-spin-button,
+        .seed-quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 收获次数输入容器 */
+        .harvest-input-container,
+        .multiplier-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .harvest-input-label,
+        .multiplier-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        /* 输入框样式 */
+        input[type="number"] {
+            width: 60px;
+            height: 20px;
+            text-align: center;
+            border: 2px solid var(--border-primary);
+            border-radius: 4px;
+            padding: 2px 5px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-primary);
+            -moz-appearance: textfield;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 颜色样式 */
+        .zero {
+            color: #ffd700;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .positive {
+            color: #51cf66;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .negative {
+            color: #ff6b6b;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        /* 数值变化动画 */
+        @keyframes valueChange {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .summary-item span:last-child.changing {
+            animation: valueChange 0.2s ease;
+        }
+
+        /* 材料需求区域 */
+        .material-requirements-area {
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            border: 2px solid var(--border-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .material-requirements-row,
+        #material-requirements1,
+        #material-requirements2,
+        #material-requirements3,
+        #material-requirements4 {
+            margin-bottom: 10px;
+        }
+
+        .material-requirements-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 摘要项 */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+            padding: 2px 0;
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .summary-item:hover {
+            background-color: var(--tertiary-bg);
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 2px 0;
+        }
+
+        /* 月光调和器特殊样式 */
+        .moonlight {
+            color: #bbf23d;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .moonlight:hover {
+            color: #d4f871;
+        }
+
+        /* 隐藏状态 */
+        .seed-row.hidden {
+            display: none;
+        }
+
+        #material-requirements1.hidden,
+        #material-requirements2.hidden,
+        #material-requirements3.hidden,
+        #material-requirements4.hidden {
+            display: none;
+        }
+
+        /* 单选按钮激活状态 */
+        .radio-button.active {
+            background-color: var(--accent-primary);
+            color: var(--text-light);
+            box-shadow: 0 4px 12px var(--shadow-accent);
+        }
+
+        /* 快速输入容器 */
+        .quick-input-container {
+            margin-bottom: 10px;
+        }
+
+        .quick-input-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        #quick-input {
+            width: 100%;
+            height: 60px;
+            text-align: left;
+            border: 2px solid var(--border-primary);
+            border-radius: 4px;
+            padding: 8px 10px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-primary);
+            font-size: 12px;
+            resize: vertical;
+            transition: all 0.2s ease;
+        }
+
+        #quick-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        /* 种子图片上的按钮容器 */
+        .seed-image-buttons {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 2;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .seed-image:hover .seed-image-buttons {
+            opacity: 1;
+        }
+
+        .seed-clear-button {
+            width: 18px;
+            height: 18px;
+            background-color: #ff6b6b;
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .seed-clear-button:hover {
+            background-color: #ff8787;
+        }
+
+        /* 种子操作按钮 */
+        .seed-operation-buttons {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 2px;
+            z-index: 2;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .seed-image:hover .seed-operation-buttons {
+            opacity: 1;
+        }
+
+        .seed-operation-button {
+            width: 20px;
+            height: 20px;
+            background-color: #4c6ef5;
+            color: var(--text-light);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .seed-operation-button:hover {
+            background-color: #3b5bdb;
+        }
+
+        /* 行重置按钮 */
+        .row-reset-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: #ff922b;
+            color: var(--text-light);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 2;
+            opacity: 0;
+        }
+
+        .seed-row:hover .row-reset-button {
+            opacity: 1;
+        }
+
+        .row-reset-button:hover {
+            background-color: #ffa94d;
+        }
+
+        /* 数值变化提示 */
+        .value-change-indicator {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            color: var(--accent-primary);
+            font-weight: bold;
+            font-size: 14px;
+            animation: floatUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1000px) {
+            .content-area {
+                flex-direction: column;
+            }
+
+            .seed-row {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .right-panel {
+                order: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: column;
+                padding: 15px;
+                order: -1;
+                border-right: none;
+                border-bottom: 2px solid var(--border-primary);
+            }
+
+            .option-buttons-container,
+            .function-buttons-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+
+            .option-button,
+            .function-button {
+                flex: 1;
+                min-width: 120px;
+                max-width: 200px;
+            }
+
+            .content-area {
+                padding: 10px;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+            }
+
+            .seed-item {
+                width: 100px;
+            }
+
+            .seed-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .row-reset-button {
+                bottom: 5px;
+                left: 5px;
+            }
+
+            .harvest-input-container,
+            .multiplier-container {
+                min-width: 120px;
+                max-width: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .option-button,
+            .function-button {
+                min-width: 100px;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .option-buttons-container,
+            .function-buttons-container {
+                gap: 6px;
+            }
+
+            .harvest-input-container,
+            .multiplier-container {
+                min-width: 100px;
+                max-width: 120px;
+            }
+
+            .harvest-input-label,
+            .multiplier-label {
+                font-size: 11px;
+            }
+
+            textarea {
+                min-height: 30px;
+                max-height: 30px;
+            }
+
+            .seed-item {
+                width: 90px;
+            }
+
+            .seed-image {
+                width: 90px;
+                height: 90px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="option-buttons-container">
+                <div class="option-button active" id="golden-watering-can" title="激活此按钮时，最大收获为5次，否则为2次。">使用黄金水壶</div>
+                <div class="harvest-input-container" title="只会对有【产出的计算】有影响。">
+                    <span class="harvest-input-label">收获次数:</span>
+                    <input type="number" id="harvest-count" value="5" min="1" max="5">
+                </div>
+                <!-- 新增水壶浇灌数量输入框 -->
+                <div class="harvest-input-container" title="改变计算黄金水壶时被除数的大小。">
+                    <span class="harvest-input-label">水壶浇灌:</span>
+                    <input type="number" id="watering-amount" value="9" min="1" max="100">
+                </div>
+                <!-- 新增倍数输入框 -->
+                <div class="multiplier-container" title="用于种子图片上的乘除运算的倍数。">
+                    <span class="multiplier-label">运算倍数:</span>
+                    <input type="number" id="multiplier" value="1" min="1">
+                </div>
+                <div class="option-button active" id="simplify-results" title="将结果数量超过【10000】的数值简化为【w】。">简化结果</div>
+            </div>
+
+            <div class="option-buttons-container" id="calculation-mode">
+                <div class="option-button radio-button active" data-mode="consumption" title="计算所有种子需要【消耗的材料】。">计算消耗
+                </div>
+                <div class="option-button radio-button" data-mode="production" title="计算所有种子会【产出的材料】。">计算产出</div>
+                <div class="option-button radio-button" data-mode="self-cycle" title="计算所有种子【产出的材料】-【消耗的材料】。">计算自循环
+                </div>
+            </div>
+
+            <!-- 新增快速输入框 -->
+            <div class="quick-input-container">
+                <span class="quick-input-label">快速输入↓</span>
+                <textarea id="quick-input" placeholder="例如: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"></textarea>
+            </div>
+
+            <div class="function-buttons-container" id="function-buttons">
+                <div class="function-button" data-action="reset" title="重置所有种子数量">重置数量</div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="left-panel">
+                <h3 class="area-title" title="设置你要计算的种子数量,可在图片上【左键增加】或【右键减少】，【长按1秒】可进行快速【加减操作】">
+                    设置数量<span style="color: var(--text-secondary);">?</span>
+                </h3>
+
+                <!-- 新增的一阶种子行 -->
+                <div class="seed-row" id="seed-row1">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="1" title="重置本行">R</button>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="shaping-ore-seed">
+                            <img src="../../图片/物品/塑形矿.png" alt="塑形矿" title="塑形矿">
+                            <div class="seed-quantity-marker" title="单次收获数量">400</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="shaping-ore-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="shaping-ore-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="shaping-ore-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="shaping-ore-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="blue-crystal-seed">
+                            <img src="../../图片/物品/蓝晶.png" alt="蓝晶" title="蓝晶">
+                            <div class="seed-quantity-marker" title="单次收获数量">350</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="blue-crystal-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="blue-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="blue-crystal-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="blue-crystal-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="limit-crystal-seed">
+                            <img src="../../图片/物品/限晶.png" alt="限晶" title="限晶">
+                            <div class="seed-quantity-marker" title="单次收获数量">425</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="limit-crystal-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="limit-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="limit-crystal-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="limit-crystal-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="red-ore-seed">
+                            <img src="../../图片/物品/红矿.png" alt="" title="红矿">
+                            <div class="seed-quantity-marker" title="单次收获数量">70</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="red-ore-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="red-ore-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="red-ore-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="red-ore-seed" class="seed-quantity-input">
+                    </div>
+                </div>
+
+                <!-- 原有的二阶种子行 -->
+                <div class="seed-row" id="seed-row2">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="2" title="重置本行">R</button>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="crystal-seed">
+                            <img src="../../图片/物品/水晶.png" alt="水晶" title="水晶">
+                            <div class="seed-quantity-marker" title="单次收获数量">100</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="crystal-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="crystal-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="crystal-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="eye-seed">
+                            <img src="../../图片/物品/眼睛.png" alt="眼睛" title="眼睛">
+                            <div class="seed-quantity-marker" title="单次收获数量">750</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="eye-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="eye-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="eye-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="eye-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="sunrise-seed">
+                            <img src="../../图片/物品/旭日.png" alt="旭日" title="旭日">
+                            <div class="seed-quantity-marker" title="单次收获数量">750</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="sunrise-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="sunrise-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="sunrise-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="sunrise-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="glimmerstone-seed">
+                            <img src="../../图片/物品/微光石.png" alt="微光石" title="微光石">
+                            <div class="seed-quantity-marker" title="单次收获数量">500</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="glimmerstone-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="glimmerstone-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="glimmerstone-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="glimmerstone-seed" class="seed-quantity-input">
+                    </div>
+                </div>
+
+                <div class="seed-row" id="seed-row3">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="3" title="重置本行">R</button>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="tentacle-seed">
+                            <img src="../../图片/物品/触手.png" alt="触手" title="触手">
+                            <div class="seed-quantity-marker" title="单次收获数量">15</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="tentacle-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="tentacle-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="tentacle-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="tentacle-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="golden-soul-seed">
+                            <img src="../../图片/物品/金魂.png" alt="金魂" title="金魂">
+                            <div class="seed-quantity-marker" title="单次收获数量">5</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="golden-soul-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="golden-soul-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="golden-soul-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="golden-soul-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="bulb-seed">
+                            <img src="../../图片/物品/阳光球根.png" alt="阳光球根" title="阳光球根">
+                            <div class="seed-quantity-marker" title="单次收获数量">400</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="bulb-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="bulb-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="bulb-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="bulb-seed" class="seed-quantity-input">
+                    </div>
+                </div>
+
+                <div class="seed-row" id="seed-row4">
+                    <!-- 行重置按钮 -->
+                    <button class="row-reset-button" data-row="4" title="重置本行">R</button>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="construct-crystal-seed">
+                            <img src="../../图片/物品/建晶.png" alt="建晶" title="建晶">
+                            <div class="seed-quantity-marker" title="单次收获数量">115</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="construct-crystal-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="construct-crystal-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="construct-crystal-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="construct-crystal-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="ripener-seed">
+                            <img src="../../图片/物品/催熟剂.png" alt="催熟剂" title="催熟剂">
+                            <div class="seed-quantity-marker" title="单次收获数量">15</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="ripener-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="ripener-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="ripener-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="ripener-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="primordial-flame-seed">
+                            <img src="../../图片/物品/原初之炎.png" alt="原初之炎" title="原初之炎">
+                            <div class="seed-quantity-marker" title="单次收获数量">150</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="primordial-flame-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="primordial-flame-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="primordial-flame-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="primordial-flame-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="wallflower-seed">
+                            <img src="../../图片/物品/壁花.png" alt="壁花" title="壁花">
+                            <div class="seed-quantity-marker" title="单次收获数量">55</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="wallflower-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="wallflower-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="wallflower-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="wallflower-seed" class="seed-quantity-input">
+                    </div>
+
+                    <div class="seed-item">
+                        <div class="seed-image" data-input-id="flash-powder-seed">
+                            <img src="../../图片/物品/闪光粉.png" alt="闪光粉" title="闪光粉">
+                            <div class="seed-quantity-marker" title="单次收获数量">70</div>
+                            <div class="seed-image-buttons">
+                                <button class="seed-clear-button" data-input-id="flash-powder-seed">×</button>
+                            </div>
+                            <div class="seed-operation-buttons">
+                                <button class="seed-operation-button" data-operation="multiply"
+                                    data-input-id="flash-powder-seed">×</button>
+                                <button class="seed-operation-button" data-operation="divide"
+                                    data-input-id="flash-powder-seed">÷</button>
+                            </div>
+                        </div>
+                        <input type="number" value="0" id="flash-powder-seed" class="seed-quantity-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <h3 class="area-title" title="需求为负数(红色)，产出为正数(绿色)">材料需求<span style="color: var(--text-secondary);">?</span></h3>
+                <div class="material-requirements-area">
+                    <div class="material-requirements-row">
+                        <div class="summary-item">
+                            <span>黄金水壶</span>
+                            <span id="concentrated-goldenwatering-requirement" class="zero">0</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>浓缩堆肥</span>
+                            <span id="concentrated-compost-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="moonlight" id="moonlight-harmonizer-requirement-label"
+                                title="点击查看消耗材料量">月光调和器</span>
+                            <span id="moonlight-harmonizer-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>月光球根</span>
+                            <span id="moonlight-bulb-requirement" class="zero">0</span>
+                        </div>
+                    </div>
+
+                    <!-- 新增一阶材料需求 -->
+                    <div id="material-requirements1">
+                        <div class="summary-item">
+                            <span>塑形矿</span>
+                            <span id="shaping-ore-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>蓝晶</span>
+                            <span id="blue-crystal-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>限晶</span>
+                            <span id="limit-crystal-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>红矿</span>
+                            <span id="red-ore-requirement" class="zero">0</span>
+                        </div>
+                    </div>
+
+                    <div id="material-requirements2">
+                        <div class="summary-item">
+                            <span>水晶</span>
+                            <span id="crystal-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>眼睛</span>
+                            <span id="eye-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>旭日</span>
+                            <span id="sunrise-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>微光石</span>
+                            <span id="glimmerstone-requirement" class="zero">0</span>
+                        </div>
+                    </div>
+
+                    <div id="material-requirements3">
+                        <div class="summary-item">
+                            <span>触手</span>
+                            <span id="tentacle-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>金魂</span>
+                            <span id="golden-soul-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>球根</span>
+                            <span id="bulb-requirement" class="zero">0</span>
+                        </div>
+                    </div>
+
+                    <div id="material-requirements4">
+                        <div class="summary-item">
+                            <span>建晶</span><span id="construct-crystal-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>催熟剂</span><span id="ripener-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>原初之炎</span><span id="primordial-flame-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>壁花</span><span id="wallflower-requirement" class="zero">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>闪光粉</span><span id="flash-powder-requirement" class="zero">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 园艺计算器核心逻辑
+        document.addEventListener('DOMContentLoaded', function () {
+            // 应用状态
+            const appState = {
+                goldenWateringCan: true,
+                simplifyResults: true,
+                calculationMode: 'consumption', // consumption, production, self-cycle
+                seedQuantities: {},
+                harvestCount: 5,
+                wateringAmount: 9,
+                multiplier: 1  // 新增：运算倍数
+            };
+
+            // 种子配置 - 新增一阶种子
+            const seedConfigs = {
+                // 一阶种子
+                'shaping-ore-seed': {
+                    name: '塑形矿',
+                    output: 400,
+                    consumption: {
+                        'concentrated-compost': 10,
+                        'moonlight-bulb': 1,
+                        'blue-crystal': 835,
+                        'limit-crystal': 835,
+                        'moonlight-harmonizer': 0
+                    },
+                    useGoldenWateringCan: false // 不参与计算黄金水壶
+                },
+                'blue-crystal-seed': {
+                    name: '蓝晶',
+                    output: 350,
+                    consumption: {
+                        'concentrated-compost': 10,
+                        'moonlight-bulb': 1,
+                        'shaping-ore': 900,
+                        'limit-crystal': 900,
+                        'moonlight-harmonizer': 0
+                    },
+                    useGoldenWateringCan: false // 不参与计算黄金水壶
+                },
+                'limit-crystal-seed': {
+                    name: '限晶',
+                    output: 425,
+                    consumption: {
+                        'concentrated-compost': 10,
+                        'moonlight-bulb': 1,
+                        'shaping-ore': 850,
+                        'blue-crystal': 850,
+                        'moonlight-harmonizer': 0
+                    },
+                    useGoldenWateringCan: false // 不参与计算黄金水壶
+                },
+                'red-ore-seed': {
+                    name: '红矿',
+                    output: 70,
+                    consumption: {
+                        'concentrated-compost': 15,
+                        'moonlight-bulb': 1,
+                        'shaping-ore': 600,
+                        'limit-crystal': 600,
+                        'blue-crystal': 600,
+                        'moonlight-harmonizer': 0
+                    },
+                    useGoldenWateringCan: true // 会参与黄金水壶计算
+                },
+                // 二阶种子
+                'crystal-seed': {
+                    name: '水晶',
+                    output: 100,
+                    consumption: {
+                        'concentrated-compost': 15,
+                        'moonlight-harmonizer': 1,
+                        'moonlight-bulb': 2,
+                        'sunrise': 450,
+                        'glimmerstone': 500
+                    },
+                    useGoldenWateringCan: true
+                },
+                'eye-seed': {
+                    name: '眼睛',
+                    output: 750,
+                    consumption: {
+                        'concentrated-compost': 15,
+                        'moonlight-harmonizer': 2,
+                        'moonlight-bulb': 2,
+                        'crystal': 300,
+                        'sunrise': 300
+                    },
+                    useGoldenWateringCan: true
+                },
+                'sunrise-seed': {
+                    name: '旭日',
+                    output: 750,
+                    consumption: {
+                        'concentrated-compost': 15,
+                        'moonlight-harmonizer': 1,
+                        'moonlight-bulb': 2,
+                        'eye': 725,
+                        'glimmerstone': 725
+                    },
+                    useGoldenWateringCan: true
+                },
+                'glimmerstone-seed': {
+                    name: '微光石',
+                    output: 500,
+                    consumption: {
+                        'concentrated-compost': 15,
+                        'moonlight-harmonizer': 1,
+                        'moonlight-bulb': 2,
+                        'crystal': 300,
+                        'eye': 300
+                    },
+                    useGoldenWateringCan: true
+                },
+                // 三阶种子
+                'tentacle-seed': {
+                    name: '触手',
+                    output: 15,
+                    consumption: {
+                        'concentrated-compost': 20,
+                        'moonlight-harmonizer': 5,
+                        'moonlight-bulb': 3,
+                        'golden-soul': 14,
+                        'bulb': 14
+                    },
+                    useGoldenWateringCan: true
+                },
+                'golden-soul-seed': {
+                    name: '金魂',
+                    output: 5,
+                    consumption: {
+                        'concentrated-compost': 20,
+                        'moonlight-harmonizer': 5,
+                        'moonlight-bulb': 3,
+                        'tentacle': 35,
+                        'bulb': 35
+                    },
+                    useGoldenWateringCan: true
+                },
+                'bulb-seed': {
+                    name: '球根',
+                    output: 400,
+                    consumption: {
+                        'concentrated-compost': 20,
+                        'moonlight-harmonizer': 3,
+                        'moonlight-bulb': 3,
+                        'tentacle': 10,
+                        'golden-soul': 10
+                    },
+                    useGoldenWateringCan: true
+                },
+                // 四阶种子
+                'construct-crystal-seed': {
+                    name: '建晶',
+                    output: 115,
+                    consumption: {
+                        'concentrated-compost': 25,
+                        'moonlight-harmonizer': 7,
+                        'moonlight-bulb': 4,
+                        'primordial-flame': 150,
+                        'flash-powder': 100
+                    },
+                    useGoldenWateringCan: true
+                },
+                'ripener-seed': {
+                    name: '催熟剂',
+                    output: 15,
+                    consumption: {
+                        'concentrated-compost': 30,
+                        'moonlight-harmonizer': 7,
+                        'moonlight-bulb': 4,
+                        'wallflower': 70,
+                        'flash-powder': 70
+                    },
+                    useGoldenWateringCan: true
+                },
+                'primordial-flame-seed': {
+                    name: '原初之炎',
+                    output: 150,
+                    consumption: {
+                        'concentrated-compost': 30,
+                        'moonlight-harmonizer': 7,
+                        'moonlight-bulb': 4,
+                        'construct-crystal': 90,
+                        'wallflower': 90
+                    },
+                    useGoldenWateringCan: true
+                },
+                'wallflower-seed': {
+                    name: '壁花',
+                    output: 55,
+                    consumption: {
+                        'concentrated-compost': 25,
+                        'moonlight-harmonizer': 7,
+                        'moonlight-bulb': 4,
+                        'construct-crystal': 40,
+                        'ripener': 40
+                    },
+                    useGoldenWateringCan: true
+                },
+                'flash-powder-seed': {
+                    name: '闪光粉',
+                    output: 70,
+                    consumption: {
+                        'concentrated-compost': 25,
+                        'moonlight-harmonizer': 7,
+                        'moonlight-bulb': 4,
+                        'ripener': 50,
+                        'primordial-flame': 50
+                    },
+                    useGoldenWateringCan: true
+                }
+            };
+
+            // 初始化种子数量
+            function initializeSeedQuantities() {
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+                inputs.forEach(input => {
+                    appState.seedQuantities[input.id] = parseInt(input.value) || 0;
+                });
+            }
+
+            // 显示数值变化动画
+            function showValueChangeAnimation(element, value) {
+                if (!element || !value) return;
+
+                const oldValue = parseInt(element.textContent) || 0;
+                const newValue = value;
+                
+                if (oldValue !== newValue) {
+                    element.classList.add('changing');
+                    setTimeout(() => {
+                        element.classList.remove('changing');
+                    }, 200);
+                }
+            }
+
+            // 创建点击动画
+            function createClickAnimation(x, y, value) {
+                const indicator = document.createElement('div');
+                indicator.className = 'value-change-indicator';
+                indicator.textContent = value > 0 ? `+${value}` : `${value}`;
+                indicator.style.left = `${x}px`;
+                indicator.style.top = `${y}px`;
+                document.body.appendChild(indicator);
+
+                setTimeout(() => {
+                    indicator.remove();
+                }, 500);
+            }
+
+            // 计算材料需求
+            function calculateRequirements() {
+                // 初始化材料结果 - 新增一阶材料
+                const materials = {
+                    'concentrated-compost': 0,
+                    'moonlight-harmonizer': 0,
+                    'moonlight-bulb': 0,
+                    'shaping-ore': 0,
+                    'blue-crystal': 0,
+                    'limit-crystal': 0,
+                    'red-ore': 0,
+                    'crystal': 0,
+                    'eye': 0,
+                    'sunrise': 0,
+                    'glimmerstone': 0,
+                    'tentacle': 0,
+                    'golden-soul': 0,
+                    'bulb': 0,
+                    'construct-crystal': 0,
+                    'ripener': 0,
+                    'primordial-flame': 0,
+                    'wallflower': 0,
+                    'flash-powder': 0
+                };
+
+                // 根据计算模式计算材料
+                if (appState.calculationMode === 'self-cycle') {
+                    // 自循环模式：分别计算消耗和产出，然后计算差值
+                    const consumption = { ...materials };
+                    const production = { ...materials };
+
+                    Object.keys(appState.seedQuantities).forEach(seedId => {
+                        const quantity = appState.seedQuantities[seedId];
+                        if (quantity <= 0) return;
+
+                        const config = seedConfigs[seedId];
+                        if (!config) return;
+
+                        // 计算消耗
+                        Object.keys(config.consumption).forEach(material => {
+                            consumption[material] += config.consumption[material] * quantity;
+                        });
+
+                        // 计算产出 - 根据材料名转换
+                        let materialName = config.name;
+                        // 特殊处理名称映射
+                        const nameMap = {
+                            '塑形矿': 'shaping-ore',
+                            '蓝晶': 'blue-crystal',
+                            '限晶': 'limit-crystal',
+                            '红矿': 'red-ore',
+                            '水晶': 'crystal',
+                            '眼睛': 'eye',
+                            '旭日': 'sunrise',
+                            '微光石': 'glimmerstone',
+                            '触手': 'tentacle',
+                            '金魂': 'golden-soul',
+                            '球根': 'bulb',
+                            '建晶': 'construct-crystal',
+                            '催熟剂': 'ripener',
+                            '原初之炎': 'primordial-flame',
+                            '壁花': 'wallflower',
+                            '闪光粉': 'flash-powder'
+                        };
+
+                        if (nameMap[materialName]) {
+                            production[nameMap[materialName]] += config.output * quantity * appState.harvestCount;
+                        }
+                    });
+
+                    // 计算差值：产出 - 消耗
+                    Object.keys(materials).forEach(material => {
+                        materials[material] = production[material] - consumption[material];
+                    });
+                } else {
+                    // 消耗和产出模式
+                    Object.keys(appState.seedQuantities).forEach(seedId => {
+                        const quantity = appState.seedQuantities[seedId];
+                        if (quantity <= 0) return;
+
+                        const config = seedConfigs[seedId];
+                        if (!config) return;
+
+                        if (appState.calculationMode === 'production') {
+                            // 产出模式：计算产出并乘以1（正数）
+                            let materialName = config.name;
+                            const nameMap = {
+                                '塑形矿': 'shaping-ore',
+                                '蓝晶': 'blue-crystal',
+                                '限晶': 'limit-crystal',
+                                '红矿': 'red-ore',
+                                '水晶': 'crystal',
+                                '眼睛': 'eye',
+                                '旭日': 'sunrise',
+                                '微光石': 'glimmerstone',
+                                '触手': 'tentacle',
+                                '金魂': 'golden-soul',
+                                '球根': 'bulb',
+                                '建晶': 'construct-crystal',
+                                '催熟剂': 'ripener',
+                                '原初之炎': 'primordial-flame',
+                                '壁花': 'wallflower',
+                                '闪光粉': 'flash-powder'
+                            };
+
+                            if (nameMap[materialName]) {
+                                materials[nameMap[materialName]] += config.output * quantity * appState.harvestCount * 1;
+                            }
+                        } else if (appState.calculationMode === 'consumption') {
+                            // 消耗模式：计算消耗并乘以-1（负数）
+                            Object.keys(config.consumption).forEach(material => {
+                                materials[material] += config.consumption[material] * quantity * -1;
+                            });
+                        }
+                    });
+                }
+
+                // 更新显示
+                updateMaterialDisplay(materials);
+
+                // 计算黄金水壶需求
+                calculateGoldenWateringRequirement();
+
+                // 更新快速输入框（只在种子数量变化时更新）
+                updateQuickInput();
+            }
+
+            // 更新材料显示
+            function updateMaterialDisplay(materials) {
+                Object.keys(materials).forEach(material => {
+                    const element = document.getElementById(`${material}-requirement`);
+                    if (element) {
+                        let value = materials[material];
+
+                        // 显示数值变化动画
+                        showValueChangeAnimation(element, value);
+
+                        // 简化结果
+                        if (appState.simplifyResults && Math.abs(value) >= 10000) {
+                            value = (value / 10000).toFixed(2) + 'w';
+                        } else {
+                            value = value.toString();
+                        }
+
+                        // 设置数值和颜色类
+                        element.textContent = value;
+
+                        // 移除所有颜色类
+                        element.classList.remove('zero', 'positive', 'negative');
+
+                        // 添加适当的颜色类
+                        const numValue = parseFloat(value);
+                        if (numValue > 0) {
+                            element.classList.add('positive');
+                        } else if (numValue < 0) {
+                            element.classList.add('negative');
+                        } else {
+                            element.classList.add('zero');
+                        }
+                    }
+                });
+            }
+
+            // 添加点击/右键点击/长按功能
+            function setupSeedImageInteractions() {
+                const seedImages = document.querySelectorAll('.seed-image');
+
+                seedImages.forEach(seedImage => {
+                    let pressTimer;
+                    let isLongPress = false;
+                    let intervalId;
+                    let startTime;
+
+                    const inputId = seedImage.getAttribute('data-input-id');
+                    const input = document.getElementById(inputId);
+
+                    // 左键点击事件 - 增加数量
+                    seedImage.addEventListener('click', function (e) {
+                        // 防止点击按钮时触发图片点击事件
+                        if (!e.target.closest('.seed-clear-button') && !e.target.closest('.seed-operation-button') && !e.target.closest('.row-reset-button')) {
+                            if (e.button === 0 && !isLongPress) {
+                                e.preventDefault();
+                                input.value = parseInt(input.value) + 1;
+                                appState.seedQuantities[inputId] = parseInt(input.value);
+                                
+                                // 创建点击动画
+                                createClickAnimation(e.clientX, e.clientY, 1);
+                                
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                                calculateRequirements();
+                            }
+                        }
+                    });
+
+                    // 右键点击事件 - 减少数量
+                    seedImage.addEventListener('contextmenu', function (e) {
+                        e.preventDefault();
+                        if (!isLongPress) {
+                            input.value = Math.max(0, parseInt(input.value) - 1);
+                            appState.seedQuantities[inputId] = parseInt(input.value);
+                            
+                            // 创建点击动画
+                            createClickAnimation(e.clientX, e.clientY, -1);
+                            
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            calculateRequirements();
+                        }
+                    });
+
+                    // 鼠标按下事件 - 开始计时长按
+                    seedImage.addEventListener('mousedown', function (e) {
+                        // 防止按钮触发长按
+                        if (e.target.closest('.seed-clear-button') || e.target.closest('.seed-operation-button') || e.target.closest('.row-reset-button')) {
+                            return;
+                        }
+
+                        isLongPress = false;
+                        const isLeftClick = e.button === 0;
+                        const isRightClick = e.button === 2;
+
+                        if (isLeftClick || isRightClick) {
+                            startTime = Date.now();
+
+                            pressTimer = setTimeout(function () {
+                                isLongPress = true;
+                                const step = isLeftClick ? 1 : -1;
+
+                                // 开始间隔函数
+                                intervalId = setInterval(function () {
+                                    const elapsed = Date.now() - startTime;
+                                    // 计算速度：5秒内从100ms加速到10ms
+                                    let currentSpeed;
+                                    if (elapsed < 5000) {
+                                        // 线性加速：从100ms到10ms
+                                        currentSpeed = Math.max(10, 100 - (elapsed / 5000) * 90);
+                                    } else {
+                                        currentSpeed = 10; // 5秒后达到上限
+                                    }
+
+                                    const newValue = Math.max(0, parseInt(input.value) + step);
+                                    input.value = newValue;
+                                    appState.seedQuantities[inputId] = newValue;
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                    calculateRequirements();
+
+                                    // 重新设置间隔时间
+                                    clearInterval(intervalId);
+                                    intervalId = setInterval(arguments.callee, currentSpeed);
+                                }, 100); // 初始速度为100ms
+                            }, 1000);
+                        }
+                    });
+
+                    // 鼠标释放事件 - 清除计时器
+                    seedImage.addEventListener('mouseup', function () {
+                        clearTimeout(pressTimer);
+                        clearInterval(intervalId);
+                    });
+
+                    // 鼠标离开事件 - 清除计时器
+                    seedImage.addEventListener('mouseleave', function () {
+                        clearTimeout(pressTimer);
+                        clearInterval(intervalId);
+                    });
+                });
+            }
+
+            // 设置输入框变化监听
+            function setupInputListeners() {
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        appState.seedQuantities[input.id] = parseInt(input.value) || 0;
+                        calculateRequirements();
+                    });
+                });
+
+                // 收获次数输入框监听
+                const harvestInput = document.getElementById('harvest-count');
+                harvestInput.addEventListener('input', function () {
+                    // 在输入时也检查限制
+                    const maxValue = appState.goldenWateringCan ? 5 : 2;
+                    if (this.value > maxValue) {
+                        this.value = maxValue;
+                    }
+                    appState.harvestCount = parseInt(this.value) || 1;
+                    calculateRequirements();
+                });
+
+                // 新增：水壶浇灌数量输入框监听
+                const wateringInput = document.getElementById('watering-amount');
+                wateringInput.addEventListener('input', function () {
+                    appState.wateringAmount = parseInt(this.value) || 9;
+                    if (appState.wateringAmount < 1) {
+                        this.value = 1;
+                        appState.wateringAmount = 1;
+                    }
+                    calculateRequirements();
+                });
+
+                // 新增：倍数输入框监听
+                const multiplierInput = document.getElementById('multiplier');
+                multiplierInput.addEventListener('input', function () {
+                    let value = parseInt(this.value) || 1;
+                    if (value < 1) {
+                        value = 1;
+                        this.value = 1;
+                    }
+                    appState.multiplier = value;
+                });
+
+                // 新增：快速输入框监听 - 只在失去焦点时更新
+                const quickInput = document.getElementById('quick-input');
+                let quickInputTimer;
+
+                quickInput.addEventListener('input', function () {
+                    // 清除之前的计时器
+                    clearTimeout(quickInputTimer);
+
+                    // 设置新的计时器，延迟更新
+                    quickInputTimer = setTimeout(() => {
+                        applyQuickInput(this.value);
+                    }, 500); // 500毫秒延迟，让用户有输入的时间
+                });
+
+                // 当快速输入框失去焦点时立即更新
+                quickInput.addEventListener('blur', function () {
+                    clearTimeout(quickInputTimer);
+                    applyQuickInput(this.value);
+                });
+            }
+
+            function setupButtonInteractions() {
+                // 黄金水壶按钮
+                const goldenWateringCanBtn = document.getElementById('golden-watering-can');
+                goldenWateringCanBtn.addEventListener('click', function () {
+                    const wasActive = this.classList.contains('active');
+                    this.classList.toggle('active');
+                    appState.goldenWateringCan = this.classList.contains('active');
+
+                    const harvestInput = document.getElementById('harvest-count');
+
+                    // 状态改变时设置收获次数
+                    if (wasActive && !appState.goldenWateringCan) {
+                        // 从激活变为未激活，设置收获次数为2
+                        harvestInput.value = 2;
+                        appState.harvestCount = 2;
+                    } else if (!wasActive && appState.goldenWateringCan) {
+                        // 从未激活变为激活，设置收获次数为5
+                        harvestInput.value = 5;
+                        appState.harvestCount = 5;
+                    }
+
+                    // 更新收获次数限制
+                    updateHarvestInputLimit();
+
+                    calculateRequirements();
+                });
+
+                // 简化结果按钮
+                document.getElementById('simplify-results').addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    appState.simplifyResults = this.classList.contains('active');
+                    calculateRequirements();
+                });
+
+                // 计算模式按钮
+                const modeButtons = document.querySelectorAll('#calculation-mode .radio-button');
+                modeButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        modeButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        appState.calculationMode = this.getAttribute('data-mode');
+                        calculateRequirements();
+                    });
+                });
+
+                // 重置数量按钮
+                const resetButton = document.querySelector('[data-action="reset"]');
+
+                // 左键点击重置按钮重置所有
+                resetButton.addEventListener('click', function () {
+                    const inputs = document.querySelectorAll('.seed-quantity-input');
+                    inputs.forEach(input => {
+                        input.value = 0;
+                        appState.seedQuantities[input.id] = 0;
+                    });
+
+                    // 重置收获次数输入框
+                    const harvestInput = document.getElementById('harvest-count');
+                    harvestInput.value = appState.goldenWateringCan ? 5 : 2;
+                    appState.harvestCount = parseInt(harvestInput.value);
+
+                    // 重置水壶浇灌数量输入框
+                    const wateringInput = document.getElementById('watering-amount');
+                    wateringInput.value = 9;
+                    appState.wateringAmount = 9;
+
+                    // 重置倍数输入框
+                    const multiplierInput = document.getElementById('multiplier');
+                    multiplierInput.value = 1;
+                    appState.multiplier = 1;
+
+                    // 重置快速输入框
+                    const quickInput = document.getElementById('quick-input');
+                    quickInput.value = '';
+
+                    // 更新收获次数限制
+                    updateHarvestInputLimit();
+
+                    calculateRequirements();
+                });
+            }
+
+            // 重置指定种子行
+            function resetSeedRow(rowId) {
+                const seedRow = document.getElementById(`seed-row${rowId}`);
+                if (seedRow) {
+                    const inputs = seedRow.querySelectorAll('.seed-quantity-input');
+                    inputs.forEach(input => {
+                        input.value = 0;
+                        appState.seedQuantities[input.id] = 0;
+                    });
+                    calculateRequirements();
+                }
+            }
+
+            // 添加计算黄金水壶需求的函数
+            function calculateGoldenWateringRequirement() {
+                const goldenWateringElement = document.getElementById('concentrated-goldenwatering-requirement');
+
+                if (appState.goldenWateringCan) {
+                    // 计算设置数量的总和，只包括useGoldenWateringCan为true的种子
+                    let totalSeeds = 0;
+                    Object.keys(appState.seedQuantities).forEach(seedId => {
+                        const config = seedConfigs[seedId];
+                        if (config && config.useGoldenWateringCan) {
+                            totalSeeds += appState.seedQuantities[seedId] || 0;
+                        }
+                    });
+
+                    // 计算黄金水壶数量：总和/wateringAmount，向上取整
+                    const goldenWateringCount = Math.ceil(totalSeeds / appState.wateringAmount);
+
+                    // 显示数值变化动画
+                    showValueChangeAnimation(goldenWateringElement, goldenWateringCount);
+
+                    // 更新显示
+                    goldenWateringElement.textContent = goldenWateringCount.toString();
+                    goldenWateringElement.classList.remove('zero', 'positive', 'negative');
+
+                    if (goldenWateringCount > 0) {
+                        goldenWateringElement.classList.add('positive');
+                    } else {
+                        goldenWateringElement.classList.add('zero');
+                    }
+                } else {
+                    // 未激活时归零
+                    goldenWateringElement.textContent = '0';
+                    goldenWateringElement.classList.remove('zero', 'positive', 'negative');
+                    goldenWateringElement.classList.add('zero');
+                }
+            }
+
+            // 更新收获次数输入框限制
+            function updateHarvestInputLimit() {
+                const harvestInput = document.getElementById('harvest-count');
+                if (appState.goldenWateringCan) {
+                    harvestInput.max = 5;
+                    if (harvestInput.value > 5) harvestInput.value = 5;
+                } else {
+                    harvestInput.max = 2;
+                    if (harvestInput.value > 2) harvestInput.value = 2;
+                }
+                appState.harvestCount = parseInt(harvestInput.value);
+            }
+
+            // 设置月光调和器点击事件
+            function setupHarmonizerClick() {
+                const harmonizerLabel = document.getElementById('moonlight-harmonizer-requirement-label');
+                const harmonizerValueElement = document.getElementById('moonlight-harmonizer-requirement');
+
+                harmonizerLabel.addEventListener('click', function () {
+                    // 从moonlight-harmonizer-requirement获取数值
+                    const harmonizerText = harmonizerValueElement.textContent;
+                    let harmonizerValue = 0;
+
+                    // 解析数值（处理简化显示的情况）
+                    if (harmonizerText.includes('w')) {
+                        harmonizerValue = parseFloat(harmonizerText) * 10000;
+                    } else {
+                        harmonizerValue = parseInt(harmonizerText) || 0;
+                    }
+
+                    // 计算绝对值
+                    const absValue = Math.abs(harmonizerValue);
+
+                    // 计算各项数值（向上取整）
+                    const squareTomatoSeeds = Math.ceil(absValue * 4 * 5 / 2 / 7 / 14);
+                    const squareTomatoes = Math.ceil(absValue * 4 * 5 / 2);
+                    const premiumCompost = Math.ceil(absValue * 4);
+
+                    // 创建弹窗信息
+                    const message = `\n预计需要 ${squareTomatoSeeds} 棵方茄种子。
+                    \n一共需要约 ${squareTomatoes} 个方茄，用于制作 ${premiumCompost} 个优质堆肥。
+                    \n\n【以每棵种子收获14次，每次7个方茄计算】`;
+
+                    // 显示弹窗
+                    alert(message);
+                });
+            }
+
+            // 设置种子图片上的按钮事件
+            function setupSeedImageButtons() {
+                // 清空按钮事件
+                document.querySelectorAll('.seed-clear-button').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.stopPropagation(); // 防止事件冒泡触发种子图片的点击事件
+                        const inputId = this.getAttribute('data-input-id');
+                        const input = document.getElementById(inputId);
+                        input.value = 0;
+                        appState.seedQuantities[inputId] = 0;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        calculateRequirements();
+                    });
+                });
+
+                // 运算按钮事件
+                document.querySelectorAll('.seed-operation-button').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.stopPropagation(); // 防止事件冒泡
+                        const inputId = this.getAttribute('data-input-id');
+                        const operation = this.getAttribute('data-operation');
+                        const input = document.getElementById(inputId);
+
+                        let currentValue = parseInt(input.value) || 0;
+                        let newValue;
+
+                        if (operation === 'multiply') {
+                            newValue = currentValue * appState.multiplier;
+                        } else if (operation === 'divide') {
+                            // 除法结果向上取整
+                            newValue = Math.ceil(currentValue / appState.multiplier);
+                        }
+
+                        // 确保最小值是0
+                        newValue = Math.max(0, newValue);
+                        input.value = newValue;
+                        appState.seedQuantities[inputId] = newValue;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        calculateRequirements();
+                    });
+                });
+
+                // 重置行按钮事件
+                document.querySelectorAll('.row-reset-button').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.stopPropagation(); // 防止事件冒泡
+                        const rowId = this.getAttribute('data-row');
+                        resetSeedRow(rowId);
+                    });
+                });
+            }
+
+            // 更新快速输入框
+            function updateQuickInput() {
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+                const values = Array.from(inputs).map(input => input.value || '0');
+                const quickInput = document.getElementById('quick-input');
+
+                // 只在快速输入框没有焦点时更新
+                if (document.activeElement !== quickInput) {
+                    quickInput.value = values.join(',');
+                }
+            }
+
+            // 应用快速输入框的内容
+            function applyQuickInput(quickInputValue) {
+                const values = quickInputValue.split(',')
+                    .map(val => val.trim())
+                    .map(val => {
+                        const num = parseInt(val);
+                        return isNaN(num) ? 0 : Math.max(0, num);
+                    });
+
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+
+                inputs.forEach((input, index) => {
+                    if (index < values.length) {
+                        input.value = values[index];
+                        appState.seedQuantities[input.id] = values[index];
+                    }
+                });
+
+                calculateRequirements();
+            }
+
+            /**
+             * 监听父窗口的主题变化
+             */
+            function listenToParentThemeChanges() {
+                // 检查是否在iframe中
+                if (window.parent !== window) {
+                    // 监听存储变化（父窗口主题变化会更新localStorage）
+                    window.addEventListener('storage', function (e) {
+                        if (e.key === 'preferred-theme') {
+                            applyThemeFromParent(e.newValue);
+                        }
+                    });
+
+                    // 监听父窗口的消息
+                    window.addEventListener('message', function (e) {
+                        if (e.data && e.data.type === 'theme-change') {
+                            applyThemeFromParent(e.data.theme);
+                        }
+                    });
+
+                    // 初始应用父窗口主题
+                    const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                    applyThemeFromParent(parentTheme);
+                }
+            }
+
+            /**
+             * 应用父窗口的主题
+             * @param {string} theme - 主题名称
+             */
+            function applyThemeFromParent(theme) {
+                if (theme === 'default') {
+                    document.body.removeAttribute('data-theme');
+                } else {
+                    document.body.setAttribute('data-theme', theme);
+                }
+            }
+
+            // 初始化应用
+            function initializeApp() {
+                initializeSeedQuantities();
+                setupSeedImageInteractions();
+                setupInputListeners();
+                setupButtonInteractions();
+                setupHarmonizerClick();
+                setupSeedImageButtons();
+                updateHarvestInputLimit();
+
+                // 监听父窗口主题变化
+                listenToParentThemeChanges();
+
+                // 初始化水壶浇灌数量
+                const wateringInput = document.getElementById('watering-amount');
+                if (wateringInput) {
+                    appState.wateringAmount = parseInt(wateringInput.value) || 9;
+                }
+
+                // 初始化倍数
+                const multiplierInput = document.getElementById('multiplier');
+                if (multiplierInput) {
+                    appState.multiplier = parseInt(multiplierInput.value) || 1;
+                }
+
+                calculateRequirements();
+            }
+
+            // 启动应用
+            initializeApp();
+        });
+
+        // 暴露函数给父窗口调用
+        window.applyTheme = function (theme) {
+            if (theme === 'default') {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+        };
+    </script>
+    <script src="../../js/security.js"></script>
+</body>
+
+</html>

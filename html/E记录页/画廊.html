@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画廊A</title>
+    <link rel="stylesheet" href="../../css/none.css">
+    <link rel="stylesheet" href="../../css/color.css">
+    <style>
+        
+        body {
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+            padding: 20px;
+        }
+
+
+        body.modal-open {
+            overflow: hidden;
+            padding-right: 8px;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes cardAppear {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+
+        /* 主容器 */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* 头部区域 */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--border-primary);
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        .page-title {
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+            font-size: 3rem;
+            text-shadow: 0 0 20px var(--shadow-accent);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* 画廊网格 */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* 画廊卡片 */
+        .gallery-card {
+            background-color: var(--secondary-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px var(--shadow-primary);
+            border: 2px solid var(--border-primary);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: cardAppear 0.6s ease-out;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .gallery-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+            z-index: 2;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 40px var(--shadow-primary);
+            border-color: var(--accent-secondary);
+        }
+
+        .gallery-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .gallery-card:hover .thumbnail {
+            transform: scale(1.1);
+        }
+
+        /* 缩略图 */
+        .thumbnail-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background-color: var(--tertiary-bg);
+            position: relative;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 卡片信息 */
+        .card-info {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px var(--shadow-accent);
+        }
+
+        .card-meta {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ========= 修复：模态框固定定位，不受滚动条影响 ========= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* 修复：确保覆盖整个视口，不受滚动影响 */
+            margin: 0;
+            border: 0;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 1000px;
+            max-height: 85vh;
+            background-color: var(--secondary-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-primary);
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-image-container {
+            width: 100%;
+            height: 50vh;
+            max-height: 500px;
+            background-color: var(--primary-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-info {
+            padding: 25px;
+            flex: 1;
+            overflow-y: auto;
+            /* 修复：自定义滚动条 */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-primary) var(--tertiary-bg);
+        }
+
+        .modal-info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-info::-webkit-scrollbar-track {
+            background: var(--tertiary-bg);
+            border-radius: 3px;
+        }
+
+        .modal-info::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        .modal-info::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px var(--shadow-accent);
+        }
+
+        .modal-meta {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .modal-description {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* ========= 修复：导航按钮固定定位，不受滚动影响 ========= */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 56px;
+            height: 56px;
+            background: rgba(var(--accent-primary-rgb), 0.85);
+            color: var(--text-light);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 0;
+            line-height: 1;
+        }
+
+        .nav-btn:hover {
+            background: rgba(var(--accent-primary-rgb), 1);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .prev-btn {
+            left: 25px;
+        }
+
+        .next-btn {
+            right: 25px;
+        }
+
+        /* ========= 修复：关闭按钮固定定位 ========= */
+        .close-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 48px;
+            height: 48px;
+            background: rgba(var(--accent-primary-rgb), 0.9);
+            color: var(--text-light);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10001;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 80, 80, 0.9);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: rotate(90deg) scale(1.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .close-btn:active {
+            transform: rotate(90deg) scale(0.95);
+        }
+
+        .modal-overlay.active ~ .nav-btn,
+        .modal-overlay.active ~ .close-btn {
+            display: flex;
+        }
+
+        /* 加载状态 */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .modal-image-container {
+                height: 40vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            header {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+            }
+            .page-title {
+                font-size: 2.2rem;
+            }
+            .page-subtitle {
+                font-size: 1.1rem;
+            }
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            .thumbnail-container {
+                height: 220px;
+            }
+            .modal-content {
+                width: 95%;
+                max-height: 80vh;
+            }
+            .modal-image-container {
+                height: 35vh;
+            }
+            .modal-title {
+                font-size: 1.6rem;
+            }
+            .nav-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.5rem;
+            }
+            .prev-btn { left: 15px; }
+            .next-btn { right: 15px; }
+            .close-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1.5rem;
+                top: 15px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .thumbnail-container {
+                height: 200px;
+            }
+            .modal-content {
+                width: 98%;
+                max-height: 85vh;
+            }
+            .modal-image-container {
+                height: 30vh;
+            }
+            .modal-info {
+                padding: 20px;
+            }
+            .modal-title {
+                font-size: 1.4rem;
+            }
+            .modal-description {
+                font-size: 0.95rem;
+            }
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            .modal-content {
+                max-height: 90vh;
+            }
+            .modal-image-container {
+                height: 60vh;
+            }
+            .thumbnail-container {
+                height: 160px;
+            }
+        }
+
+        @keyframes pageLoad {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            animation: pageLoad 0.8s ease-out;
+        }
+    </style>
+</head>
+
+<body class="custom-scrollbar">
+    <div class="container">
+        <header>
+            <h1 class="page-title" id="pageTitle">艺术品</h1>
+            <p class="page-subtitle" id="pageSubtitle">展览</p>
+        </header>
+
+        <!-- 画廊网格容器 - 完全由JS动态生成内容 -->
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <!-- ========= 模态框 - 完全由JS动态控制 ========= -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-image-container">
+                <img src="" alt="" class="modal-image" id="modalImage">
+            </div>
+            <div class="modal-info" id="modalInfo">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div class="modal-meta" id="modalMeta"></div>
+                <div class="modal-description" id="modalDescription"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航和关闭按钮 - 固定定位，不受滚动影响 -->
+    <button class="close-btn" id="closeBtn" aria-label="关闭">×</button>
+    <button class="nav-btn prev-btn" id="prevBtn" aria-label="上一张">‹</button>
+    <button class="nav-btn next-btn" id="nextBtn" aria-label="下一张">›</button>
+
+    <script src="../../json/画廊数据.js"></script>
+    <script>
+        // ==================== 配置数据 ====================
+        // 画廊数据 - 完全独立，便于维护和扩展
+        const GALLERY_CONFIG = {
+            pageTitle: "艺术品",
+            pageSubtitle: "展示"
+        };
+
+
+        // ==================== DOM 元素 ====================
+        // 缓存常用DOM元素
+        const DOM = {
+            galleryGrid: document.getElementById('galleryGrid'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            modalImage: document.getElementById('modalImage'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalMeta: document.getElementById('modalMeta'),
+            modalDescription: document.getElementById('modalDescription'),
+            closeBtn: document.getElementById('closeBtn'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            body: document.body
+        };
+
+        // ==================== 状态管理 ====================
+        const State = {
+            currentImageIndex: 0,
+            artworks: ARTWORKS,
+            isModalOpen: false
+        };
+
+        // ==================== 主题管理 ====================
+        function listenToParentThemeChanges() {
+            if (window.parent !== window) {
+                window.addEventListener('storage', function (e) {
+                    if (e.key === 'preferred-theme') {
+                        applyThemeFromParent(e.newValue);
+                    }
+                });
+                const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                applyThemeFromParent(parentTheme);
+            }
+        }
+
+        function applyThemeFromParent(theme) {
+            if (theme === 'default') {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', theme);
+            }
+        }
+
+        // ==================== 画廊渲染 ====================
+        /**
+         * 渲染画廊卡片 - 完全动态生成
+         */
+        function renderGallery() {
+            if (!DOM.galleryGrid) return;
+            
+            // 清空容器
+            DOM.galleryGrid.innerHTML = '';
+            
+            // 如果没有作品，显示空状态
+            if (State.artworks.length === 0) {
+                DOM.galleryGrid.innerHTML = '<div class="no-results">暂无作品</div>';
+                return;
+            }
+            
+            // 动态创建每一张卡片
+            State.artworks.forEach((artwork, index) => {
+                const card = createGalleryCard(artwork, index);
+                DOM.galleryGrid.appendChild(card);
+            });
+            
+            console.log(`✅ 画廊渲染完成: ${State.artworks.length} 张卡片`);
+        }
+
+        /**
+         * 创建单个画廊卡片
+         */
+        function createGalleryCard(artwork, index) {
+            const card = document.createElement('div');
+            card.className = 'gallery-card';
+            card.setAttribute('data-id', artwork.id);
+            card.setAttribute('data-index', index);
+            card.style.animationDelay = `${index * 0.08}s`;
+            
+            // 使用模板字符串构建内部HTML
+            card.innerHTML = `
+                <div class="thumbnail-container">
+                    <img src="${artwork.image}" alt="${artwork.title}" class="thumbnail" loading="lazy">
+                </div>
+                <div class="card-info">
+                    <div class="card-title">${escapeHTML(artwork.title)}</div>
+                    <div class="card-meta">${escapeHTML(artwork.author)} · ${escapeHTML(artwork.time)}</div>
+                </div>
+            `;
+            
+            // 绑定点击事件 - 直接绑定，确保可靠
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal(artwork.id);
+            });
+            
+            return card;
+        }
+
+        /**
+         * 简单的HTML转义，防止XSS
+         */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ==================== 模态框控制 ====================
+        /**
+         * 打开模态框 - 完全修复滚动条问题
+         */
+        function openModal(id) {
+            // 查找对应的作品数据
+            const artwork = State.artworks.find(item => item.id == id);
+            
+            if (!artwork) {
+                console.error(`❌ 未找到ID为 ${id} 的作品`);
+                return;
+            }
+            
+            // 更新当前索引
+            State.currentImageIndex = State.artworks.findIndex(item => item.id == id);
+            
+            // 更新模态框内容
+            DOM.modalImage.src = artwork.image;
+            DOM.modalImage.alt = artwork.title;
+            DOM.modalTitle.textContent = artwork.title;
+            DOM.modalMeta.textContent = `${artwork.time} · ${artwork.author}`;
+            DOM.modalDescription.textContent = artwork.description;
+            
+            // 显示模态框
+            DOM.modalOverlay.classList.add('active');
+            
+            // ===== 修复：禁止body滚动，防止背景滚动 =====
+            DOM.body.classList.add('modal-open');
+            DOM.body.style.overflow = 'hidden';
+            DOM.body.style.position = 'fixed';
+            DOM.body.style.top = '0';
+            DOM.body.style.left = '0';
+            DOM.body.style.width = '100%';
+            
+            // 显示导航按钮和关闭按钮
+            DOM.prevBtn.style.display = 'flex';
+            DOM.nextBtn.style.display = 'flex';
+            DOM.closeBtn.style.display = 'flex';
+            
+            State.isModalOpen = true;
+            
+            console.log(`🖼️ 打开模态框: ${artwork.title}`);
+        }
+
+        /**
+         * 关闭模态框 - 完全修复滚动条恢复问题
+         */
+        function closeModal() {
+            // 隐藏模态框
+            DOM.modalOverlay.classList.remove('active');
+            
+            // ===== 修复：恢复body滚动 =====
+            DOM.body.classList.remove('modal-open');
+            DOM.body.style.overflow = '';
+            DOM.body.style.position = '';
+            DOM.body.style.top = '';
+            DOM.body.style.left = '';
+            DOM.body.style.width = '';
+            
+            // 隐藏导航按钮和关闭按钮
+            DOM.prevBtn.style.display = 'none';
+            DOM.nextBtn.style.display = 'none';
+            DOM.closeBtn.style.display = 'none';
+            
+            State.isModalOpen = false;
+            
+            console.log('❌ 关闭模态框');
+        }
+
+        /**
+         * 上一张图片
+         */
+        function prevImage() {
+            if (State.artworks.length === 0) return;
+            
+            // 计算上一张索引
+            State.currentImageIndex = (State.currentImageIndex - 1 + State.artworks.length) % State.artworks.length;
+            const artworkId = State.artworks[State.currentImageIndex].id;
+            
+            // 重新打开模态框
+            openModal(artworkId);
+        }
+
+        /**
+         * 下一张图片
+         */
+        function nextImage() {
+            if (State.artworks.length === 0) return;
+            
+            // 计算下一张索引
+            State.currentImageIndex = (State.currentImageIndex + 1) % State.artworks.length;
+            const artworkId = State.artworks[State.currentImageIndex].id;
+            
+            // 重新打开模态框
+            openModal(artworkId);
+        }
+
+        // ==================== 事件绑定 ====================
+        /**
+         * 初始化事件监听器
+         */
+        function initEventListeners() {
+            // 关闭按钮
+            if (DOM.closeBtn) {
+                DOM.closeBtn.addEventListener('click', closeModal);
+            }
+            
+            // 上一张按钮
+            if (DOM.prevBtn) {
+                DOM.prevBtn.addEventListener('click', prevImage);
+            }
+            
+            // 下一张按钮
+            if (DOM.nextBtn) {
+                DOM.nextBtn.addEventListener('click', nextImage);
+            }
+            
+            // 点击模态框背景关闭
+            if (DOM.modalOverlay) {
+                DOM.modalOverlay.addEventListener('click', function(e) {
+                    if (e.target === DOM.modalOverlay) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            // 键盘事件
+            document.addEventListener('keydown', function(e) {
+                if (!State.isModalOpen) return;
+                
+                switch(e.key) {
+                    case 'Escape':
+                        closeModal();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        prevImage();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextImage();
+                        break;
+                }
+            });
+            
+            // 窗口resize事件 - 修复移动端滚动问题
+            window.addEventListener('resize', function() {
+                if (State.isModalOpen) {
+                    // 确保模态框打开时body仍然禁止滚动
+                    DOM.body.style.overflow = 'hidden';
+                }
+            });
+        }
+
+        // ==================== 页面初始化 ====================
+        /**
+         * 初始化页面
+         */
+        function initPage() {
+            console.log('🚀 画廊页面初始化中...');
+            
+            // 设置页面标题
+            document.title = GALLERY_CONFIG.pageTitle;
+            
+            // 监听主题变化
+            listenToParentThemeChanges();
+            
+            // 渲染画廊
+            renderGallery();
+            
+            // 初始化事件监听
+            initEventListeners();
+            
+            // 初始隐藏导航按钮和关闭按钮
+            DOM.prevBtn.style.display = 'none';
+            DOM.nextBtn.style.display = 'none';
+            DOM.closeBtn.style.display = 'none';
+            
+            // 页面加载动画
+            DOM.body.style.opacity = '0';
+            DOM.body.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                DOM.body.style.transition = 'all 0.6s ease';
+                DOM.body.style.opacity = '1';
+                DOM.body.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    DOM.body.style.transition = '';
+                }, 600);
+            }, 100);
+            
+            console.log('✅ 画廊页面初始化完成');
+        }
+
+        // 等待DOM加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+    <script src="../../js/security.js"></script>
+</body>
+
+</html>

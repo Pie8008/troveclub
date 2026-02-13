@@ -3,7 +3,7 @@
     
     // 安全配置 - 可以根据需要调整
     const SECURITY_CONFIG = {
-        enableRightClickProtection: false,      // 启用右键保护
+        enableRightClickProtection: true,      // 启用右键保护
         enableDevToolsProtection: true,        // 启用开发者工具保护
         enableConsoleProtection: true,         // 启用控制台保护
         enableIframeProtection: true,          // 启用iframe保护

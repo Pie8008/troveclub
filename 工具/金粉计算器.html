@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奢龙试炼金粉需求计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-muted: #6c7a8a;
+            --text-light: #f8f9fa;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.2);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+            --accent-danger: #d43d3d;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .baike-wrapper {
+            width: 100%;
+            max-width: 560px;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            padding: 30px 32px;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 14px;
+        }
+
+        .baike-header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .baike-header h1 i {
+            -webkit-text-fill-color: var(--accent-primary);
+            font-size: 1.4rem;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .baike-card {
+            background: var(--secondary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+            padding: 8px 0 4px;
+            transition: border-color 0.2s;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .cost-button {
+            padding: 12px 6px;
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-primary);
+            border-radius: 40px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+            line-height: 1.3;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .cost-button:hover {
+            background: var(--accent-primary-transparent);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px var(--shadow-primary);
+        }
+
+        .cost-button.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 107, 184, 0.25);
+        }
+
+        .cost-button:active {
+            transform: scale(0.96);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-primary);
+            border-radius: 40px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-transparent);
+        }
+
+        .input-field:invalid {
+            border-color: var(--accent-danger);
+        }
+
+        .result-section {
+            margin-top: 6px;
+            padding: 20px 18px 18px;
+            background: var(--tertiary-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .result-section:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 14px var(--shadow-primary);
+        }
+
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            transition: transform 0.15s;
+            text-shadow: 0 0 12px rgba(30, 107, 184, 0.15);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .baike-wrapper {
+                padding: 22px 18px;
+            }
+
+            .baike-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .result-value {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .baike-wrapper {
+                padding: 16px 12px;
+            }
+
+            .baike-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cost-button {
+                font-size: 0.8rem;
+                padding: 10px 4px;
+            }
+
+            .result-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="baike-wrapper">
+
+        <div class="baike-header">
+            <h1><i class="fas fa-calculator"></i> 金粉需求计算器</h1>
+            <span class="subhead"><i class="fas fa-dragon"></i> 奢龙试炼</span>
+        </div>
+
+        <div class="baike-card">
+
+            <div class="button-group">
+                <button class="cost-button active" data-count="4"
+                    title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中未制作过，请选择此选项。">未制作过</button>
+                <button class="cost-button" data-count="3"
+                    title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过1次，请选择此选项。">已制作1次</button>
+                <button class="cost-button" data-count="2"
+                    title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过2次，请选择此选项。">已制作2次</button>
+                <button class="cost-button" data-count="1"
+                    title="每制作4次，需求便会额外增加1点，如果你在起始消耗开始的需求中制作过3次，请选择此选项。">已制作3次</button>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label" for="current-cost">起始消耗</label>
+                    <input type="number" id="current-cost" class="input-field" min="7" value="7" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="quantity">制作数量</label>
+                    <input type="number" id="quantity" class="input-field" min="1" value="1">
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div class="result-title"><i class="fas fa-coins" style="margin-right: 6px;"></i>消耗数量</div>
+                <div class="result-value" id="result">0</div>
+            </div>
+        </div>
+
+        <div
+            style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); text-align: right; border-top: 1px solid var(--border-light); padding-top: 12px;">
+            <i class="far fa-clock"></i> 每制作4次需求+1
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function listenToParentThemeChanges() {
+                if (window.parent !== window) {
+                    window.addEventListener('storage', function (e) {
+                        if (e.key === 'preferred-theme') {
+                            applyThemeFromParent(e.newValue);
+                        }
+                    });
+                    window.addEventListener('message', function (e) {
+                        if (e.data && e.data.type === 'theme-change') {
+                            applyThemeFromParent(e.data.theme);
+                        }
+                    });
+                    const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                    applyThemeFromParent(parentTheme);
+                }
+            }
+
+            function applyThemeFromParent(theme) {
+                if (theme === 'default') {
+                    document.body.removeAttribute('data-theme');
+                } else {
+                    document.body.setAttribute('data-theme', theme);
+                }
+                document.body.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                }, 500);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                listenToParentThemeChanges();
+
+                const currentCostInput = document.getElementById('current-cost');
+                const quantityInput = document.getElementById('quantity');
+                const resultElement = document.getElementById('result');
+                const costButtons = document.querySelectorAll('.cost-button');
+
+                let currentCount = 4;
+
+                costButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+
+                        costButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        currentCount = parseInt(this.getAttribute('data-count'));
+                        calculateResult();
+                    });
+                });
+
+                currentCostInput.addEventListener('change', function () {
+                    if (this.value < 7) {
+                        this.value = 7;
+                    }
+                    calculateResult();
+                });
+
+                function calculateResulta(x, z, y) {
+                    let n;
+                    if (x <= z) {
+                        n = 1;
+                        return x * y;
+                    } else {
+                        n = Math.ceil((x - z) / 4) + 1;
+                        return x * (n + 6) - 2 * n * n + 6 * n - z * (n - 1) - 4;
+                    }
+                }
+
+                function calculateResult() {
+                    const x = parseInt(currentCostInput.value) || 7;
+                    const y = parseInt(quantityInput.value) || 1;
+                    const totalResult = calculateResulta(y, currentCount, x);
+
+                    resultElement.textContent = totalResult;
+
+                    resultElement.style.transform = 'scale(1.12)';
+                    setTimeout(() => {
+                        resultElement.style.transform = 'scale(1)';
+                    }, 150);
+                }
+
+                currentCostInput.addEventListener('input', calculateResult);
+                quantityInput.addEventListener('input', calculateResult);
+
+                calculateResult();
+
+                document.querySelector('.baike-wrapper').style.opacity = '0';
+                document.querySelector('.baike-wrapper').style.transform = 'translateY(8px)';
+                setTimeout(() => {
+                    document.querySelector('.baike-wrapper').style.opacity = '1';
+                    document.querySelector('.baike-wrapper').style.transform = 'translateY(0)';
+                    document.querySelector('.baike-wrapper').style.transition = 'opacity 0.4s, transform 0.4s';
+                }, 50);
+            });
+
+            window.applyTheme = function (theme) {
+                applyThemeFromParent(theme);
+            };
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名人堂</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f6f7f9;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+      color: #222;
+      line-height: 1.6;
+      padding: 24px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .wiki-container {
+      max-width: 1060px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+      padding: 28px 32px 40px;
+      transition: all 0.2s;
+    }
+
+    .wiki-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-bottom: 1px solid #e8ecf0;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .wiki-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      background: #f0f4fa;
+    }
+
+    .wiki-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .wiki-title-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .guild-title-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: none;
+      color: #1a1f2b;
+      transition: 0.2s;
+      border-radius: 8px;
+      padding: 4px 8px 4px 4px;
+      margin-left: -8px;
+    }
+
+    .guild-title-link:hover {
+      background: #eef4ff;
+      color: #1f2a3a;
+    }
+
+    .guild-title-link h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: inherit;
+      margin: 0;
+    }
+
+    .guild-title-link i {
+      color: #4b7bec;
+      font-size: 20px;
+      opacity: 0.7;
+      transition: 0.2s;
+    }
+
+    .guild-title-link:hover i {
+      opacity: 1;
+      transform: translateX(3px);
+    }
+
+    .wiki-title-group .sub {
+      font-size: 14px;
+      color: #7e8a98;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+
+    .wiki-title-group .sub i {
+      margin-right: 6px;
+      color: #9aa6b5;
+    }
+
+    .hall-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    .hall-card-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+      border-radius: 12px;
+      background: #fafbfc;
+      border: 1px solid #edf0f5;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .hall-card-link:hover {
+      background: #f2f8ff;
+      border-color: #b8cbe5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(75, 123, 236, 0.08);
+    }
+
+    .hall-card {
+      display: flex;
+      align-items: center;
+      gap: 18px 24px;
+      padding: 16px 22px 16px 18px;
+      flex-wrap: wrap;
+      position: relative;
+      min-height: 100px;
+    }
+
+    .level-badge {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 6px 22px 6px 20px;
+      border-radius: 40px;
+      line-height: 1.3;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      margin-left: auto;
+      flex-shrink: 0;
+      background: rgba(75, 123, 236, 0.10);
+      color: #4b7bec;
+      border: 2px solid rgba(75, 123, 236, 0.30);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: 0.2s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      position: relative;
+    }
+
+    .level-夯 .level-badge {
+      color: #c0392b;
+      background: rgba(192, 57, 43, 0.12);
+      border-color: rgba(192, 57, 43, 0.45);
+      box-shadow: 0 2px 10px rgba(192, 57, 43, 0.15);
+    }
+
+    .level-顶级 .level-badge {
+      color: #d35400;
+      background: rgba(211, 84, 0, 0.10);
+      border-color: rgba(211, 84, 0, 0.40);
+      box-shadow: 0 2px 10px rgba(211, 84, 0, 0.12);
+    }
+
+    .level-一般 .level-badge {
+      color: #2c7be0;
+      background: rgba(44, 123, 224, 0.12);
+      border-color: rgba(44, 123, 224, 0.35);
+      box-shadow: 0 2px 10px rgba(44, 123, 224, 0.10);
+    }
+
+    .level-npc .level-badge {
+      color: #27ae60;
+      background: rgba(39, 174, 96, 0.12);
+      border-color: rgba(39, 174, 96, 0.35);
+      box-shadow: 0 2px 10px rgba(39, 174, 96, 0.10);
+    }
+
+    .level-拉完了 .level-badge {
+      color: #7f8c8d;
+      background: rgba(127, 140, 141, 0.12);
+      border-color: rgba(127, 140, 141, 0.30);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .hall-card-link:hover .level-badge {
+      transform: scale(1.04);
+      filter: brightness(1.05);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    }
+
+    .card-avatar {
+      flex-shrink: 0;
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #eef1f5;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      margin-left: 4px;
+      border: 1px solid #e8ecf0;
+      transition: 0.2s;
+    }
+
+    .hall-card-link:hover .card-avatar {
+      border-color: #b0c8e5;
+    }
+
+    .card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 140px;
+      padding-left: 4px;
+    }
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1f2b;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-name i {
+      color: #4b7bec;
+      font-size: 18px;
+      opacity: 0.6;
+      transition: 0.2s;
+    }
+
+    .hall-card-link:hover .card-name i {
+      opacity: 1;
+      transform: translateX(3px);
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 2px;
+    }
+
+    .card-tag {
+      background: #edf2fa;
+      color: #2c3e50;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 2px 16px 2px 14px;
+      border-radius: 30px;
+      border: 1px solid #dce3ed;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.2px;
+      line-height: 1.6;
+      transition: 0.1s;
+    }
+
+    .card-tag i {
+      color: #4b7bec;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .card-tag:before {
+      content: "";
+      display: none;
+    }
+
+    .hall-card-link:hover .card-tag {
+      background: #e7efff;
+      border-color: #b8cbe5;
+    }
+
+    .card-arrow {
+      display: none;
+    }
+
+    .footer-line {
+      margin-top: 32px;
+      border-top: 1px solid #e8ecf0;
+      padding-top: 16px;
+      font-size: 13px;
+      color: #8a98a8;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    @media (max-width: 700px) {
+      .wiki-container {
+        padding: 18px 16px 28px;
+      }
+
+      .wiki-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .wiki-icon {
+        width: 60px;
+        height: 60px;
+      }
+
+      .guild-title-link h1 {
+        font-size: 24px;
+      }
+
+      .hall-card {
+        padding: 18px 16px 16px 16px;
+        flex-wrap: wrap;
+      }
+
+      .level-badge {
+        font-size: 24px;
+        padding: 4px 18px 4px 16px;
+        margin-left: auto;
+      }
+
+      .card-avatar {
+        width: 72px;
+        height: 72px;
+      }
+
+      .card-name {
+        font-size: 19px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wiki-container {
+        padding: 12px 10px 24px;
+      }
+
+      .hall-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 12px;
+      }
+
+      .card-avatar {
+        width: 64px;
+        height: 64px;
+      }
+
+      .card-name {
+        font-size: 17px;
+      }
+
+      .card-tags {
+        gap: 4px 8px;
+      }
+
+      .card-tag {
+        font-size: 12px;
+        padding: 0 12px 0 10px;
+      }
+
+      .level-badge {
+        font-size: 22px;
+        padding: 2px 14px 2px 12px;
+        margin-left: auto;
+        border-width: 2px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wiki-container">
+
+    <div class="hall-list" id="hallList">
+      <!-- 数据由 JavaScript 动态渲染 -->
+    </div>
+  </div>
+
+  <script>
+    (function () {
+
+      const members = [
+        {
+          id: 1,
+          name: '鸟哥',
+          level: '夯',
+          avatar: '#',
+          tags: ['神了', '拉了'],
+          detailUrl: './鸟哥.html'
+        }
+      ];
+
+      const container = document.getElementById('hallList');
+      if (!container) return;
+
+      let html = '';
+      members.forEach(m => {
+        let tagsHtml = '';
+        if (m.tags && m.tags.length) {
+          m.tags.forEach(tag => {
+            tagsHtml += `<span class="card-tag"><i class="fas fa-hashtag"></i>${tag}</span>`;
+          });
+        }
+
+        const levelClass = 'level-' + m.level.toLowerCase();
+
+        html += `
+          <a href="${m.detailUrl}" class="hall-card-link ${levelClass}" rel="noopener noreferrer">
+            <div class="hall-card">
+              <div class="card-avatar">
+                <img src="${m.avatar}" alt="${m.name}">
+              </div>
+              <div class="card-content">
+                <div class="card-name">
+                  ${m.name}
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="card-tags">
+                  ${tagsHtml}
+                </div>
+              </div>
+              <div class="level-badge">${m.level}</div>
+              <div class="card-arrow"></div>
+            </div>
+          </a>
+        `;
+      });
+
+      container.innerHTML = html;
+    })();
+  </script>
+
+</body>
+
+</html>

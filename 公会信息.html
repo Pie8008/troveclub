@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promiscuous Eden</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-light: #f8f9fa;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.25);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .baike-wrapper {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            overflow: hidden;
+            padding: 30px 35px;
+            transition: background 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 16px;
+        }
+
+        .baike-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+            background: var(--tertiary-bg);
+            padding: 18px 20px;
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 6px 4px;
+            border-right: 1px solid var(--border-light);
+        }
+
+        .info-item:last-child {
+            border-right: none;
+        }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            line-height: 1.3;
+        }
+
+        .info-label {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        .baike-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 720px) {
+            .baike-row {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .baike-card {
+            background: var(--secondary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+            padding: 18px 22px 22px;
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .baike-card:hover {
+            border-color: #b8c9e0;
+            box-shadow: 0 6px 18px var(--shadow-primary);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title i {
+            color: var(--accent-primary);
+            width: 1.4rem;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.98rem;
+        }
+
+        .card-body p {
+            margin-bottom: 10px;
+        }
+
+        .card-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .tag-item {
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: default;
+        }
+
+        .tag-item:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(30, 107, 184, 0.15);
+        }
+
+        .member-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            margin-top: 6px;
+        }
+
+        .member-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--tertiary-bg);
+            padding: 5px 16px 5px 12px;
+            border-radius: 40px;
+            border: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .member-badge:hover {
+            background: var(--secondary-bg);
+            border-color: var(--accent-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .role-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .role-leader {
+            background: #d43d3d;
+            box-shadow: 0 0 6px #d43d3d80;
+            animation: glowPulse 3s infinite;
+        }
+
+        .role-officer {
+            background: #2a7fcf;
+        }
+
+        .role-member {
+            background: #55aaff;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 4px #d43d3d80;
+            }
+
+            50% {
+                box-shadow: 0 0 12px #d43d3dcc;
+            }
+
+            100% {
+                box-shadow: 0 0 4px #d43d3d80;
+            }
+        }
+
+        .member-extra {
+            font-size: 0.78rem;
+            opacity: 0.7;
+            margin-left: 2px;
+            font-weight: 400;
+        }
+
+        .history-section {
+            margin-top: 28px;
+            border-top: 2px solid var(--border-light);
+            padding-top: 20px;
+        }
+
+        .history-section .card-title {
+            border-bottom: none;
+            margin-bottom: 12px;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            padding: 8px 14px;
+            background: var(--tertiary-bg);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-primary);
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .timeline-item:hover {
+            background: #e8edf5;
+            transform: translateX(4px);
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--accent-primary);
+            min-width: 120px;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+        }
+
+        .timeline-desc i {
+            color: var(--accent-primary);
+            margin-right: 6px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 10px;
+            }
+
+            .baike-wrapper {
+                padding: 18px 16px;
+            }
+
+            .baike-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .baike-header .subhead {
+                font-size: 0.8rem;
+                padding: 4px 12px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                padding: 14px;
+            }
+
+            .info-item {
+                border-right: none;
+                border-bottom: 1px solid var(--border-light);
+                padding: 8px 0;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .info-value {
+                font-size: 1.5rem;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                border-left-width: 4px;
+            }
+
+            .timeline-date {
+                min-width: auto;
+            }
+        }
+
+        .mt-2 {
+            margin-top: 12px;
+        }
+
+        .text-muted {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="baike-wrapper">
+
+        <!-- 头部 -->
+        <div class="baike-header">
+            <h1><i
+                    style="background: none; -webkit-text-fill-color: var(--accent-primary); margin-right: 8px;"></i>Promiscuous
+                Eden</h1>
+            <span class="subhead"><i class="far fa-clock"></i> 公会</span>
+        </div>
+
+        <!-- 信息统计 -->
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-value">10级</span>
+                <span class="info-label">公会等级</span>
+            </div>
+            <div class="info-item">
+                <span class="info-value" id="history-time">计算中…</span>
+                <span class="info-label">存活时间</span>
+            </div>
+            <div class="info-item">
+                <span class="info-value">2023.11.02</span>
+                <span class="info-label">成立日期</span>
+            </div>
+            <div class="info-item">
+                <span class="info-value">死寂</span>
+                <span class="info-label">状态</span>
+            </div>
+        </div>
+
+        <!-- 双栏内容 -->
+        <div class="baike-row">
+            <!-- 左栏：简介 + 印象 -->
+            <div>
+                <div class="baike-card">
+                    <div class="card-title"><i class="fas fa-info-circle"></i> 公会简介</div>
+                    <div class="card-body">
+                        <p>死寂的公会，除了砸豆荚的时候没人出现。</p>
+                        <p>欢迎来到 Promiscuous Eden，一个充满惊喜和欢乐的游戏社区。</p>
+                        <div
+                            style="margin-top: 14px; background: var(--tertiary-bg); padding: 10px 14px; border-radius: 12px; border-left: 4px solid var(--accent-primary);">
+                            <i class="fas fa-quote-left" style="opacity: 0.5; margin-right: 6px;"></i>
+                            <span style="font-weight: 450;">“死寂中偶有回响，繁荣却不复存在。”</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="baike-card" style="margin-top: 18px;">
+                    <div class="card-title"><i class="fas fa-star"></i> 公会印象 · 标签</div>
+                    <div class="card-body">
+                        <p style="margin-bottom: 6px;">成员给出的最高评价：</p>
+                        <div class="tag-cloud">
+                            <span class="tag-item">什么</span>
+                            <span class="tag-item">全是男娘</span>
+                            <span class="tag-item">群友很烧</span>
+                            <span class="tag-item">河里</span>
+                            <span class="tag-item">唐人街</span>
+                            <span class="tag-item">涩图</span>
+                            <span class="tag-item">promiscuous</span>
+                            <span class="tag-item">无能的会长</span>
+                            <span class="tag-item">怪人协会</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="baike-card">
+                    <div class="card-title"><i class="fas fa-users"></i> 核心成员</div>
+                    <div class="card-body">
+                        <p><strong>创始成员</strong></p>
+                        <div class="member-list">
+                            <span class="member-badge"><span class="role-dot role-leader"></span> cannasun <span
+                                    class="member-extra">(会长)</span></span>
+                            <span class="member-badge"><span class="role-dot role-leader"></span> Yu_qi <span
+                                    class="member-extra">(前会长·音轨师·消失)</span></span>
+                            <span class="member-badge"><span class="role-dot role-leader"></span> zLOVEz <span
+                                    class="member-extra">(副会长·音轨师·消失)</span></span>
+                            <span class="member-badge"><span class="role-dot role-leader"></span> OPumpkinPieO <span
+                                    class="member-extra">(副会长·音轨师)</span></span>
+                            <span class="member-badge"><span class="role-dot role-leader"></span> 果冻 <span
+                                    class="member-extra">(消失不见)</span></span>
+                        </div>
+
+                        <p style="margin-top: 16px;"><strong>骨干成员</strong></p>
+                        <div class="member-list">
+                            <span class="member-badge"><span class="role-dot role-officer"></span> MewsCat <span
+                                    class="member-extra">(攻略·他说要上来的)</span></span>
+                            <span class="member-badge"><span class="role-dot role-officer"></span> wqrrrr <span
+                                    class="member-extra">(像素画)</span></span>
+                            <span class="member-badge"><span class="role-dot role-officer"></span> BluesRui <span
+                                    class="member-extra">(招募)</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="card-title" style="border-bottom: none; padding-bottom: 0;"><i class="fas fa-history"></i> 公会大事件
+            </div>
+            <div class="timeline" id="timelineContainer">
+                <!-- 由 js 动态渲染，保留原始数据顺序 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const RECORDS = [
+                { id: 1, title: "2024年8月1日", description: "公会由sexeveryday更名为promiscuouseden。" },
+                { id: 2, title: "2024年8月21日", description: "会长Yuqi因在公会重铸金雕被封禁7天。" },
+                { id: 3, title: "2025年3月", description: "Pie8008消失了。" },
+                { id: 4, title: "2025年11月", description: "zLOVEz消失了。" },
+                { id: 5, title: "2025年12月5号", description: "会长Yuqi因被夺舍打广告而封禁7天。" },
+                { id: 6, title: "2026年8月26号", description: "Yuqi消失了。" },
+            ];
+
+
+            function renderTimeline() {
+                const container = document.getElementById('timelineContainer');
+                if (!container) return;
+
+
+                const sorted = [...RECORDS].sort((a, b) => a.id - b.id);
+
+                let html = '';
+                sorted.forEach(item => {
+                    html += `
+                    <div class="timeline-item">
+                        <span class="timeline-date"><i class="far fa-calendar-alt"></i> ${item.title}</span>
+                        <span class="timeline-desc"><i class="fas fa-chevron-right" style="font-size: 0.6rem; vertical-align: middle;"></i> ${item.description}</span>
+                    </div>
+                `;
+                });
+
+                container.innerHTML = html;
+
+
+                const countEl = document.getElementById('recordCount');
+                if (countEl) countEl.textContent = sorted.length;
+            }
+
+
+            const startDate = new Date('2023-11-02T00:00:00');
+
+            function updateHistoryTime() {
+                const now = new Date();
+                const diffMs = now - startDate;
+
+                const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
+                const months = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+                const days = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                let displayText = '';
+                if (years > 0) displayText += `${years}年`;
+                if (months > 0) displayText += `${months}月`;
+                if (days > 0) displayText += `${days}天`;
+                if (hours > 0) displayText += `${hours}时`;
+                if (minutes > 0) displayText += `${minutes}分`;
+                if (seconds > 0 || displayText === '') displayText += `${seconds}秒`;
+
+                const el = document.getElementById('history-time');
+                if (el) el.textContent = displayText || '0秒';
+            }
+
+
+            function listenToParentTheme() {
+                if (window.parent !== window) {
+                    window.addEventListener('storage', function (e) {
+                        if (e.key === 'preferred-theme') {
+                            applyTheme(e.newValue);
+                        }
+                    });
+                    window.addEventListener('message', function (e) {
+                        if (e.data && e.data.type === 'theme-change') {
+                            applyTheme(e.data.theme);
+                        }
+                    });
+                    const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                    applyTheme(parentTheme);
+                }
+            }
+
+            function applyTheme(theme) {
+                if (theme === 'default') {
+                    document.body.removeAttribute('data-theme');
+                } else {
+                    document.body.setAttribute('data-theme', theme);
+                }
+            }
+
+
+            document.addEventListener('DOMContentLoaded', function () {
+                renderTimeline();
+                updateHistoryTime();
+                setInterval(updateHistoryTime, 1000);
+                listenToParentTheme();
+
+
+                document.querySelectorAll('.tag-item, .member-badge, .timeline-item').forEach(el => {
+                    el.addEventListener('click', function (e) {
+
+                        this.style.transform = 'scale(0.96)';
+                        setTimeout(() => { this.style.transform = ''; }, 120);
+                    });
+                });
+            });
+
+
+            window.applyTheme = function (theme) {
+                applyTheme(theme);
+            };
+        })();
+    </script>
+</body>
+
+</html>

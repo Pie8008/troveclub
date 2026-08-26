@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录错误</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-muted: #6c7a8a;
+            --text-light: #f8f9fa;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.2);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .baike-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            padding: 30px 35px;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 18px;
+        }
+
+        .baike-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .page-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 24px;
+            padding: 12px 18px;
+            background: var(--tertiary-bg);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .baike-card {
+            background: var(--secondary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+            padding: 22px 24px 24px;
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .baike-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .baike-card:hover {
+            transform: translateY(-6px);
+            border-color: #b8c9e0;
+            box-shadow: 0 10px 28px var(--shadow-primary);
+        }
+
+        .baike-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title i {
+            color: var(--accent-primary);
+            width: 1.4rem;
+            font-size: 1rem;
+        }
+
+        .error-code {
+            display: inline-block;
+            background: var(--accent-primary-transparent);
+            color: var(--accent-primary);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent-primary-transparent);
+            margin-bottom: 14px;
+            align-self: flex-start;
+            letter-spacing: 0.3px;
+        }
+
+        .error-desc {
+            font-size: 0.98rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .solution-box {
+            background: var(--tertiary-bg);
+            padding: 16px 18px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-secondary);
+            transition: 0.2s;
+        }
+
+        .solution-box:hover {
+            background: #e8edf5;
+            transform: translateX(4px);
+        }
+
+        .solution-box strong {
+            display: block;
+            color: var(--accent-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .solution-text {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+
+        .empty-card {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border: 2px dashed var(--border-primary);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            min-height: 200px;
+        }
+
+        .empty-card:hover {
+            border-color: var(--accent-primary);
+            background: linear-gradient(135deg, var(--accent-primary-transparent), var(--tertiary-bg));
+        }
+
+        .empty-card .card-title {
+            border: none;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .empty-message {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.95rem;
+            animation: softPulse 2s infinite alternate;
+        }
+
+        @keyframes softPulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px 10px;
+            }
+
+            .baike-wrapper {
+                padding: 20px 16px;
+            }
+
+            .baike-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .baike-card {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .baike-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .baike-header .subhead {
+                font-size: 0.8rem;
+                padding: 4px 12px;
+            }
+
+            .error-code {
+                font-size: 0.8rem;
+                padding: 4px 14px;
+            }
+
+            .solution-text {
+                font-size: 0.88rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="baike-wrapper">
+
+        <div class="baike-header">
+            <h1><i class="fas fa-exclamation-triangle"
+                    style="background: none; -webkit-text-fill-color: var(--accent-primary); margin-right: 8px;"></i>登录错误</h1>
+            <span class="subhead"><i class="fas fa-code"></i> 错误代码/解决方案</span>
+        </div>
+
+        <!-- 卡片网格 -->
+        <div class="card-grid">
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-ban"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 2015</span>
+                <div class="error-desc">服务器出错，无法处理此登录请求。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">检查账号是否输入错误，重新输入账号。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-clock"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 2025</span>
+                <div class="error-desc">连接超时。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">使用游戏加速器优化网络。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-download"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 1035</span>
+                <div class="error-desc">下载服务器验证时出现问题。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">使用游戏加速器优化网络。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-file-alt"></i> 游戏更新文件损坏</div>
+                <span class="error-code">错误代码: 待补充</span>
+                <div class="error-desc">游戏文件完整性检查失败。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">检查当前网络环境，使用游戏加速器/关闭加速器后重新下载，或者向其他玩家获取更新后的游戏文件。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-user-slash"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 2003</span>
+                <div class="error-desc">该账户已被暂停或封禁。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">向游戏支持部门发送电子邮件，查询原因，询问账户后续处理情况。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-wifi"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 1013</span>
+                <div class="error-desc">连接至下载服务器时出错，请检查您的网络设置。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">网络中断或未连接，请检查网络连接。</div>
+                </div>
+            </div>
+
+            <div class="baike-card">
+                <div class="card-title"><i class="fas fa-server"></i> 游戏登录报错</div>
+                <span class="error-code">错误代码: 2022</span>
+                <div class="error-desc">无法连接至验证服务器，请检查您的网络设置。</div>
+                <div class="solution-box">
+                    <strong><i class="fas fa-wrench"></i> 解决方案</strong>
+                    <div class="solution-text">网络中断或未连接，请检查网络连接。</div>
+                </div>
+            </div>
+
+            <!-- 8. 空卡片（占位） -->
+            <div class="baike-card empty-card" id="emptyCard">
+                <div class="card-title"><i class="fas fa-hourglass-half"></i> 新的问题正在赶来</div>
+                <div class="empty-message">相关人员摸鱼中…</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function listenToParentTheme() {
+                if (window.parent !== window) {
+                    window.addEventListener('storage', function (e) {
+                        if (e.key === 'preferred-theme') applyTheme(e.newValue);
+                    });
+                    window.addEventListener('message', function (e) {
+                        if (e.data && e.data.type === 'theme-change') applyTheme(e.data.theme);
+                    });
+                    const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                    applyTheme(parentTheme);
+                }
+            }
+
+            function applyTheme(theme) {
+                if (theme === 'default') document.body.removeAttribute('data-theme');
+                else document.body.setAttribute('data-theme', theme);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                listenToParentTheme();
+
+                document.querySelectorAll('.baike-card').forEach(card => {
+                    card.addEventListener('click', function (e) {
+
+                        if (e.target.closest('a')) return;
+                        this.style.transform = 'scale(0.98)';
+                        this.style.transition = 'transform 0.12s';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 120);
+                    });
+                });
+
+                const emptyCard = document.getElementById('emptyCard');
+                if (emptyCard) {
+                    emptyCard.addEventListener('click', function () {
+                        const msg = this.querySelector('.empty-message');
+                        const original = msg.textContent;
+                        msg.textContent = '摸鱼结束，问题加载中…';
+                        msg.style.color = 'var(--accent-primary)';
+                        setTimeout(() => {
+                            msg.textContent = original;
+                            msg.style.color = '';
+                        }, 1500);
+                    });
+                }
+
+                document.querySelector('.baike-wrapper').style.opacity = '0';
+                document.querySelector('.baike-wrapper').style.transform = 'translateY(8px)';
+                setTimeout(() => {
+                    document.querySelector('.baike-wrapper').style.opacity = '1';
+                    document.querySelector('.baike-wrapper').style.transform = 'translateY(0)';
+                    document.querySelector('.baike-wrapper').style.transition = 'opacity 0.4s, transform 0.4s';
+                }, 50);
+            });
+
+            window.applyTheme = applyTheme;
+        })();
+    </script>
+</body>
+
+</html>

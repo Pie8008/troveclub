@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>园艺计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-muted: #6c7a8a;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.2);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .baike-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            padding: 30px 35px;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 16px;
+        }
+
+        .baike-header h1 {
+            font-size: 2.0rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr 280px;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .app-grid { grid-template-columns: 1fr; gap: 20px; }
+        }
+
+        .sidebar {
+            background: var(--tertiary-bg);
+            border-radius: var(--card-radius);
+            padding: 18px 16px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .sidebar .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 4px;
+        }
+
+        .option-button {
+            padding: 8px 12px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-primary);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .option-button:hover {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary-transparent);
+        }
+        .option-button.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 107, 184, 0.2);
+        }
+
+        .input-row-side {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-bg);
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border-primary);
+        }
+        .input-row-side label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .input-row-side input[type="number"],
+        .input-row-side textarea {
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            width: 50px;
+            text-align: center;
+            outline: none;
+            font-weight: 500;
+        }
+        .input-row-side input[type="number"]:focus {
+            border-bottom: 2px solid var(--accent-primary);
+        }
+        .input-row-side textarea {
+            width: 100%;
+            min-height: 36px;
+            max-height: 36px;
+            resize: none;
+            font-size: 0.75rem;
+            text-align: left;
+            padding: 4px 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+        }
+        .input-row-side textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .function-button {
+            padding: 8px 12px;
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .function-button:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+        }
+
+        .seed-area {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .area-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .area-title i {
+            color: var(--accent-primary);
+        }
+
+        .seed-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            align-items: stretch;
+            gap: 12px 8px;
+            background: var(--tertiary-bg);
+            padding: 14px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border-light);
+            position: relative;
+            transition: 0.2s;
+        }
+        .seed-row:hover {
+            border-color: #b8c9e0;
+        }
+
+        .row-reset-button {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: #ff922b;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: 0.2s;
+            z-index: 5;
+        }
+        .seed-row:hover .row-reset-button { opacity: 1; }
+        .row-reset-button:hover { background: #ffa94d; }
+
+        .seed-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 0 1 auto;
+            min-width: 80px;
+            max-width: 110px;
+            transition: 0.2s;
+        }
+
+        .seed-image {
+            width: 80px;
+            height: 80px;
+            background: var(--secondary-bg);
+            border: 2px solid var(--border-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: 0.2s;
+            overflow: visible;
+        }
+        .seed-image:hover {
+            border-color: var(--accent-primary);
+            transform: scale(1.02);
+        }
+
+        .seed-image .seed-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: var(--tertiary-bg);
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            padding: 4px;
+            text-align: center;
+            line-height: 1.2;
+            border-radius: 10px;
+        }
+
+        .seed-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .seed-quantity-marker {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: var(--accent-primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.20);
+            line-height: 1.5;
+            z-index: 30;
+            white-space: nowrap;
+            pointer-events: none;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            transform: translate(0, 0);
+        }
+
+        .seed-image-buttons {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            opacity: 0;
+            transition: 0.2s;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .seed-image:hover .seed-image-buttons {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .seed-clear-button {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 50%;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+
+        .seed-operation-buttons {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: 0.2s;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .seed-image:hover .seed-operation-buttons {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .seed-operation-button {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 4px;
+            background: #4c6ef5;
+            color: white;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+
+        .seed-quantity-input {
+            width: 64px;
+            text-align: center;
+            border: 1px solid var(--border-primary);
+            border-radius: 20px;
+            padding: 4px 6px;
+            font-size: 0.8rem;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.2s;
+        }
+        .seed-quantity-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px var(--accent-primary-transparent);
+        }
+
+        .material-panel {
+            background: var(--tertiary-bg);
+            border-radius: var(--card-radius);
+            padding: 18px 16px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .material-panel .area-title {
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+
+        .material-group {
+            background: var(--secondary-bg);
+            border-radius: 10px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item span:first-child { color: var(--text-secondary); }
+
+        .zero { color: #ffd700; font-weight: 600; }
+        .positive { color: #51cf66; font-weight: 600; }
+        .negative { color: #ff6b6b; font-weight: 600; }
+        .moonlight { color: #bbf23d; cursor: pointer; transition: 0.2s; }
+        .moonlight:hover { color: #d4f871; }
+
+        @media (max-width: 768px) {
+            body { padding: 16px 10px; }
+            .baike-wrapper { padding: 18px 14px; }
+            .baike-header h1 { font-size: 1.5rem; }
+            .seed-item { min-width: 70px; max-width: 90px; }
+            .seed-image { width: 70px; height: 70px; }
+            .seed-quantity-input { width: 56px; }
+            .seed-quantity-marker { font-size: 0.6rem; padding: 1px 8px; top: -6px; left: -6px; }
+        }
+
+        @media (max-width: 480px) {
+            .seed-item { min-width: 60px; max-width: 80px; }
+            .seed-image { width: 60px; height: 60px; }
+            .seed-quantity-input { width: 48px; font-size: 0.7rem; }
+            .seed-quantity-marker { font-size: 0.55rem; padding: 1px 6px; top: -5px; left: -5px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="baike-wrapper">
+    <div class="baike-header">
+        <h1><i class="fas fa-seedling" style="background: none; -webkit-text-fill-color: var(--accent-primary); margin-right: 8px;"></i>园艺计算器</h1>
+        <span class="subhead"><i class="fas fa-calculator"></i> 材料 · 产出 · 自循环</span>
+    </div>
+
+    <div class="app-grid">
+
+        <div class="sidebar">
+            <div class="option-group">
+                <div class="option-group-title">工具</div>
+                <div class="option-button active" id="golden-watering-can">黄金水壶</div>
+                <div class="input-row-side">
+                    <label>单植物收获次数</label>
+                    <input type="number" id="harvest-count" value="5" min="1" max="5">
+                </div>
+                <div class="input-row-side">
+                    <label>单水壶浇灌量</label>
+                    <input type="number" id="watering-amount" value="9" min="1">
+                </div>
+                <div class="input-row-side">
+                    <label>快速运算倍数</label>
+                    <input type="number" id="multiplier" value="1" min="1">
+                </div>
+                <div class="option-button active" id="simplify-results">简化结果</div>
+            </div>
+            <div class="option-group">
+                <div class="option-group-title">计算模式</div>
+                <div class="option-button radio-button active" data-mode="consumption">计算消耗</div>
+                <div class="option-button radio-button" data-mode="production">计算产出</div>
+                <div class="option-button radio-button" data-mode="self-cycle">计算自循环</div>
+            </div>
+            <div class="option-group">
+                <div class="option-group-title">快速输入</div>
+                <div class="input-row-side" style="padding: 4px 10px;">
+                    <textarea id="quick-input" placeholder="xx,xx,xx"></textarea>
+                </div>
+            </div>
+            <div class="function-button" data-action="reset">重置数量</div>
+        </div>
+
+        <!-- 种子区域 -->
+        <div class="seed-area" id="seedArea"></div>
+
+        <!-- 材料面板 -->
+        <div class="material-panel" id="materialPanel">
+            <div class="area-title"><i class="fas fa-cubes"></i> 材料需求</div>
+            <div id="materialContent"></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-light); padding-top: 14px; text-align: right;">
+        <i class="far fa-clock"></i> 点击种子图片左键+1 / 右键-1 · 长按连续操作
+    </div>
+</div>
+
+<script>
+    (function () {
+
+        const seedImageMap = {
+            'shaping-ore-seed': '../图片/物品/塑形矿.png',
+            'blue-crystal-seed': '../图片/物品/蓝晶.png',
+            'limit-crystal-seed': '../图片/物品/限晶.png',
+            'red-ore-seed': '../图片/物品/红矿.png',
+            'crystal-seed': '../图片/物品/水晶.png',
+            'eye-seed': '../图片/物品/眼睛.png',
+            'sunrise-seed': '../图片/物品/旭日.png',
+            'glimmerstone-seed': '../图片/物品/微光石.png',
+            'tentacle-seed': '../图片/物品/触手.png',
+            'golden-soul-seed': '../图片/物品/金魂.png',
+            'bulb-seed': '../图片/物品/阳光球根.png',
+            'construct-crystal-seed': '../图片/物品/建晶.png',
+            'ripener-seed': '../图片/物品/催熟剂.png',
+            'primordial-flame-seed': '../图片/物品/原初之炎.png',
+            'wallflower-seed': '../图片/物品/壁花.png',
+            'flash-powder-seed': '../图片/物品/闪光粉.png'
+        };
+
+        const seedConfigs = {
+            'shaping-ore-seed': { name: '塑形矿', output: 400, consumption: { 'concentrated-compost': 10, 'moonlight-bulb': 1, 'blue-crystal': 835, 'limit-crystal': 835, 'moonlight-harmonizer': 0 }, useGoldenWateringCan: false },
+            'blue-crystal-seed': { name: '蓝晶', output: 350, consumption: { 'concentrated-compost': 10, 'moonlight-bulb': 1, 'shaping-ore': 900, 'limit-crystal': 900, 'moonlight-harmonizer': 0 }, useGoldenWateringCan: false },
+            'limit-crystal-seed': { name: '限晶', output: 425, consumption: { 'concentrated-compost': 10, 'moonlight-bulb': 1, 'shaping-ore': 850, 'blue-crystal': 850, 'moonlight-harmonizer': 0 }, useGoldenWateringCan: false },
+            'red-ore-seed': { name: '红矿', output: 70, consumption: { 'concentrated-compost': 15, 'moonlight-bulb': 1, 'shaping-ore': 600, 'limit-crystal': 600, 'blue-crystal': 600, 'moonlight-harmonizer': 0 }, useGoldenWateringCan: true },
+            'crystal-seed': { name: '水晶', output: 100, consumption: { 'concentrated-compost': 15, 'moonlight-harmonizer': 1, 'moonlight-bulb': 2, 'sunrise': 450, 'glimmerstone': 500 }, useGoldenWateringCan: true },
+            'eye-seed': { name: '眼睛', output: 750, consumption: { 'concentrated-compost': 15, 'moonlight-harmonizer': 2, 'moonlight-bulb': 2, 'crystal': 300, 'sunrise': 300 }, useGoldenWateringCan: true },
+            'sunrise-seed': { name: '旭日', output: 750, consumption: { 'concentrated-compost': 15, 'moonlight-harmonizer': 1, 'moonlight-bulb': 2, 'eye': 725, 'glimmerstone': 725 }, useGoldenWateringCan: true },
+            'glimmerstone-seed': { name: '微光石', output: 500, consumption: { 'concentrated-compost': 15, 'moonlight-harmonizer': 1, 'moonlight-bulb': 2, 'crystal': 300, 'eye': 300 }, useGoldenWateringCan: true },
+            'tentacle-seed': { name: '触手', output: 15, consumption: { 'concentrated-compost': 20, 'moonlight-harmonizer': 5, 'moonlight-bulb': 3, 'golden-soul': 14, 'bulb': 14 }, useGoldenWateringCan: true },
+            'golden-soul-seed': { name: '金魂', output: 5, consumption: { 'concentrated-compost': 20, 'moonlight-harmonizer': 5, 'moonlight-bulb': 3, 'tentacle': 35, 'bulb': 35 }, useGoldenWateringCan: true },
+            'bulb-seed': { name: '球根', output: 400, consumption: { 'concentrated-compost': 20, 'moonlight-harmonizer': 3, 'moonlight-bulb': 3, 'tentacle': 10, 'golden-soul': 10 }, useGoldenWateringCan: true },
+            'construct-crystal-seed': { name: '建晶', output: 115, consumption: { 'concentrated-compost': 25, 'moonlight-harmonizer': 7, 'moonlight-bulb': 4, 'primordial-flame': 150, 'flash-powder': 100 }, useGoldenWateringCan: true },
+            'ripener-seed': { name: '催熟剂', output: 15, consumption: { 'concentrated-compost': 30, 'moonlight-harmonizer': 7, 'moonlight-bulb': 4, 'wallflower': 70, 'flash-powder': 70 }, useGoldenWateringCan: true },
+            'primordial-flame-seed': { name: '原初之炎', output: 150, consumption: { 'concentrated-compost': 30, 'moonlight-harmonizer': 7, 'moonlight-bulb': 4, 'construct-crystal': 90, 'wallflower': 90 }, useGoldenWateringCan: true },
+            'wallflower-seed': { name: '壁花', output: 55, consumption: { 'concentrated-compost': 25, 'moonlight-harmonizer': 7, 'moonlight-bulb': 4, 'construct-crystal': 40, 'ripener': 40 }, useGoldenWateringCan: true },
+            'flash-powder-seed': { name: '闪光粉', output: 70, consumption: { 'concentrated-compost': 25, 'moonlight-harmonizer': 7, 'moonlight-bulb': 4, 'ripener': 50, 'primordial-flame': 50 }, useGoldenWateringCan: true }
+        };
+
+        const rowGroups = [
+            ['shaping-ore-seed', 'blue-crystal-seed', 'limit-crystal-seed', 'red-ore-seed'],
+            ['crystal-seed', 'eye-seed', 'sunrise-seed', 'glimmerstone-seed'],
+            ['tentacle-seed', 'golden-soul-seed', 'bulb-seed'],
+            ['construct-crystal-seed', 'ripener-seed', 'primordial-flame-seed', 'wallflower-seed', 'flash-powder-seed']
+        ];
+
+        const appState = {
+            goldenWateringCan: true,
+            simplifyResults: true,
+            calculationMode: 'consumption',
+            seedQuantities: {},
+            harvestCount: 5,
+            wateringAmount: 9,
+            multiplier: 1
+        };
+
+        const seedArea = document.getElementById('seedArea');
+        const materialPanel = document.getElementById('materialContent');
+
+        function renderSeedRows() {
+            let html = '';
+            rowGroups.forEach((group, idx) => {
+                const rowNum = idx + 1;
+                html += `<div class="seed-row" id="seed-row${rowNum}">
+          <button class="row-reset-button" data-row="${rowNum}">R</button>`;
+                group.forEach(seedId => {
+                    const cfg = seedConfigs[seedId];
+                    const marker = cfg.output || 0;
+                    const imgSrc = seedImageMap[seedId] || '';
+                    html += `
+            <div class="seed-item">
+              <div class="seed-image" data-input-id="${seedId}">
+                <img src="${imgSrc}" alt="${cfg.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="seed-placeholder" style="display:none;">
+                  <i class="fas fa-seedling" style="font-size:1.2rem;color:var(--accent-primary);"></i>
+                  <span>${cfg.name}</span>
+                </div>
+                <div class="seed-quantity-marker">${marker}</div>
+                <div class="seed-image-buttons">
+                  <button class="seed-clear-button" data-input-id="${seedId}">×</button>
+                </div>
+                <div class="seed-operation-buttons">
+                  <button class="seed-operation-button" data-operation="multiply" data-input-id="${seedId}">×</button>
+                  <button class="seed-operation-button" data-operation="divide" data-input-id="${seedId}">÷</button>
+                </div>
+              </div>
+              <input type="number" value="0" id="${seedId}" class="seed-quantity-input">
+            </div>`;
+                });
+                html += `</div>`;
+            });
+            seedArea.innerHTML = html;
+
+            document.querySelectorAll('.seed-image img').forEach(img => {
+                img.addEventListener('error', function () {
+                    this.style.display = 'none';
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder && placeholder.classList.contains('seed-placeholder')) {
+                        placeholder.style.display = 'flex';
+                    }
+                });
+                img.addEventListener('load', function () {
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder && placeholder.classList.contains('seed-placeholder')) {
+                        placeholder.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function renderMaterialPanel() {
+            const nameMap = {
+                'concentrated-compost': '浓缩堆肥', 'moonlight-harmonizer': '月光调和器', 'moonlight-bulb': '月光球根',
+                'shaping-ore': '塑形矿', 'blue-crystal': '蓝晶', 'limit-crystal': '限晶', 'red-ore': '红矿',
+                'crystal': '水晶', 'eye': '眼睛', 'sunrise': '旭日', 'glimmerstone': '微光石',
+                'tentacle': '触手', 'golden-soul': '金魂', 'bulb': '球根',
+                'construct-crystal': '建晶', 'ripener': '催熟剂', 'primordial-flame': '原初之炎',
+                'wallflower': '壁花', 'flash-powder': '闪光粉'
+            };
+            let html = '';
+            html += `<div class="material-group"><div class="summary-item"><span>黄金水壶</span><span id="concentrated-goldenwatering-requirement" class="zero">0</span></div>`;
+            ['concentrated-compost', 'moonlight-harmonizer', 'moonlight-bulb'].forEach(key => {
+                const label = key === 'moonlight-harmonizer' ? `<span class="moonlight" id="moonlight-harmonizer-requirement-label">月光调和器</span>` : nameMap[key];
+                html += `<div class="summary-item"><span>${label}</span><span id="${key}-requirement" class="zero">0</span></div>`;
+            });
+            html += `</div>`;
+            const groups = [
+                ['shaping-ore', 'blue-crystal', 'limit-crystal', 'red-ore'],
+                ['crystal', 'eye', 'sunrise', 'glimmerstone'],
+                ['tentacle', 'golden-soul', 'bulb'],
+                ['construct-crystal', 'ripener', 'primordial-flame', 'wallflower', 'flash-powder']
+            ];
+            groups.forEach(group => {
+                html += `<div class="material-group">`;
+                group.forEach(key => {
+                    html += `<div class="summary-item"><span>${nameMap[key]}</span><span id="${key}-requirement" class="zero">0</span></div>`;
+                });
+                html += `</div>`;
+            });
+            materialPanel.innerHTML = html;
+        }
+
+        function calculateRequirements() {
+            const materials = {
+                'concentrated-compost': 0, 'moonlight-harmonizer': 0, 'moonlight-bulb': 0,
+                'shaping-ore': 0, 'blue-crystal': 0, 'limit-crystal': 0, 'red-ore': 0,
+                'crystal': 0, 'eye': 0, 'sunrise': 0, 'glimmerstone': 0,
+                'tentacle': 0, 'golden-soul': 0, 'bulb': 0,
+                'construct-crystal': 0, 'ripener': 0, 'primordial-flame': 0, 'wallflower': 0, 'flash-powder': 0
+            };
+            const mode = appState.calculationMode;
+            if (mode === 'self-cycle') {
+                const consumption = { ...materials };
+                const production = { ...materials };
+                Object.keys(appState.seedQuantities).forEach(seedId => {
+                    const qty = appState.seedQuantities[seedId] || 0;
+                    if (qty <= 0) return;
+                    const cfg = seedConfigs[seedId];
+                    if (!cfg) return;
+                    Object.keys(cfg.consumption).forEach(mat => {
+                        consumption[mat] += cfg.consumption[mat] * qty;
+                    });
+                    const nameMap = { '塑形矿': 'shaping-ore', '蓝晶': 'blue-crystal', '限晶': 'limit-crystal', '红矿': 'red-ore', '水晶': 'crystal', '眼睛': 'eye', '旭日': 'sunrise', '微光石': 'glimmerstone', '触手': 'tentacle', '金魂': 'golden-soul', '球根': 'bulb', '建晶': 'construct-crystal', '催熟剂': 'ripener', '原初之炎': 'primordial-flame', '壁花': 'wallflower', '闪光粉': 'flash-powder' };
+                    const matKey = nameMap[cfg.name];
+                    if (matKey) production[matKey] += cfg.output * qty * appState.harvestCount;
+                });
+                Object.keys(materials).forEach(mat => {
+                    materials[mat] = production[mat] - consumption[mat];
+                });
+            } else if (mode === 'production') {
+                Object.keys(appState.seedQuantities).forEach(seedId => {
+                    const qty = appState.seedQuantities[seedId] || 0;
+                    if (qty <= 0) return;
+                    const cfg = seedConfigs[seedId];
+                    if (!cfg) return;
+                    const nameMap = { '塑形矿': 'shaping-ore', '蓝晶': 'blue-crystal', '限晶': 'limit-crystal', '红矿': 'red-ore', '水晶': 'crystal', '眼睛': 'eye', '旭日': 'sunrise', '微光石': 'glimmerstone', '触手': 'tentacle', '金魂': 'golden-soul', '球根': 'bulb', '建晶': 'construct-crystal', '催熟剂': 'ripener', '原初之炎': 'primordial-flame', '壁花': 'wallflower', '闪光粉': 'flash-powder' };
+                    const matKey = nameMap[cfg.name];
+                    if (matKey) materials[matKey] += cfg.output * qty * appState.harvestCount;
+                });
+            } else {
+                Object.keys(appState.seedQuantities).forEach(seedId => {
+                    const qty = appState.seedQuantities[seedId] || 0;
+                    if (qty <= 0) return;
+                    const cfg = seedConfigs[seedId];
+                    if (!cfg) return;
+                    Object.keys(cfg.consumption).forEach(mat => {
+                        materials[mat] += cfg.consumption[mat] * qty * -1;
+                    });
+                });
+            }
+            updateMaterialDisplay(materials);
+            calculateGoldenWatering();
+        }
+
+        function updateMaterialDisplay(materials) {
+            Object.keys(materials).forEach(key => {
+                const el = document.getElementById(`${key}-requirement`);
+                if (!el) return;
+                let val = materials[key];
+                const numVal = val;
+                if (appState.simplifyResults && Math.abs(val) >= 10000) {
+                    val = (val / 10000).toFixed(2) + 'w';
+                } else {
+                    val = val.toString();
+                }
+                el.textContent = val;
+                el.classList.remove('zero', 'positive', 'negative');
+                if (numVal > 0) el.classList.add('positive');
+                else if (numVal < 0) el.classList.add('negative');
+                else el.classList.add('zero');
+            });
+        }
+
+        function calculateGoldenWatering() {
+            const el = document.getElementById('concentrated-goldenwatering-requirement');
+            if (!el) return;
+            if (appState.goldenWateringCan) {
+                let total = 0;
+                Object.keys(appState.seedQuantities).forEach(seedId => {
+                    const cfg = seedConfigs[seedId];
+                    if (cfg && cfg.useGoldenWateringCan) {
+                        total += appState.seedQuantities[seedId] || 0;
+                    }
+                });
+                const count = Math.ceil(total / appState.wateringAmount);
+                el.textContent = count;
+                el.classList.remove('zero', 'positive', 'negative');
+                if (count > 0) el.classList.add('positive');
+                else el.classList.add('zero');
+            } else {
+                el.textContent = '0';
+                el.classList.remove('positive', 'negative');
+                el.classList.add('zero');
+            }
+        }
+
+        function initQuantities() {
+            document.querySelectorAll('.seed-quantity-input').forEach(inp => {
+                appState.seedQuantities[inp.id] = parseInt(inp.value) || 0;
+            });
+        }
+
+        function bindEvents() {
+            document.getElementById('golden-watering-can').addEventListener('click', function () {
+                this.classList.toggle('active');
+                appState.goldenWateringCan = this.classList.contains('active');
+                const harvestInput = document.getElementById('harvest-count');
+                if (appState.goldenWateringCan) {
+                    harvestInput.value = 5;
+                    harvestInput.max = 5;
+                } else {
+                    harvestInput.value = 2;
+                    harvestInput.max = 2;
+                }
+                appState.harvestCount = parseInt(harvestInput.value);
+                calculateRequirements();
+            });
+            document.getElementById('simplify-results').addEventListener('click', function () {
+                this.classList.toggle('active');
+                appState.simplifyResults = this.classList.contains('active');
+                calculateRequirements();
+            });
+            document.querySelectorAll('.radio-button').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.radio-button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    appState.calculationMode = this.dataset.mode;
+                    calculateRequirements();
+                });
+            });
+            document.getElementById('harvest-count').addEventListener('input', function () {
+                let val = parseInt(this.value) || 1;
+                const max = appState.goldenWateringCan ? 5 : 2;
+                if (val > max) { val = max; this.value = max; }
+                appState.harvestCount = val;
+                calculateRequirements();
+            });
+            document.getElementById('watering-amount').addEventListener('input', function () {
+                let val = parseInt(this.value) || 1;
+                if (val < 1) { val = 1; this.value = 1; }
+                appState.wateringAmount = val;
+                calculateRequirements();
+            });
+            document.getElementById('multiplier').addEventListener('input', function () {
+                let val = parseInt(this.value) || 1;
+                if (val < 1) { val = 1; this.value = 1; }
+                appState.multiplier = val;
+            });
+
+            document.querySelectorAll('.seed-quantity-input').forEach(inp => {
+                inp.addEventListener('input', function () {
+                    appState.seedQuantities[this.id] = parseInt(this.value) || 0;
+                    calculateRequirements();
+                });
+            });
+
+            document.querySelectorAll('.seed-image').forEach(img => {
+                const inputId = img.dataset.inputId;
+                const input = document.getElementById(inputId);
+
+                img.addEventListener('click', function (e) {
+                    if (e.target.closest('button')) return;
+                    e.preventDefault();
+                    input.value = Math.max(0, parseInt(input.value) + 1);
+                    appState.seedQuantities[inputId] = parseInt(input.value);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    calculateRequirements();
+                });
+
+                img.addEventListener('contextmenu', function (e) {
+                    e.preventDefault();
+                    if (e.target.closest('button')) return;
+                    input.value = Math.max(0, parseInt(input.value) - 1);
+                    appState.seedQuantities[inputId] = parseInt(input.value);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    calculateRequirements();
+                });
+
+                let timer;
+                img.addEventListener('mousedown', function (e) {
+                    if (e.target.closest('button')) return;
+                    const step = e.button === 0 ? 1 : -1;
+                    timer = setTimeout(() => {
+                        const interval = setInterval(() => {
+                            const val = Math.max(0, parseInt(input.value) + step);
+                            input.value = val;
+                            appState.seedQuantities[inputId] = val;
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            calculateRequirements();
+                        }, 50);
+                        img._interval = interval;
+                    }, 600);
+                });
+                img.addEventListener('mouseup', function () {
+                    clearTimeout(timer);
+                    if (img._interval) { clearInterval(img._interval); img._interval = null; }
+                });
+                img.addEventListener('mouseleave', function () {
+                    clearTimeout(timer);
+                    if (img._interval) { clearInterval(img._interval); img._interval = null; }
+                });
+            });
+
+            document.querySelectorAll('.seed-clear-button').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const inputId = this.dataset.inputId;
+                    const input = document.getElementById(inputId);
+                    input.value = 0;
+                    appState.seedQuantities[inputId] = 0;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    calculateRequirements();
+                });
+            });
+
+            document.querySelectorAll('.seed-operation-button').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const inputId = this.dataset.inputId;
+                    const input = document.getElementById(inputId);
+                    const op = this.dataset.operation;
+                    let val = parseInt(input.value) || 0;
+                    if (op === 'multiply') val = val * appState.multiplier;
+                    else if (op === 'divide') val = Math.ceil(val / appState.multiplier);
+                    val = Math.max(0, val);
+                    input.value = val;
+                    appState.seedQuantities[inputId] = val;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    calculateRequirements();
+                });
+            });
+
+            document.querySelectorAll('.row-reset-button').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const row = this.dataset.row;
+                    const rowEl = document.getElementById(`seed-row${row}`);
+                    if (!rowEl) return;
+                    rowEl.querySelectorAll('.seed-quantity-input').forEach(inp => {
+                        inp.value = 0;
+                        appState.seedQuantities[inp.id] = 0;
+                        inp.dispatchEvent(new Event('input', { bubbles: true }));
+                    });
+                    calculateRequirements();
+                });
+            });
+
+            document.querySelector('[data-action="reset"]').addEventListener('click', function () {
+                document.querySelectorAll('.seed-quantity-input').forEach(inp => {
+                    inp.value = 0;
+                    appState.seedQuantities[inp.id] = 0;
+                    inp.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+                document.getElementById('harvest-count').value = appState.goldenWateringCan ? 5 : 2;
+                appState.harvestCount = parseInt(document.getElementById('harvest-count').value);
+                document.getElementById('watering-amount').value = 9;
+                appState.wateringAmount = 9;
+                document.getElementById('multiplier').value = 1;
+                appState.multiplier = 1;
+                document.getElementById('quick-input').value = '';
+                calculateRequirements();
+            });
+
+            document.getElementById('quick-input').addEventListener('blur', function () {
+                const vals = this.value.split(',').map(v => parseInt(v.trim()) || 0);
+                const inputs = document.querySelectorAll('.seed-quantity-input');
+                inputs.forEach((inp, idx) => {
+                    if (idx < vals.length) {
+                        inp.value = Math.max(0, vals[idx]);
+                        appState.seedQuantities[inp.id] = parseInt(inp.value);
+                        inp.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                calculateRequirements();
+            });
+
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'moonlight-harmonizer-requirement-label') {
+                    const el = document.getElementById('moonlight-harmonizer-requirement');
+                    if (!el) return;
+                    let val = parseFloat(el.textContent) || 0;
+                    if (el.textContent.includes('w')) val = parseFloat(el.textContent) * 10000;
+                    val = Math.abs(val);
+                    const seeds = Math.ceil(val * 4 * 5 / 2 / 7 / 12);
+                    const tomatoes = Math.ceil(val * 4 * 5 / 2);
+                    const compost = Math.ceil(val * 4);
+                    alert(`预计需要 ${seeds} 棵方茄种子。\n一共需要约 ${tomatoes} 个方茄，用于制作 ${compost} 个优质堆肥。\n\n【以每棵种子收获12次，每次7个方茄计算】`);
+                }
+            });
+        }
+
+        function listenToParentTheme() {
+            if (window.parent !== window) {
+                window.addEventListener('storage', function (e) {
+                    if (e.key === 'preferred-theme') applyTheme(e.newValue);
+                });
+                window.addEventListener('message', function (e) {
+                    if (e.data && e.data.type === 'theme-change') applyTheme(e.data.theme);
+                });
+                const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                applyTheme(parentTheme);
+            }
+        }
+        function applyTheme(theme) {
+            if (theme === 'default') document.body.removeAttribute('data-theme');
+            else document.body.setAttribute('data-theme', theme);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSeedRows();
+            renderMaterialPanel();
+            initQuantities();
+
+            document.getElementById('golden-watering-can').classList.add('active');
+            document.getElementById('simplify-results').classList.add('active');
+            document.querySelector('.radio-button[data-mode="consumption"]').classList.add('active');
+
+            bindEvents();
+            calculateRequirements();
+            listenToParentTheme();
+
+            document.querySelector('.baike-wrapper').style.opacity = '0';
+            document.querySelector('.baike-wrapper').style.transform = 'translateY(6px)';
+            setTimeout(() => {
+                document.querySelector('.baike-wrapper').style.opacity = '1';
+                document.querySelector('.baike-wrapper').style.transform = 'translateY(0)';
+            }, 50);
+        });
+
+        window.applyTheme = applyTheme;
+    })();
+</script>
+</body>
+</html>

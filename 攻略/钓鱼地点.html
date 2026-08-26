@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>垂钓地点</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-muted: #6c7a8a;
+            --text-light: #f8f9fa;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.2);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .baike-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            padding: 30px 35px;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 16px;
+        }
+
+        .baike-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .baike-card {
+            background: var(--secondary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+            padding: 18px 22px 22px;
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .baike-card:hover {
+            border-color: #b8c9e0;
+            box-shadow: 0 6px 18px var(--shadow-primary);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title i {
+            color: var(--accent-primary);
+            width: 1.4rem;
+            font-size: 1.1rem;
+        }
+
+        .search-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 10px 18px;
+            border: 1px solid var(--border-primary);
+            border-radius: 40px;
+            font-size: 0.95rem;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            transition: 0.2s;
+            min-width: 180px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-transparent);
+        }
+
+        .search-btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 40px;
+            background: var(--accent-primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 107, 184, 0.25);
+        }
+
+        .search-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            padding: 12px 18px;
+            background: var(--tertiary-bg);
+            border-radius: 60px;
+            border: 1px solid var(--border-light);
+        }
+
+        .search-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .search-option input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--accent-primary);
+            cursor: pointer;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .category-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-btn {
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--border-primary);
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .category-btn:hover {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary-transparent);
+        }
+
+        .category-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 107, 184, 0.2);
+        }
+
+        .current-category-label {
+            font-weight: 600;
+            color: var(--accent-primary);
+            font-size: 1.05rem;
+        }
+
+        .search-results-info {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background: var(--tertiary-bg);
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .search-results-info.show {
+            display: flex;
+        }
+
+        .results-count {
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .clear-search {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            background: var(--secondary-bg);
+            margin-top: 8px;
+        }
+
+        .fishing-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+            font-size: 0.92rem;
+        }
+
+        .fishing-table th {
+            background: var(--tertiary-bg);
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .fishing-table td {
+            padding: 12px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            transition: background 0.15s;
+        }
+
+        .fishing-table tbody tr:hover {
+            background: var(--accent-primary-transparent);
+        }
+
+        .rarity-common {
+            color: #6c7a8a;
+            font-weight: 500;
+        }
+
+        .rarity-uncommon {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .rarity-rare {
+            color: #E15AFA;
+            font-weight: 700;
+        }
+
+        .special-condition {
+            background: var(--accent-primary-transparent);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-primary);
+            display: inline-block;
+            font-size: 0.88rem;
+        }
+
+        .rod-requirement {
+            color: #d43d3d;
+            background: rgba(212, 61, 61, 0.08);
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .highlight {
+            background: rgba(255, 235, 59, 0.4);
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #d48a00;
+        }
+
+        .section-header {
+            background: var(--tertiary-bg);
+            padding: 12px 18px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 2px solid var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-water .section-header {
+            border-color: rgba(52, 152, 219, 0.6);
+        }
+
+        .section-lava .section-header {
+            border-color: rgba(231, 76, 60, 0.6);
+        }
+
+        .section-chocolate .section-header {
+            border-color: rgba(165, 42, 42, 0.6);
+        }
+
+        .section-plasma .section-header {
+            border-color: rgba(155, 89, 182, 0.6);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results h3 {
+            color: var(--accent-secondary);
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 16px 10px;
+            }
+
+            .baike-wrapper {
+                padding: 18px 14px;
+            }
+
+            .baike-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-options {
+                border-radius: 30px;
+                gap: 10px 16px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .category-group {
+                justify-content: center;
+            }
+
+            .current-category-label {
+                text-align: center;
+            }
+
+            .fishing-table {
+                font-size: 0.82rem;
+                min-width: 600px;
+            }
+
+            .fishing-table th,
+            .fishing-table td {
+                padding: 8px 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-group {
+                gap: 6px;
+            }
+
+            .category-btn {
+                padding: 4px 12px;
+                font-size: 0.8rem;
+            }
+
+            .fishing-table {
+                min-width: 480px;
+            }
+
+            .section-header {
+                font-size: 1rem;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="baike-wrapper">
+
+        <!-- 头部 -->
+        <div class="baike-header">
+            <h1><i class="fas fa-fish"
+                    style="background: none; -webkit-text-fill-color: var(--accent-primary); margin-right: 8px;"></i>垂钓指南
+            </h1>
+            <span class="subhead"><i class="fas fa-map-pin"></i> 全鱼类图鉴</span>
+        </div>
+
+        <!-- 搜索 & 过滤 -->
+        <div class="baike-card">
+            <div class="card-title"><i class="fas fa-search"></i> 搜索与筛选</div>
+
+            <div class="search-controls">
+                <div class="search-row">
+                    <input type="text" class="search-box" id="searchInput" placeholder="输入名称、条件或钓竿类型…"
+                        autocomplete="off">
+                    <button class="search-btn" id="searchBtn"><i class="fas fa-arrow-right"></i> 搜索</button>
+                </div>
+
+                <div class="search-options">
+                    <label class="search-option"><input type="checkbox" id="optName" checked> 名称</label>
+                    <label class="search-option"><input type="checkbox" id="optCondition" checked> 条件</label>
+                    <label class="search-option"><input type="checkbox" id="optRod" checked> 钓竿</label>
+                    <label class="search-option"><input type="checkbox" id="optLocation"> 鱼池类型</label>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="category-group" id="categoryGroup">
+                        <button class="category-btn active" data-cat="水鱼类">水</button>
+                        <button class="category-btn" data-cat="熔岩鱼类">熔岩</button>
+                        <button class="category-btn" data-cat="巧克力鱼类">巧克力</button>
+                        <button class="category-btn" data-cat="等离子鱼类">等离子</button>
+                        <button class="category-btn" data-cat="all">全部</button>
+                    </div>
+                    <span class="current-category-label" id="currentCategoryLabel">水鱼类</span>
+                </div>
+
+                <div class="search-results-info" id="resultsInfo">
+                    <span>找到 <strong class="results-count" id="resultsCount">0</strong> 条结果 <span
+                            id="keywordHint"></span></span>
+                    <button class="clear-search" id="clearSearchBtn">清除搜索</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表格容器 -->
+        <div id="fishingContent">
+            <div style="text-align:center; padding:40px; color:var(--text-muted);"><i
+                    class="fas fa-spinner fa-spin"></i> 加载中…</div>
+        </div>
+
+        <!-- 脚注 -->
+        <div
+            style="margin-top: 18px; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-light); padding-top: 14px; text-align: right;">
+            <i class="far fa-database"></i> 数据整合 · 共 <span id="totalFishCount">0</span> 种鱼类
+        </div>
+    </div>
+
+    <script>
+        (function () {
+
+            const fishingData = {
+                "鱼类数据": [
+                    {
+                        "类别": "水鱼类",
+                        "鱼类": [
+                            { "名称": "跳跃玉鳍鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "蓝色布拉丁鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "紫罗兰阅诗者", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "文雅金鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "绯红沙舞者", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "深海公主", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "深渊凝视者", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "鼻涕虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "青蛙", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "粉色珊瑚", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "飞翔燃烧镖鱼", "稀有度": "普通", "出现条件/地点": "深渊世界，爬虫&鱿鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "燃烧克拉肯幼体", "稀有度": "普通", "出现条件/地点": "深渊世界，爬虫&鱿鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "和风鮟鱇鱼", "稀有度": "普通", "出现条件/地点": "深渊世界，青蛙&流浪鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "和风鹦鹉螺", "稀有度": "普通", "出现条件/地点": "深渊世界，青蛙&流浪鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "深渊鮟鱇鱼", "稀有度": "普通", "出现条件/地点": "深渊世界，珊瑚&元素的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "深渊甲壳", "稀有度": "普通", "出现条件/地点": "深渊世界，珊瑚&元素的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "大鲶鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "盐水剑鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "光辉鲨丁鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "附魔妖精鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "冻矿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "学士鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "光耀矿石鱼", "稀有度": "罕见", "出现条件/地点": "断裂高地上层", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "流浪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "水元素", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "蓝色鱿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "毒性青苔石鱼", "稀有度": "罕见", "出现条件/地点": "深渊世界，爬虫&鱿鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "燃烧河豚", "稀有度": "罕见", "出现条件/地点": "深渊世界，爬虫&鱿鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "符文板鱼", "稀有度": "罕见", "出现条件/地点": "深渊世界，青蛙&流浪鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "和风蛤蜊", "稀有度": "罕见", "出现条件/地点": "深渊世界，青蛙&流浪鱼的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "深渊海马", "稀有度": "罕见", "出现条件/地点": "深渊世界，珊瑚&元素的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "深渊石鱼", "稀有度": "罕见", "出现条件/地点": "深渊世界，珊瑚&元素的水池", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "远古海鱼", "稀有度": "稀有", "出现条件/地点": "不满足其他稀有鱼条件的地方", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "宽眼笨鱼", "稀有度": "稀有", "出现条件/地点": "教程世界", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "光辉黄昏鱼", "稀有度": "稀有", "出现条件/地点": "光辉遗迹白天", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "光辉月鱼", "稀有度": "稀有", "出现条件/地点": "光辉遗迹黑天", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "薄暮鱼", "稀有度": "稀有", "出现条件/地点": "诅咒峡谷", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "奇怪鱼眼", "稀有度": "稀有", "出现条件/地点": "暗影塔大厅", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "主城鱼", "稀有度": "稀有", "出现条件/地点": "主城", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "枯骨鱼", "稀有度": "稀有", "出现条件/地点": "沙漠边境", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "彩虹鱼", "稀有度": "稀有", "出现条件/地点": "浸没世界：魔法环焦", "所需钓竿类型": "无", "鱼池类型": "非鱼池" },
+                            { "名称": "青蛙王子", "稀有度": "稀有", "出现条件/地点": "妖精森林，高度在20~255之间", "所需钓竿类型": "湖中仙女（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "稚鸡鱼", "稀有度": "稀有", "出现条件/地点": "龙火山峰，高度在20~255之间", "所需钓竿类型": "湖中仙女（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "女巫海葵鱼", "稀有度": "稀有", "出现条件/地点": "诅咒峡谷，高度在20~255之间", "所需钓竿类型": "湖中仙女（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "狮鹫鱼", "稀有度": "稀有", "出现条件/地点": "除了妖精森林、龙火山峰、诅咒峡谷，高度在200~255之间", "所需钓竿类型": "湖中仙女（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "深海怪鱼", "稀有度": "稀有", "出现条件/地点": "除了妖精森林、龙火山峰、诅咒峡谷，高度在1~20之间", "所需钓竿类型": "湖中仙女（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "水龟", "稀有度": "稀有", "出现条件/地点": "暗影海滩：禁忌之影", "所需钓竿类型": "海龟拖杆（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "鲨鱼", "稀有度": "稀有", "出现条件/地点": "无", "所需钓竿类型": "无", "鱼池类型": "鱼池" },
+                            { "名称": "依偎虫", "稀有度": "稀有", "出现条件/地点": "暗影海滩/开放海域", "所需钓竿类型": "暗流印记商人钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "妮莎妖精鱼", "稀有度": "稀有", "出现条件/地点": "粉色珊瑚&水元素的水池", "所需钓竿类型": "暗流印记商人钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "燃烧果冻鱼", "稀有度": "稀有", "出现条件/地点": "深渊世界，鼻涕虫&鱿鱼的水池", "所需钓竿类型": "深渊钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "克拉肯幼体", "稀有度": "稀有", "出现条件/地点": "深渊世界，青蛙&流浪鱼的水池", "所需钓竿类型": "深渊钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "和风蝠鲼", "稀有度": "稀有", "出现条件/地点": "深渊世界，珊瑚&元素的水池", "所需钓竿类型": "深渊钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "深渊鱿鱼", "稀有度": "稀有", "出现条件/地点": "深渊世界，稀有鱼池", "所需钓竿类型": "深渊钓竿（使用）", "鱼池类型": "鱼池" }
+                        ]
+                    },
+                    {
+                        "类别": "熔岩鱼类",
+                        "鱼类": [
+                            { "名称": "骨火狂牙鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "炽热翻鳍鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "火熔等角虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "燃炎蛤蜊", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "舞龙鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "彩虹壳小海龟", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "影裔三叶虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "熔岩爬虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "红色青蛙", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "火焰珊瑚", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "塑形石矿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "蓝晶矿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "限晶矿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "火鼻矿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "岩浆枪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "高压煤黑鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "玻璃瞪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "灰烬裂矿鱼", "稀有度": "罕见", "出现条件/地点": "断裂高地", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "熔化的流浪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "火元素", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "火鱿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "远古岩浆骑士", "稀有度": "稀有", "出现条件/地点": "不满足其他稀有鱼条件的地方", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "火烤笨鱼", "稀有度": "稀有", "出现条件/地点": "新手教程", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "焦炎主城鱼", "稀有度": "稀有", "出现条件/地点": "主城", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "翱翔焰鱼", "稀有度": "稀有", "出现条件/地点": "光辉遗迹", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "热带火山鱼", "稀有度": "稀有", "出现条件/地点": "失落岛屿（仅限主世界）", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "寒火鱼", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "火红流鱼", "稀有度": "稀有", "出现条件/地点": "侏罗纪：蜥蜴沼泽", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "岩浆龟", "稀有度": "稀有", "出现条件/地点": "断裂高地", "所需钓竿类型": "海龟拖杆（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "姜鲨鱼", "稀有度": "稀有", "出现条件/地点": "无", "所需钓竿类型": "熔火岩浆筛（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "明瑞阳光鱼", "稀有度": "稀有", "出现条件/地点": "熔岩鱼池", "所需钓竿类型": "暗流印记商人吊杆（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "蓝爪船长", "稀有度": "稀有", "出现条件/地点": "稀有熔岩鱼池", "所需钓竿类型": "暗流印记商人吊杆（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "灼热虎鱼", "稀有度": "稀有", "出现条件/地点": "暗影海滩，一星副本顶部", "所需钓竿类型": "阿尔法垂钓者/艾莉西亚吊杆（使用）", "鱼池类型": "鱼池" }
+                        ]
+                    },
+                    {
+                        "类别": "巧克力鱼类",
+                        "鱼类": [
+                            { "名称": "薄荷巧克力龟", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "蓝莓派虎鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "原始紫红刺鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "橙色马林克鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "樱桃果冻鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "酸溜鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "暗礁烈鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "糖果爬虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "糖果蛙", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "糖果珊瑚", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "纸杯蛋糕爬行鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "巧克力鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "糖盖糊鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "甜蜜斩鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "肥大布朗尼莫鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "红矿鱼", "稀有度": "罕见", "出现条件/地点": "蓬丘仙境：远古高地", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "冰糖流浪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "巧克力元素", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "糖果鱿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "远古巧克鮟鱇", "稀有度": "稀有", "出现条件/地点": "不满足其他稀有鱼条件的地方", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "蓝色棉花糖高飞鱼", "稀有度": "稀有", "出现条件/地点": "任意世界，高度在200~255之间", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "粉色棉花糖高飞鱼", "稀有度": "稀有", "出现条件/地点": "任意世界，高度在200~255之间", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "增压块鱼", "稀有度": "稀有", "出现条件/地点": "除了主城外的世界，高度在1~20之间", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "热门巧克力章鱼", "稀有度": "稀有", "出现条件/地点": "侏罗纪：蜥蜴沼泽", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "巧克鳄鱼", "稀有度": "稀有", "出现条件/地点": "糖果世界，高度在20~200之间", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "软糖鱼", "稀有度": "稀有", "出现条件/地点": "蓬丘仙境：远古高地", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "巧克力龟", "稀有度": "稀有", "出现条件/地点": "永冻界，高度在1~20之间", "所需钓竿类型": "海龟拖杆（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "巧克力鲨鱼", "稀有度": "稀有", "出现条件/地点": "无", "所需钓竿类型": "蘸糖钓杖（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "松饼海胆", "稀有度": "稀有", "出现条件/地点": "糖果蛙&冰糖流浪鱼的巧克力池", "所需钓竿类型": "暗流印记商人钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "激升河豚", "稀有度": "稀有", "出现条件/地点": "暗影海滩，一星副本顶部", "所需钓竿类型": "阿尔法垂钓者/艾莉西亚钓竿（使用）", "鱼池类型": "鱼池" }
+                        ]
+                    },
+                    {
+                        "类别": "等离子鱼类",
+                        "鱼类": [
+                            { "名称": "翡翠霓虹镖鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "冷钢外骨骼鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "紫色霓虹射线", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "青钢霓虹石首鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "卡明提蟹", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "楷模八爪鱼", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "暗影垂钓者", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "发光的鼻涕虫", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "灯光青蛙", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "发光珊瑚", "稀有度": "普通", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "封闭贝塔鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "故障的阿尔法鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "太字节龟", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "霓虹无限鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "硝基闪光鱼", "稀有度": "罕见", "出现条件/地点": "晶洞高层地表", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "LED流浪鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "等离子元素", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "萤火鱿鱼", "稀有度": "罕见", "出现条件/地点": "无", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "LED狮子鱼", "稀有度": "稀有", "出现条件/地点": "蓬丘仙境：远古高地", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "电鳗", "稀有度": "稀有", "出现条件/地点": "任何世界，高度在1~55之间", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "石化河豚", "稀有度": "稀有", "出现条件/地点": "任何世界，高度在111~255之间", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "质子水虎鱼", "稀有度": "稀有", "出现条件/地点": "霓虹城，高度在55~111之间", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "章鱼无人机", "稀有度": "稀有", "出现条件/地点": "暗影塔大厅", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "霓虹骑士鱼", "稀有度": "稀有", "出现条件/地点": "不满足其他稀有鱼条件的地方，高度在56~110之间", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "等离子冷凝鱼", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "非鱼池" },
+                            { "名称": "等离子龟", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "海龟拖杆（使用）", "鱼池类型": "非鱼池" },
+                            { "名称": "震动鲨鱼MK.II", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "N-0深钓竿（拥有即可）", "鱼池类型": "鱼池" },
+                            { "名称": "伊维斯鳗鱼", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "暗流印记商人钓竿（使用）", "鱼池类型": "鱼池" },
+                            { "名称": "脉冲反应鱼", "稀有度": "稀有", "出现条件/地点": "永冻界", "所需钓竿类型": "阿尔法垂钓者/艾莉西亚钓竿（使用）", "鱼池类型": "鱼池" }
+                        ]
+                    }
+                ]
+            };
+
+
+            let currentCategory = '水鱼类';
+            let currentQuery = '';
+
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const resultsInfo = document.getElementById('resultsInfo');
+            const resultsCount = document.getElementById('resultsCount');
+            const keywordHint = document.getElementById('keywordHint');
+            const currentCategoryLabel = document.getElementById('currentCategoryLabel');
+            const fishingContent = document.getElementById('fishingContent');
+            const totalFishSpan = document.getElementById('totalFishCount');
+
+            // 搜索选项
+            const optName = document.getElementById('optName');
+            const optCondition = document.getElementById('optCondition');
+            const optRod = document.getElementById('optRod');
+            const optLocation = document.getElementById('optLocation');
+
+            // ---- 辅助 ----
+            function getRarityClass(rarity) {
+                if (rarity === '普通') return 'rarity-common';
+                if (rarity === '罕见') return 'rarity-uncommon';
+                if (rarity === '稀有') return 'rarity-rare';
+                return '';
+            }
+
+            function formatCondition(text) {
+                if (!text || text === '无') return '<span style="color:var(--text-muted);">无特殊条件</span>';
+                return `<span class="special-condition">${text}</span>`;
+            }
+
+            function formatRod(text) {
+                if (!text || text === '无') return '<span style="color:var(--text-muted);">无要求</span>';
+                return `<span class="rod-requirement">${text}</span>`;
+            }
+
+            function highlightText(text, query) {
+                if (!query || query.trim() === '') return text;
+                const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`(${q})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>');
+            }
+
+            function getSectionClass(category) {
+                const map = {
+                    '水鱼类': 'section-water',
+                    '熔岩鱼类': 'section-lava',
+                    '巧克力鱼类': 'section-chocolate',
+                    '等离子鱼类': 'section-plasma'
+                };
+                return map[category] || '';
+            }
+
+            function getFishesForCategory(cat) {
+                if (cat === 'all') {
+                    let all = [];
+                    fishingData['鱼类数据'].forEach(group => {
+                        all = all.concat(group.鱼类.map(f => ({ ...f, category: group.类别 })));
+                    });
+                    return all;
+                }
+                const group = fishingData['鱼类数据'].find(g => g.类别 === cat);
+                if (!group) return [];
+                return group.鱼类.map(f => ({ ...f, category: cat }));
+            }
+
+            function matches(fish, query) {
+                if (!query || query.trim() === '') return true;
+                const q = query.toLowerCase().trim();
+                const fields = [];
+                if (optName.checked) fields.push(fish.名称);
+                if (optCondition.checked) fields.push(fish["出现条件/地点"]);
+                if (optRod.checked) fields.push(fish["所需钓竿类型"]);
+                if (optLocation.checked) fields.push(fish["鱼池类型"]);
+                return fields.some(f => f && f.toLowerCase().includes(q));
+            }
+
+            function render() {
+                const allFishes = getFishesForCategory(currentCategory);
+                const filtered = allFishes.filter(f => matches(f, currentQuery));
+
+                if (currentQuery.trim()) {
+                    resultsInfo.classList.add('show');
+                    resultsCount.textContent = filtered.length;
+                    keywordHint.textContent = `关键词: "${currentQuery}"`;
+                } else {
+                    resultsInfo.classList.remove('show');
+                }
+
+                currentCategoryLabel.textContent = currentCategory === 'all' ? '全部鱼类' : currentCategory;
+
+                const totalAll = getFishesForCategory('all').length;
+                totalFishSpan.textContent = totalAll;
+
+                if (filtered.length === 0) {
+                    fishingContent.innerHTML = `
+                    <div class="no-results">
+                        <h3><i class="fas fa-fish"></i> 没有找到匹配的鱼类</h3>
+                        <p>${currentQuery ? `包含 "<strong>${currentQuery}</strong>" 的鱼类不存在。` : '该类别暂无数据。'}</p>
+                        <p style="font-size:0.9rem; color:var(--text-muted);">尝试调整搜索关键词或筛选条件</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                let groups = [];
+                if (currentCategory === 'all') {
+                    const map = {};
+                    filtered.forEach(f => {
+                        if (!map[f.category]) map[f.category] = [];
+                        map[f.category].push(f);
+                    });
+                    groups = Object.keys(map).map(cat => ({ category: cat, fishes: map[cat] }));
+                } else {
+                    groups = [{ category: currentCategory, fishes: filtered }];
+                }
+
+                let html = '';
+                groups.forEach(group => {
+                    const secClass = getSectionClass(group.category);
+                    html += `<div class="${secClass}">`;
+                    html += `<div class="section-header"><i class="fas fa-water"></i> ${group.category} <span style="font-size:0.8rem; font-weight:400; opacity:0.7;">(${group.fishes.length} 种)</span></div>`;
+                    html += `<div class="table-wrap"><table class="fishing-table"><thead><tr>
+                    <th style="width:20%;">名称</th>
+                    <th style="width:10%;">稀有度</th>
+                    <th style="width:35%;">出现条件 / 地点</th>
+                    <th style="width:20%;">所需钓竿</th>
+                    <th style="width:15%;">鱼池类型</th>
+                </tr></thead><tbody>`;
+
+                    group.fishes.forEach(fish => {
+                        const nameHtml = currentQuery ? highlightText(fish.名称, currentQuery) : fish.名称;
+                        const condHtml = currentQuery ? highlightText(fish["出现条件/地点"], currentQuery) : fish["出现条件/地点"];
+                        const rodHtml = currentQuery ? highlightText(fish["所需钓竿类型"], currentQuery) : fish["所需钓竿类型"];
+                        html += `<tr>
+                        <td><strong>${nameHtml}</strong></td>
+                        <td class="${getRarityClass(fish.稀有度)}">${fish.稀有度}</td>
+                        <td>${formatCondition(condHtml)}</td>
+                        <td>${formatRod(rodHtml)}</td>
+                        <td>${fish["鱼池类型"]}</td>
+                    </tr>`;
+                    });
+
+                    html += `</tbody></table></div></div>`;
+                });
+
+                fishingContent.innerHTML = html;
+            }
+
+            function switchCategory(cat) {
+                currentCategory = cat;
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.cat === cat);
+                });
+                render();
+            }
+
+            function doSearch() {
+                currentQuery = searchInput.value.trim();
+                render();
+            }
+
+            function clearSearch() {
+                searchInput.value = '';
+                currentQuery = '';
+                render();
+                searchInput.focus();
+            }
+
+            function listenToParentTheme() {
+                if (window.parent !== window) {
+                    window.addEventListener('storage', function (e) {
+                        if (e.key === 'preferred-theme') applyTheme(e.newValue);
+                    });
+                    window.addEventListener('message', function (e) {
+                        if (e.data && e.data.type === 'theme-change') applyTheme(e.data.theme);
+                    });
+                    const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                    applyTheme(parentTheme);
+                }
+            }
+
+            function applyTheme(theme) {
+                if (theme === 'default') document.body.removeAttribute('data-theme');
+                else document.body.setAttribute('data-theme', theme);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                searchBtn.addEventListener('click', doSearch);
+                searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') doSearch(); });
+                clearSearchBtn.addEventListener('click', clearSearch);
+
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        switchCategory(this.dataset.cat);
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => this.style.transform = '', 120);
+                    });
+                });
+
+                [optName, optCondition, optRod, optLocation].forEach(el => {
+                    el.addEventListener('change', render);
+                });
+
+                render();
+
+                listenToParentTheme();
+
+                document.querySelector('.baike-wrapper').style.opacity = '0';
+                document.querySelector('.baike-wrapper').style.transform = 'translateY(6px)';
+                setTimeout(() => {
+                    document.querySelector('.baike-wrapper').style.opacity = '1';
+                    document.querySelector('.baike-wrapper').style.transform = 'translateY(0)';
+                }, 60);
+            });
+
+            window.applyTheme = applyTheme;
+        })();
+    </script>
+</body>
+
+</html>

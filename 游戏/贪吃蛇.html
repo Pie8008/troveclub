@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇 · 简约版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: #1e1e2f;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 主容器 – 极简卡片 */
+    .game-wrapper {
+      max-width: 1100px;
+      width: 100%;
+      background: #2a2a3e;
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      border: 1px solid #3d3d5c;
+    }
+
+    /* 左侧游戏板 */
+    .board-section {
+      flex: 2;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    canvas {
+      background: #14141f;
+      border-radius: 16px;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1/1;
+      border: 2px solid #4a4a6a;
+      box-shadow: inset 0 0 8px #0a0a12;
+      max-width: 550px;
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .controls button {
+      background: #3b3b5a;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #ececf0;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      letter-spacing: 0.3px;
+      border: 1px solid #555577;
+    }
+
+    .controls button:hover {
+      background: #4e4e72;
+      transform: scale(1.02);
+      border-color: #7a7aa0;
+    }
+
+    .controls button:disabled {
+      opacity: 0.5;
+      transform: none;
+      pointer-events: none;
+    }
+
+    /* 右侧面板 – 极简信息 */
+    .info-panel {
+      flex: 1;
+      min-width: 200px;
+      background: #22223a;
+      border-radius: 18px;
+      padding: 20px 18px;
+      border: 1px solid #3d3d5c;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-panel h3 {
+      color: #b7b7d6;
+      font-weight: 400;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #3a3a55;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      color: #c8c8e0;
+      font-size: 0.95rem;
+      padding: 4px 0;
+      border-bottom: 1px dashed #33334d;
+    }
+
+    .stat-item span:last-child {
+      font-weight: 600;
+      color: #e0e0f0;
+    }
+
+    .effect-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .effect-tag {
+      background: #323252;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      color: #bdbde8;
+      border: 1px solid #4d4d74;
+    }
+
+    /* 难度 & 词条槽 – 极简 */
+    .slot-group {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slot-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .slot {
+      background: #282842;
+      border: 2px dashed #4a4a6a;
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      color: #a0a0c0;
+      cursor: pointer;
+      transition: 0.15s;
+      flex: 1 0 auto;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .slot.active {
+      border: 2px solid #7a7aaa;
+      background: #353557;
+      color: #d6d6f0;
+      font-weight: 500;
+    }
+
+    .slot.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.4);
+    }
+
+    .slot:hover:not(.disabled) {
+      border-color: #8a8ab0;
+      background: #313153;
+    }
+
+    /* 模态 – 极简 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 18, 0.8);
+      backdrop-filter: blur(3px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-box {
+      background: #2a2a42;
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 480px;
+      width: 92%;
+      border: 1px solid #5a5a7a;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-box h2 {
+      color: #d0d0ee;
+      font-weight: 400;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    .selection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .selection-item {
+      background: #32324e;
+      border: 1px solid #4a4a6e;
+      border-radius: 40px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      color: #b8b8d8;
+      transition: 0.1s;
+      font-size: 0.9rem;
+    }
+
+    .selection-item:hover {
+      background: #3e3e62;
+      border-color: #6a6a92;
+    }
+
+    .selection-item.active {
+      background: #4a4a72;
+      border-color: #9a9ac0;
+      color: white;
+      font-weight: 500;
+    }
+
+    .selection-item .desc {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 4px;
+      color: #a0a0c8;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .modal-actions button {
+      background: #3b3b5e;
+      border: none;
+      padding: 8px 28px;
+      border-radius: 40px;
+      color: #e8e8f0;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #55557a;
+      transition: 0.15s;
+    }
+
+    .modal-actions button:hover {
+      background: #4f4f78;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* game-over 覆盖层 */
+    .gameover-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 8, 16, 0.85);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #e8e8f0;
+      gap: 12px;
+      backdrop-filter: blur(2px);
+    }
+
+    .gameover-overlay h2 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: #f28b82;
+    }
+
+    .gameover-overlay p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .gameover-overlay button {
+      background: #4a4a70;
+      border: none;
+      padding: 8px 32px;
+      border-radius: 40px;
+      color: white;
+      font-size: 1rem;
+      margin-top: 10px;
+      cursor: pointer;
+      border: 1px solid #6a6a90;
+    }
+
+    .board-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 550px;
+    }
+
+    /* 自适应 */
+    @media (max-width: 700px) {
+      .game-wrapper {
+        padding: 16px;
+        gap: 18px;
+      }
+      .selection-grid {
+        grid-template-columns: 1fr;
+      }
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-wrapper">
+  <!-- 左侧：画布 -->
+  <div class="board-section">
+    <div class="board-wrapper">
+      <canvas id="gameCanvas" width="550" height="550"></canvas>
+      <div id="gameOverlay" class="gameover-overlay hidden">
+        <h2>游戏结束</h2>
+        <p>得分 <span id="finalScore">0</span></p>
+        <p>速度 <span id="finalSpeed">400</span> ms</p>
+        <p>食物 <span id="finalFood">0</span></p>
+        <button id="restartFromOverlay">确定</button>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="startBtn">开始游戏</button>
+    </div>
+  </div>
+
+  <!-- 右侧信息面板 -->
+  <div class="info-panel">
+    <div>
+      <h3>📊 状态</h3>
+      <div class="stat-grid">
+        <div class="stat-item"><span>分数</span><span id="scoreDisplay">0</span></div>
+        <div class="stat-item"><span>速度</span><span id="speedDisplay">400</span></div>
+        <div class="stat-item"><span>长度</span><span id="lengthDisplay">3</span></div>
+        <div class="stat-item"><span>倍率</span><span id="multiplierDisplay">1.0</span></div>
+      </div>
+      <div class="effect-tags" id="effectTags"></div>
+    </div>
+
+    <div>
+      <h3>⚙️ 难度</h3>
+      <div class="slot-group">
+        <div class="slot" id="difficultySlot">难度 I</div>
+      </div>
+    </div>
+
+    <div>
+      <h3>🏷️ 词条</h3>
+      <div class="slot-group" id="challengeSlots">
+        <!-- 由 js 动态生成 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 模态框：难度 -->
+<div id="difficultyModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h2>选择难度</h2>
+    <div class="selection-grid" id="difficultyGrid">
+      <div class="selection-item" data-speed="400" data-multiplier="1.0" data-id="d1">难度 I</div>
+      <div class="selection-item" data-speed="350" data-multiplier="1.2" data-id="d2">难度 II</div>
+      <div class="selection-item" data-speed="300" data-multiplier="1.4" data-id="d3">难度 III</div>
+      <div class="selection-item" data-speed="250" data-multiplier="1.6" data-id="d4">难度 IV</div>
+      <div class="selection-item" data-speed="200" data-multiplier="1.8" data-id="d5">难度 V</div>
+      <div class="selection-item" data-speed="150" data-multiplier="2.0" data-id="d6">难度 VI</div>
+    </div>
+    <div class="modal-actions">
+      <button id="confirmDifficulty">确认</button>
+      <button id="cancelDifficulty">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 模态框：词条 -->
+<div id="challengeModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h2>选择词条</h2>
+    <div class="selection-grid" id="challengeGrid">
+      <div class="selection-item" data-multiplier="0.1" data-id="ch1">衔尾蛇<div class="desc">撞身体不结束，扣10%积分</div></div>
+      <div class="selection-item" data-multiplier="0.8" data-id="ch2">八岐大蛇<div class="desc">食物增长8长度</div></div>
+      <div class="selection-item" data-multiplier="0.2" data-id="ch3">绿色风格<div class="desc">所有元素变绿</div></div>
+      <div class="selection-item" data-multiplier="0.5" data-id="ch4">饱腹加速<div class="desc">每5食物加速50ms</div></div>
+      <div class="selection-item" data-multiplier="0.1" data-id="ch5">暗藏宝藏<div class="desc">特殊食物+100分&加速</div></div>
+      <div class="selection-item" data-multiplier="0.5" data-id="ch6">增加障碍<div class="desc">额外5个障碍</div></div>
+      <div class="selection-item" data-multiplier="-0.2" data-id="ch7">富含营养<div class="desc">食物+4基础分</div></div>
+      <div class="selection-item" data-multiplier="0.5" data-id="ch8">积分流失<div class="desc">开局500分，每步-1</div></div>
+      <div class="selection-item" data-multiplier="0.9" data-id="ch9">过渡增长<div class="desc">每步速度+1ms</div></div>
+      <div class="selection-item" data-multiplier="1.5" data-id="ch10">迷失方向<div class="desc">反转上下/左右</div></div>
+      <div class="selection-item" data-multiplier="0.5" data-id="ch11">加固封锁<div class="desc">撞边界立即结束</div></div>
+      <div class="selection-item" data-multiplier="1.0" data-id="ch12">深谙迷雾<div class="desc">仅可见5x5范围</div></div>
+    </div>
+    <div class="modal-actions">
+      <button id="confirmChallenge">确认</button>
+      <button id="cancelChallenge">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- DOM refs ----------
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreSpan = document.getElementById('scoreDisplay');
+    const speedSpan = document.getElementById('speedDisplay');
+    const lengthSpan = document.getElementById('lengthDisplay');
+    const multiplierSpan = document.getElementById('multiplierDisplay');
+    const effectTags = document.getElementById('effectTags');
+    const difficultySlot = document.getElementById('difficultySlot');
+    const challengeSlots = document.getElementById('challengeSlots');
+    const startBtn = document.getElementById('startBtn');
+    const overlay = document.getElementById('gameOverlay');
+    const finalScore = document.getElementById('finalScore');
+    const finalSpeed = document.getElementById('finalSpeed');
+    const finalFood = document.getElementById('finalFood');
+    const restartOverlayBtn = document.getElementById('restartFromOverlay');
+
+    // ---------- 常量 ----------
+    const GRID = 20;
+    const CELL = canvas.width / GRID;
+    const MIN_SPEED = 50;
+
+    // ---------- 状态 ----------
+    let snake = [];
+    let food = { x: 8, y: 8 };
+    let specialFood = null;
+    let obstacles = [];
+    let direction = 'right';
+    let nextDirection = 'right';
+    let score = 0;
+    let gameSpeed = 400;
+    let baseSpeed = 400;
+    let isActive = false;
+    let intervalId = null;
+    let foodCount = 0;
+    let moveCount = 0;
+    let foodsSinceSpeed = 0;
+    let difficultyMultiplier = 1.0;
+    let challengeMultiplier = 1.0;
+
+    // 激活的词条 Set (id)
+    const activeEffects = new Map(); // id -> { name, ... }
+
+    // 难度 & 词条槽位数据
+    let currentDifficulty = { id: 'd1', speed: '400', multiplier: '1.0', text: '难度 I' };
+    // 每个槽位对应的词条id (null表示空)
+    let slotChallengeIds = [];
+
+    // ---------- 辅助函数 ----------
+    function rand(max) { return Math.floor(Math.random() * max); }
+
+    function posKey(x,y) { return x+','+y; }
+
+    function isOccupied(x,y, ignoreSnake=false) {
+      if (!ignoreSnake) {
+        for (let s of snake) if (s.x===x && s.y===y) return true;
+      }
+      if (food && food.x===x && food.y===y) return true;
+      if (specialFood && specialFood.x===x && specialFood.y===y) return true;
+      for (let o of obstacles) if (o.x===x && o.y===y) return true;
+      return false;
+    }
+
+    function getEmptyCell(ignoreSnake=false) {
+      let tries = 0;
+      while (tries++ < 500) {
+        const x = rand(GRID), y = rand(GRID);
+        if (!isOccupied(x,y, ignoreSnake)) return {x,y};
+      }
+      return { x: 5, y: 5 };
+    }
+
+    // ---------- 生成障碍 ----------
+    function generateObstacles(count) {
+      obstacles = [];
+      if (activeEffects.has('ch6')) count += 5;
+      for (let i=0; i<count; i++) {
+        const pos = getEmptyCell(true);
+        obstacles.push(pos);
+      }
+    }
+
+    // ---------- 生成食物 ----------
+    function generateFood() {
+      const pos = getEmptyCell(false);
+      food = pos;
+      // 特殊食物 (ch5)
+      if (activeEffects.has('ch5') && Math.random() < 0.1) {
+        const sp = getEmptyCell(false);
+        specialFood = sp;
+      } else {
+        specialFood = null;
+      }
+    }
+
+    // ---------- 初始化蛇 ----------
+    function initSnake() {
+      snake = [
+        { x: 10, y: 10 },
+        { x: 9, y: 10 },
+        { x: 8, y: 10 }
+      ];
+    }
+
+    // ---------- 重置游戏 ----------
+    function resetGame() {
+      clearInterval(intervalId);
+      isActive = false;
+      intervalId = null;
+      initSnake();
+      generateObstacles(5);
+      generateFood();
+      direction = 'right';
+      nextDirection = 'right';
+      score = 0;
+      foodCount = 0;
+      moveCount = 0;
+      foodsSinceSpeed = 0;
+      gameSpeed = parseInt(currentDifficulty.speed) || 400;
+      baseSpeed = gameSpeed;
+      // 积分流失
+      if (activeEffects.has('ch8')) score = 500;
+      updateUI();
+      drawGame();
+      overlay.classList.add('hidden');
+      startBtn.textContent = '开始游戏';
+      unlockSlots();
+    }
+
+    // ---------- 结束游戏 ----------
+    function endGame() {
+      clearInterval(intervalId);
+      isActive = false;
+      intervalId = null;
+      const totalMul = challengeMultiplier * difficultyMultiplier;
+      finalScore.textContent = Math.floor(score * totalMul);
+      finalSpeed.textContent = gameSpeed;
+      finalFood.textContent = foodCount;
+      overlay.classList.remove('hidden');
+      startBtn.textContent = '开始游戏';
+      unlockSlots();
+    }
+
+    // ---------- 移动蛇 ----------
+    function moveSnake() {
+      direction = nextDirection;
+      const head = { ...snake[0] };
+      switch(direction) {
+        case 'up': head.y--; break;
+        case 'down': head.y++; break;
+        case 'left': head.x--; break;
+        case 'right': head.x++; break;
+      }
+
+      // 边界 (加固封锁 ch11)
+      if (activeEffects.has('ch11')) {
+        if (head.x<0 || head.x>=GRID || head.y<0 || head.y>=GRID) {
+          endGame(); return;
+        }
+      } else {
+        if (head.x<0) head.x=GRID-1;
+        if (head.x>=GRID) head.x=0;
+        if (head.y<0) head.y=GRID-1;
+        if (head.y>=GRID) head.y=0;
+      }
+
+      let ate = false;
+      if (head.x===food.x && head.y===food.y) {
+        ate = true;
+        handleEat();
+      }
+      if (specialFood && head.x===specialFood.x && head.y===specialFood.y) {
+        handleSpecialEat();
+        specialFood = null;
+      }
+
+      // 衔尾蛇 ch1
+      if (activeEffects.has('ch1')) {
+        let collided = false;
+        for (let i=1; i<snake.length; i++) {
+          if (head.x===snake[i].x && head.y===snake[i].y) {
+            score = Math.max(0, Math.floor(score * 0.9));
+            collided = true;
+            break;
+          }
+        }
+        snake.unshift(head);
+        if (!ate) snake.pop();
+      } else {
+        // 正常移动
+        if (!ate) snake.pop();
+        snake.unshift(head);
+        // 自身碰撞
+        for (let i=1; i<snake.length; i++) {
+          if (head.x===snake[i].x && head.y===snake[i].y) {
+            endGame(); return;
+          }
+        }
+      }
+
+      // 障碍碰撞
+      for (let o of obstacles) {
+        if (head.x===o.x && head.y===o.y) {
+          endGame(); return;
+        }
+      }
+
+      // 积分流失 ch8
+      if (activeEffects.has('ch8')) {
+        score = Math.max(0, score - 1);
+      }
+
+      // 过渡增长 ch9
+      if (activeEffects.has('ch9')) {
+        gameSpeed = Math.max(gameSpeed - 1, MIN_SPEED);
+        if (isActive) {
+          clearInterval(intervalId);
+          intervalId = setInterval(gameLoop, gameSpeed);
+        }
+      }
+
+      moveCount++;
+      updateUI();
+    }
+
+    // ---------- 吃东西 ----------
+    function handleEat() {
+      let addScore = 1;
+      if (activeEffects.has('ch7')) addScore += 4;
+      score += addScore;
+      foodCount++;
+      foodsSinceSpeed++;
+
+      // 八岐大蛇 ch2
+      if (activeEffects.has('ch2')) {
+        for (let i=0; i<7; i++) snake.push({ ...snake[snake.length-1] });
+      }
+
+      // 饱腹加速 ch4
+      if (activeEffects.has('ch4') && foodsSinceSpeed >= 5) {
+        gameSpeed = Math.max(gameSpeed - 50, MIN_SPEED);
+        foodsSinceSpeed = 0;
+      } else {
+        gameSpeed = Math.max(gameSpeed - 10, MIN_SPEED);
+      }
+
+      generateFood();
+      if (isActive) {
+        clearInterval(intervalId);
+        intervalId = setInterval(gameLoop, gameSpeed);
+      }
+    }
+
+    function handleSpecialEat() {
+      score += 100;
+      gameSpeed = Math.max(gameSpeed - 25, MIN_SPEED);
+      foodCount++;
+      if (isActive) {
+        clearInterval(intervalId);
+        intervalId = setInterval(gameLoop, gameSpeed);
+      }
+    }
+
+    // ---------- 绘制 ----------
+    function drawGame() {
+      ctx.fillStyle = '#14141f';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      const fog = activeEffects.has('ch12');
+      const head = snake[0] || { x:10, y:10 };
+      const range = 2;
+
+      const isGreen = activeEffects.has('ch3');
+
+      // 绘制网格 (仅迷雾时可见范围)
+      for (let x=0; x<GRID; x++) {
+        for (let y=0; y<GRID; y++) {
+          if (fog) {
+            const dx = Math.abs(x-head.x), dy = Math.abs(y-head.y);
+            if (dx>range || dy>range) continue;
+          }
+          // 网格线
+          ctx.strokeStyle = 'rgba(80,80,120,0.15)';
+          ctx.lineWidth = 0.6;
+          ctx.strokeRect(x*CELL, y*CELL, CELL, CELL);
+
+          // 障碍
+          let isObs = false;
+          for (let o of obstacles) {
+            if (o.x===x && o.y===y) { isObs=true; break; }
+          }
+          if (isObs) {
+            ctx.fillStyle = isGreen ? '#4cd137' : '#7a7aaa';
+            ctx.fillRect(x*CELL, y*CELL, CELL, CELL);
+          }
+
+          // 食物
+          if (food && food.x===x && food.y===y) {
+            ctx.fillStyle = isGreen ? '#4cd137' : '#fbc531';
+            ctx.beginPath();
+            ctx.arc(x*CELL+CELL/2, y*CELL+CELL/2, CELL/2-2, 0, 2*Math.PI);
+            ctx.fill();
+          }
+          // 特殊食物
+          if (specialFood && specialFood.x===x && specialFood.y===y) {
+            ctx.fillStyle = '#e84118';
+            ctx.beginPath();
+            ctx.arc(x*CELL+CELL/2, y*CELL+CELL/2, CELL/2-2, 0, 2*Math.PI);
+            ctx.fill();
+            if (Math.floor(Date.now()/300)%2===0) {
+              ctx.strokeStyle = '#ffeb3b';
+              ctx.lineWidth=2;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // 蛇
+      for (let i=0; i<snake.length; i++) {
+        const s = snake[i];
+        if (fog) {
+          const dx = Math.abs(s.x-head.x), dy = Math.abs(s.y-head.y);
+          if (dx>range || dy>range) continue;
+        }
+        ctx.fillStyle = i===0 ? (isGreen ? '#4cd137' : '#e84118') : (isGreen ? '#4cd137' : '#8e2de2');
+        ctx.fillRect(s.x*CELL+1, s.y*CELL+1, CELL-2, CELL-2);
+      }
+    }
+
+    // ---------- UI 更新 ----------
+    function updateUI() {
+      const totalMul = challengeMultiplier * difficultyMultiplier;
+      scoreSpan.textContent = Math.floor(score * totalMul);
+      speedSpan.textContent = gameSpeed;
+      lengthSpan.textContent = snake.length;
+      multiplierSpan.textContent = totalMul.toFixed(1);
+
+      // 效果标签
+      effectTags.innerHTML = '';
+      for (let [id, val] of activeEffects) {
+        const tag = document.createElement('span');
+        tag.className = 'effect-tag';
+        tag.textContent = val.name || id;
+        effectTags.appendChild(tag);
+      }
+    }
+
+    // ---------- 游戏循环 ----------
+    function gameLoop() {
+      moveSnake();
+      drawGame();
+    }
+
+    // ---------- 开始 ----------
+    function startGame() {
+      if (isActive) {
+        endGame();
+        return;
+      }
+      // 检查是否所有槽位都已选
+      const slots = document.querySelectorAll('.challenge-slot');
+      let allFilled = true;
+      for (let s of slots) {
+        if (!s.classList.contains('active')) { allFilled = false; break; }
+      }
+      if (!allFilled) {
+        alert('请先选择所有词条槽位！');
+        return;
+      }
+      resetGame();
+      isActive = true;
+      startBtn.textContent = '结束游戏';
+      lockSlots();
+      intervalId = setInterval(gameLoop, gameSpeed);
+      drawGame();
+    }
+
+    // ---------- 锁定/解锁槽位 ----------
+    function lockSlots() {
+      document.querySelectorAll('.slot').forEach(s => s.classList.add('disabled'));
+    }
+    function unlockSlots() {
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('disabled'));
+    }
+
+    // ---------- 设置难度 ----------
+    function setDifficulty(data) {
+      currentDifficulty = data;
+      difficultyMultiplier = parseFloat(data.multiplier);
+      difficultySlot.textContent = data.text;
+      difficultySlot.classList.add('active');
+      // 更新词条槽位数量
+      const level = parseInt(data.id.replace('d','')) || 1;
+      const count = Math.max(0, Math.min(level-1, 5));
+      challengeSlots.innerHTML = '';
+      slotChallengeIds = [];
+      for (let i=0; i<count; i++) {
+        const div = document.createElement('div');
+        div.className = 'slot challenge-slot';
+        div.textContent = '点击选择';
+        div.dataset.index = i;
+        div.addEventListener('click', (e) => {
+          if (isActive) return;
+          openChallengeModal(div);
+        });
+        challengeSlots.appendChild(div);
+        slotChallengeIds.push(null);
+      }
+      // 清空已有词条
+      activeEffects.clear();
+      challengeMultiplier = 1.0;
+      updateUI();
+      // 如果游戏未开始，重置
+      if (!isActive) resetGame();
+    }
+
+    // ---------- 激活词条 ----------
+    function activateChallenge(challengeData, slotElement) {
+      const id = challengeData.id;
+      // 单次限制
+      const oneTime = ['ch3','ch10','ch11','ch12'];
+      if (oneTime.includes(id)) {
+        for (let [key] of activeEffects) {
+          if (oneTime.includes(key) && key !== id) {
+            alert('该类型词条只能选择一次');
+            return;
+          }
+        }
+      }
+      // 移除旧词条 (如果槽位已有)
+      if (slotElement.dataset.challengeId) {
+        const oldId = slotElement.dataset.challengeId;
+        activeEffects.delete(oldId);
+        const mul = parseFloat(slotElement.dataset.multiplier) || 0;
+        challengeMultiplier -= mul;
+      }
+      // 激活
+      slotElement.textContent = challengeData.text || id;
+      slotElement.classList.add('active');
+      slotElement.dataset.challengeId = id;
+      slotElement.dataset.multiplier = challengeData.multiplier;
+      activeEffects.set(id, { name: challengeData.text || id });
+      challengeMultiplier += parseFloat(challengeData.multiplier) || 0;
+      // 如果游戏未开始，重置部分
+      if (!isActive) {
+        resetGame();
+      } else {
+        updateUI();
+      }
+    }
+
+    // ---------- 模态框 ----------
+    let currentModalType = null;
+    let selectedItem = null;
+    let currentSlotRef = null;
+
+    function openDifficultyModal() {
+      if (isActive) return;
+      currentModalType = 'difficulty';
+      document.getElementById('difficultyModal').classList.remove('hidden');
+      // 高亮当前
+      const grid = document.getElementById('difficultyGrid');
+      grid.querySelectorAll('.selection-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === currentDifficulty.id);
+      });
+      selectedItem = grid.querySelector('.active') || null;
+    }
+
+    function openChallengeModal(slotElement) {
+      if (isActive) return;
+      currentSlotRef = slotElement;
+      currentModalType = 'challenge';
+      document.getElementById('challengeModal').classList.remove('hidden');
+      const grid = document.getElementById('challengeGrid');
+      grid.querySelectorAll('.selection-item').forEach(el => {
+        el.classList.remove('active');
+        // 禁用已选的
+        const id = el.dataset.id;
+        let disabled = false;
+        for (let [key] of activeEffects) {
+          if (key === id) disabled = true;
+        }
+        el.style.opacity = disabled ? '0.4' : '1';
+        el.style.pointerEvents = disabled ? 'none' : 'auto';
+      });
+      selectedItem = null;
+    }
+
+    function closeModals() {
+      document.getElementById('difficultyModal').classList.add('hidden');
+      document.getElementById('challengeModal').classList.add('hidden');
+      currentModalType = null;
+      selectedItem = null;
+      currentSlotRef = null;
+    }
+
+    // ---------- 事件绑定 ----------
+    document.getElementById('difficultySlot').addEventListener('click', openDifficultyModal);
+    document.querySelectorAll('#difficultyGrid .selection-item').forEach(el => {
+      el.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.selection-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+        selectedItem = this;
+      });
+    });
+    document.getElementById('confirmDifficulty').addEventListener('click', function() {
+      if (selectedItem) {
+        const data = {
+          id: selectedItem.dataset.id,
+          speed: selectedItem.dataset.speed,
+          multiplier: selectedItem.dataset.multiplier,
+          text: selectedItem.textContent.trim()
+        };
+        setDifficulty(data);
+      }
+      closeModals();
+    });
+    document.getElementById('cancelDifficulty').addEventListener('click', closeModals);
+
+    document.querySelectorAll('#challengeGrid .selection-item').forEach(el => {
+      el.addEventListener('click', function() {
+        if (this.style.pointerEvents === 'none') return;
+        this.parentElement.querySelectorAll('.selection-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+        selectedItem = this;
+      });
+    });
+    document.getElementById('confirmChallenge').addEventListener('click', function() {
+      if (selectedItem && currentSlotRef) {
+        const data = {
+          id: selectedItem.dataset.id,
+          multiplier: selectedItem.dataset.multiplier,
+          text: selectedItem.textContent.trim()
+        };
+        activateChallenge(data, currentSlotRef);
+      }
+      closeModals();
+    });
+    document.getElementById('cancelChallenge').addEventListener('click', closeModals);
+
+    startBtn.addEventListener('click', startGame);
+    restartOverlayBtn.addEventListener('click', function() {
+      overlay.classList.add('hidden');
+      if (!isActive) resetGame();
+    });
+
+    // 键盘控制
+    document.addEventListener('keydown', (e) => {
+      if (!isActive) return;
+      const key = e.key;
+      let up='ArrowUp', down='ArrowDown', left='ArrowLeft', right='ArrowRight';
+      if (activeEffects.has('ch10')) {
+        // 翻转
+        if (key===up || key==='w' || key==='W') { e.preventDefault(); if (direction!=='down') nextDirection='down'; }
+        else if (key===down || key==='s' || key==='S') { e.preventDefault(); if (direction!=='up') nextDirection='up'; }
+        else if (key===left || key==='a' || key==='A') { e.preventDefault(); if (direction!=='right') nextDirection='right'; }
+        else if (key===right || key==='d' || key==='D') { e.preventDefault(); if (direction!=='left') nextDirection='left'; }
+      } else {
+        if (key===up || key==='w' || key==='W') { e.preventDefault(); if (direction!=='down') nextDirection='up'; }
+        else if (key===down || key==='s' || key==='S') { e.preventDefault(); if (direction!=='up') nextDirection='down'; }
+        else if (key===left || key==='a' || key==='A') { e.preventDefault(); if (direction!=='right') nextDirection='left'; }
+        else if (key===right || key==='d' || key==='D') { e.preventDefault(); if (direction!=='left') nextDirection='right'; }
+      }
+    });
+
+    // ---------- 初始化 ----------
+    function init() {
+      setDifficulty(currentDifficulty);
+      resetGame();
+      drawGame();
+    }
+    init();
+  })();
+</script>
+</body>
+</html>

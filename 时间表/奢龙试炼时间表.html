@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奢龙加速时间</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #ffffff;
+            --tertiary-bg: #f0f2f5;
+            --text-primary: #1e2a3a;
+            --text-secondary: #2c3e50;
+            --text-muted: #6c7a8a;
+            --text-light: #f8f9fa;
+            --border-primary: #d0d7de;
+            --border-light: #e9edf2;
+            --shadow-primary: rgba(0, 0, 0, 0.06);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --shadow-accent: rgba(30, 80, 180, 0.2);
+            --accent-primary: #1e6bb8;
+            --accent-secondary: #2a7fcf;
+            --accent-primary-rgb: 30, 107, 184;
+            --accent-primary-transparent: rgba(30, 107, 184, 0.08);
+            --card-radius: 16px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .baike-wrapper {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--secondary-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px var(--shadow-dark);
+            padding: 30px 35px;
+            border: 1px solid var(--border-light);
+            animation: fadeSlide 0.5s ease-out;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .baike-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 16px;
+        }
+
+        .baike-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--accent-primary), #0f4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .baike-header .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--tertiary-bg);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 450;
+            border: 1px solid var(--border-light);
+        }
+
+        .baike-card {
+            background: var(--secondary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-light);
+            padding: 18px 22px 22px;
+            box-shadow: 0 2px 8px var(--shadow-primary);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .baike-card:hover {
+            border-color: #b8c9e0;
+            box-shadow: 0 6px 18px var(--shadow-primary);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title i {
+            color: var(--accent-primary);
+            width: 1.4rem;
+            font-size: 1.1rem;
+        }
+
+        .calendar-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .month-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .month-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--border-primary);
+            border-radius: 40px;
+            font-size: 0.95rem;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        .month-btn:hover {
+            background: var(--accent-primary-transparent);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .month-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 107, 184, 0.25);
+        }
+
+        .month-btn:active {
+            transform: scale(0.96);
+        }
+
+        .current-month-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-left: auto;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px 30px;
+            padding: 12px 18px;
+            background: var(--tertiary-bg);
+            border-radius: 60px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 22px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .color-1 { background-color: #1abc9c; }
+        .color-2 { background-color: #3498db; }
+        .color-3 { background-color: #e74c3c; }
+        .color-4 { background-color: #9b59b6; }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 10px 0;
+            background: var(--tertiary-bg);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .day-cell {
+            height: 100px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .day-cell:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 6px 14px var(--shadow-primary);
+            z-index: 2;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .time-display {
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 4px 6px;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-top: 4px;
+            transition: 0.2s;
+        }
+
+        .time-1 { background: rgba(26, 188, 156, 0.2); color: #1abc9c; border-left: 3px solid #1abc9c; }
+        .time-2 { background: rgba(52, 152, 219, 0.2); color: #3498db; border-left: 3px solid #3498db; }
+        .time-3 { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border-left: 3px solid #e74c3c; }
+        .time-4 { background: rgba(155, 89, 182, 0.2); color: #9b59b6; border-left: 3px solid #9b59b6; }
+        .time-none { background: rgba(127, 140, 141, 0.12); color: var(--text-muted); border-left: 3px solid var(--text-muted); }
+
+        .empty-day {
+            background: transparent;
+            border: none;
+            pointer-events: none;
+        }
+
+        .other-month {
+            opacity: 0.5;
+        }
+
+        .current-day {
+            border: 2px solid var(--accent-primary) !important;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(var(--accent-primary-rgb), 0.08); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0.3); }
+        }
+
+        .current-day .day-number {
+            color: var(--accent-primary);
+            font-weight: 800;
+        }
+
+        .today-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            z-index: 5;
+            letter-spacing: 0.3px;
+        }
+
+        @media (max-width: 720px) {
+            body { padding: 16px 12px; }
+            .baike-wrapper { padding: 20px 16px; }
+            .baike-header h1 { font-size: 1.7rem; }
+            .calendar-grid { gap: 6px; }
+            .day-cell { height: 80px; padding: 6px; }
+            .day-number { font-size: 0.95rem; }
+            .time-display { font-size: 0.7rem; padding: 2px 4px; }
+            .calendar-controls { flex-direction: column; align-items: stretch; }
+            .month-buttons { justify-content: center; }
+            .current-month-label { margin-left: 0; text-align: center; margin-top: 6px; }
+            .legend { border-radius: 30px; gap: 12px 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .day-cell { height: 70px; padding: 4px; }
+            .day-number { font-size: 0.85rem; }
+            .month-btn { min-width: 70px; padding: 6px 12px; font-size: 0.85rem; }
+            .baike-header h1 { font-size: 1.4rem; }
+            .today-badge { font-size: 8px; padding: 1px 6px; top: -4px; right: -4px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="baike-wrapper">
+
+    <div class="baike-header">
+        <h1><i class="fas fa-clock" style="background: none; -webkit-text-fill-color: var(--accent-primary); margin-right: 8px;"></i>奢龙加速时间</h1>
+        <span class="subhead"><i class="far fa-calendar-alt"></i> 循环时刻表</span>
+    </div>
+
+    <div class="baike-card">
+        <div class="card-title"><i class="fas fa-calendar-day"></i> 时间历</div>
+
+        <div class="calendar-controls">
+            <div class="month-buttons">
+                <button class="month-btn active" id="current-month-btn"><i class="fas fa-chevron-left"></i> 当前月</button>
+                <button class="month-btn" id="next-month-btn">下个月 <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="current-month-label" id="current-month-label">2025年 十月</div>
+        </div>
+
+        <div class="legend">
+            <span class="legend-item"><span class="color-box color-1"></span> 凌晨 (1:00,4:00)</span>
+            <span class="legend-item"><span class="color-box color-2"></span> 上午 (7:00,10:00)</span>
+            <span class="legend-item"><span class="color-box color-3"></span> 下午 (13:00,16:00)</span>
+            <span class="legend-item"><span class="color-box color-4"></span> 晚上 (19:00,22:00)</span>
+        </div>
+
+        <div class="calendar-grid" id="calendar">
+            <!-- 由 js 动态生成 -->
+        </div>
+    </div>
+
+    <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: right; border-top: 1px solid var(--border-light); padding-top: 12px;">
+        <i class="far fa-hourglass"></i> 起始基准：2025.10.13
+    </div>
+</div>
+
+<script>
+    (function() {
+
+        const startDate = new Date(2025, 9, 13);
+        const timeCycle = ["1:00", "4:00", "7:00", "10:00", "13:00", "16:00", "19:00", "22:00", "None"];
+
+        const currentMonthBtn = document.getElementById('current-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const currentMonthLabel = document.getElementById('current-month-label');
+        const calendarEl = document.getElementById('calendar');
+
+        let displayYear = new Date().getFullYear();
+        let displayMonth = new Date().getMonth();
+
+        function getTimeClass(timeText) {
+            if (timeText === "None") return 'time-none';
+            const hour = parseInt(timeText.split(':')[0]);
+            if (hour === 1 || hour === 4) return 'time-1';
+            if (hour === 7 || hour === 10) return 'time-2';
+            if (hour === 13 || hour === 16) return 'time-3';
+            if (hour === 19 || hour === 22) return 'time-4';
+            return 'time-none';
+        }
+
+        function updateMonthLabel() {
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            currentMonthLabel.textContent = `${displayYear}年 ${monthNames[displayMonth]}`;
+        }
+
+        function generateCalendar() {
+            const year = displayYear;
+            const month = displayMonth;
+
+            calendarEl.innerHTML = '';
+
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekdays.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                calendarEl.appendChild(header);
+            });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDay.getDay();
+
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day-cell empty-day';
+                calendarEl.appendChild(empty);
+            }
+
+            const today = new Date();
+            const todayDay = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+                const dateObj = new Date(year, month, d);
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+
+                const isToday = (d === todayDay && month === todayMonth && year === todayYear);
+
+                const numDiv = document.createElement('div');
+                numDiv.className = 'day-number';
+                numDiv.textContent = d;
+                cell.appendChild(numDiv);
+
+                const diffMs = dateObj.getTime() - startDate.getTime();
+                const daysDiff = Math.floor(diffMs / (1000 * 3600 * 24));
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'time-display';
+
+                if (daysDiff >= 0) {
+                    const idx = daysDiff % timeCycle.length;
+                    const timeText = timeCycle[idx];
+                    timeDiv.textContent = timeText;
+                    timeDiv.classList.add(getTimeClass(timeText));
+                } else {
+                    timeDiv.textContent = '过去';
+                    timeDiv.classList.add('time-none');
+                }
+                cell.appendChild(timeDiv);
+
+                if (isToday) {
+                    cell.classList.add('current-day');
+                    const badge = document.createElement('span');
+                    badge.className = 'today-badge';
+                    badge.textContent = '今天';
+                    cell.appendChild(badge);
+                }
+
+                calendarEl.appendChild(cell);
+            }
+        }
+
+        function switchToCurrentMonth() {
+            const now = new Date();
+            displayYear = now.getFullYear();
+            displayMonth = now.getMonth();
+            currentMonthBtn.classList.add('active');
+            nextMonthBtn.classList.remove('active');
+            updateMonthLabel();
+            generateCalendar();
+        }
+
+        function switchToNextMonth() {
+            let nextMonth = displayMonth + 1;
+            let nextYear = displayYear;
+            if (nextMonth > 11) { nextMonth = 0; nextYear += 1; }
+            displayYear = nextYear;
+            displayMonth = nextMonth;
+            currentMonthBtn.classList.remove('active');
+            nextMonthBtn.classList.add('active');
+            updateMonthLabel();
+            generateCalendar();
+        }
+
+        function scheduleMidnightRefresh() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+            setTimeout(() => {
+                if (currentMonthBtn.classList.contains('active')) {
+                    switchToCurrentMonth();
+                }
+                scheduleMidnightRefresh();
+            }, msUntilMidnight + 1000);
+        }
+
+        function listenToParentTheme() {
+            if (window.parent !== window) {
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'preferred-theme') applyTheme(e.newValue);
+                });
+                window.addEventListener('message', function(e) {
+                    if (e.data && e.data.type === 'theme-change') applyTheme(e.data.theme);
+                });
+                const parentTheme = localStorage.getItem('preferred-theme') || 'default';
+                applyTheme(parentTheme);
+            }
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'default') document.body.removeAttribute('data-theme');
+            else document.body.setAttribute('data-theme', theme);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const now = new Date();
+            displayYear = now.getFullYear();
+            displayMonth = now.getMonth();
+            updateMonthLabel();
+            generateCalendar();
+
+            currentMonthBtn.addEventListener('click', switchToCurrentMonth);
+            nextMonthBtn.addEventListener('click', switchToNextMonth);
+
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => { this.style.transform = ''; }, 120);
+                });
+            });
+
+            listenToParentTheme();
+
+            scheduleMidnightRefresh();
+
+            document.querySelector('.baike-wrapper').style.opacity = '0';
+            document.querySelector('.baike-wrapper').style.transform = 'translateY(6px)';
+            setTimeout(() => {
+                document.querySelector('.baike-wrapper').style.opacity = '1';
+                document.querySelector('.baike-wrapper').style.transform = 'translateY(0)';
+            }, 60);
+        });
+
+        window.applyTheme = applyTheme;
+    })();
+</script>
+</body>
+
+</html>

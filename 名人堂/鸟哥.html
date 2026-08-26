@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鸟哥</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f2f6fa;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Georgia', 'Times New Roman', serif;
+      color: #1f2e3f;
+      line-height: 1.7;
+      padding: 32px 20px;
+      min-height: 100vh;
+    }
+
+    .page-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+      padding: 40px 48px 44px 48px;
+      border: 1px solid #eef3f9;
+      position: relative;
+    }
+
+    /* ---------- 印章风格 · 右上角 ---------- */
+    .big-rating {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      font-family: 'Georgia', 'Times New Roman', 'PingFang SC', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #b13e3e;              /* 沉稳的朱红 */
+      letter-spacing: 4px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      transform: rotate(6deg);      /* 轻微倾斜，更显印章感 */
+      padding: 6px 8px 6px 12px;
+      border: 2px solid #b13e3e;    /* 红色边框，强化印章轮廓 */
+      border-radius: 4px;           /* 微圆角，不锋利 */
+      background: transparent;      /* 完全透明背景 */
+      background-clip: padding-box;
+      box-shadow: none;
+      backdrop-filter: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: transform 0.15s ease;
+      line-height: 1.2;
+    }
+    .big-rating:hover {
+      transform: rotate(4deg) scale(1.02);
+    }
+    /* 去除所有伪元素，只保留文字 */
+    .big-rating::before,
+    .big-rating::after {
+      display: none;
+      content: none;
+    }
+    /* 内部无额外标签，直接是文字 */
+    .big-rating .rating-label {
+      display: none;   /* 完全移除原有标签结构 */
+    }
+
+    /* 小屏适配 */
+    @media (max-width: 700px) {
+      .big-rating {
+        top: 18px;
+        right: 18px;
+        font-size: 2.0rem;
+        letter-spacing: 3px;
+        padding: 4px 6px 4px 10px;
+        border-width: 2px;
+      }
+    }
+    @media (max-width: 480px) {
+      .big-rating {
+        top: 12px;
+        right: 12px;
+        font-size: 1.6rem;
+        letter-spacing: 2px;
+        padding: 2px 6px 2px 8px;
+        border-width: 2px;
+        transform: rotate(4deg);
+      }
+      .big-rating:hover {
+        transform: rotate(2deg) scale(1.02);
+      }
+    }
+
+    /* ---------- 原有风格（精简） ---------- */
+    .detail-header {
+      margin-bottom: 28px;
+      border-bottom: 2px solid #eef3f9;
+      padding-bottom: 20px;
+      padding-right: 140px;  /* 为右上角印章留出空间 */
+    }
+    @media (max-width: 700px) {
+      .detail-header { padding-right: 110px; }
+    }
+    @media (max-width: 480px) {
+      .detail-header { padding-right: 80px; }
+    }
+
+    .detail-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0b1c2f;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .detail-title .source-tag {
+      font-size: 15px;
+      font-weight: 400;
+      color: #5f7286;
+      background: #e8eef5;
+      padding: 2px 16px;
+      border-radius: 30px;
+    }
+    .detail-subtitle {
+      font-size: 16px;
+      color: #4d6278;
+      margin-top: 6px;
+    }
+
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 32px;
+      background: #f8fafd;
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 28px;
+      border: 1px solid #e6edf5;
+    }
+    .detail-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #3d546b;
+    }
+    .detail-meta-item .label {
+      color: #7a8b9e;
+      font-weight: 400;
+    }
+    .detail-meta-item .value {
+      font-weight: 500;
+      color: #1f2e3f;
+    }
+
+    .detail-body {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .detail-section {
+      border: 1px solid #e6edf5;
+      border-radius: 12px;
+      background: #fafcfe;
+      overflow: hidden;
+    }
+    .detail-section-header {
+      padding: 12px 20px;
+      background: #f4f8fc;
+      border-bottom: 1px solid #e6edf5;
+      font-size: 16px;
+      font-weight: 600;
+      color: #0b1c2f;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .detail-section-body {
+      padding: 18px 22px 22px;
+      color: #2a4057;
+      font-size: 15px;
+    }
+    .detail-section-body p {
+      margin-bottom: 12px;
+    }
+    .detail-section-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .empty-note {
+      color: #8a9db0;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    @media (max-width: 700px) {
+      .page-wrapper {
+        padding: 24px 18px;
+      }
+      .detail-title { font-size: 26px; }
+      .detail-meta {
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px 18px;
+      }
+      .detail-section-body {
+        padding: 14px 16px 18px;
+        font-size: 14px;
+      }
+    }
+    @media (max-width: 480px) {
+      body { padding: 12px 8px; }
+      .page-wrapper { padding: 18px 12px; }
+      .detail-title { font-size: 22px; }
+      .detail-meta { padding: 12px 14px; font-size: 13px; }
+      .detail-section-body { padding: 12px 14px 16px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- ===== 右上角 · 印章式评级 ===== -->
+    <div class="big-rating" aria-label="印章评级：夯">
+      夯
+    </div>
+
+    <!-- ===== 详情头部 ===== -->
+    <div class="detail-header">
+      <h1 class="detail-title">
+        <span>鸟哥</span>
+        <span class="source-tag">YANG__AWA</span>
+      </h1>
+      <p class="detail-subtitle">神人</p>
+    </div>
+
+    <!-- ===== 标签/元信息 ===== -->
+    <div class="detail-meta">
+      <div class="detail-meta-item">
+        <span class="label">#</span>
+        <span class="value">###</span>
+      </div>
+      <div class="detail-meta-item">
+        <span class="label">#</span>
+        <span class="value">###</span>
+      </div>
+      <div class="detail-meta-item">
+        <span class="label">#</span>
+        <span class="value">###</span>
+      </div>
+    </div>
+
+    <!-- ===== 主体内容 ===== -->
+    <div class="detail-body">
+
+      <!-- 保留一个内容区块，保持与原来一致 -->
+      <div class="detail-section">
+        <div class="detail-section-header">#</div>
+        <div class="detail-section-body">
+          <p>###</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>
